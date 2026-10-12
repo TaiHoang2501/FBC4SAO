@@ -1,0 +1,74 @@
+{
+  "per_scenario": [
+    {
+      "scenario": "S1",
+      "name": "Chẩn đoán Holland/RIASEC",
+      "routing_accuracy": 0.93,
+      "rouge_l": 0.16,
+      "bertscore": 0.82,
+      "citation_accuracy": 0.93,
+      "response_time": 6.6
+    },
+    {
+      "scenario": "S2",
+      "name": "Tư vấn Ngoại khóa Nền tảng",
+      "routing_accuracy": 0.64,
+      "rouge_l": 0.18,
+      "bertscore": 0.84,
+      "citation_accuracy": 1.0,
+      "response_time": 5.45
+    },
+    {
+      "scenario": "S3",
+      "name": "Tư vấn Ngoại khóa Chuyên sâu",
+      "routing_accuracy": 0.71,
+      "rouge_l": 0.03,
+      "bertscore": 0.89,
+      "citation_accuracy": 0.5,
+      "response_time": 5.42
+    },
+    {
+      "scenario": "S4",
+      "name": "Hoạt động Cá nhân",
+      "routing_accuracy": 0.79,
+      "rouge_l": 0.12,
+      "bertscore": 0.87,
+      "citation_accuracy": 1.0,
+      "response_time": 6.24
+    },
+    {
+      "scenario": "S5",
+      "name": "Đối chiếu Hồ sơ",
+      "routing_accuracy": 0.93,
+      "rouge_l": 0.11,
+      "bertscore": 0.88,
+      "citation_accuracy": 0.93,
+      "response_time": 6.38
+    },
+    {
+      "scenario": "S6",
+      "name": "Đánh giá Toàn diện",
+      "routing_accuracy": 0.93,
+      "rouge_l": 0.08,
+      "bertscore": 0.85,
+      "citation_accuracy": 0.64,
+      "response_time": 5.66
+    },
+    {
+      "scenario": "S7",
+      "name": "Hỏi đáp Tổng quát",
+      "routing_accuracy": 1.0,
+      "rouge_l": 0.1,
+      "bertscore": 0.85,
+      "citation_accuracy": 1.0,
+      "response_time": 6.09
+    }
+  ],
+  "overall": {
+    "routing_accuracy": 0.85,
+    "rouge_l": 0.11,
+    "bertscore": 0.86,
+    "citation_accuracy": 0.86,
+    "response_time": 5.98
+  }
+}

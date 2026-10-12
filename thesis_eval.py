@@ -122,7 +122,7 @@ def run_evaluation(dataset=None, live=False, api_base="http://localhost:8000"):
                             dtype = data.get("type")
                             
                             if dtype == "token":
-                                tok = data.get("content", "")
+                                tok = data.get("token", "")
                                 answer += tok
                             elif dtype == "cached":
                                 answer = data.get("answer", "")
@@ -139,7 +139,19 @@ def run_evaluation(dataset=None, live=False, api_base="http://localhost:8000"):
         elapsed = time.time() - start_time
         rouge = compute_rouge_l(item["reference"], answer)
         bert = evaluate_semantic_similarity(item["reference"], answer)
-        routing_ok = 1.0 if predicted_agent == item["expected_agent"] else 0.0
+        
+        AGENT_DISPLAY_MAP = {
+            "test_riasec": "Phân loại Holland",
+            "hdnk_nentang": "Ngoại khóa Nền tảng",
+            "hdnk_chuyenmon": "Ngoại khóa Chuyên môn",
+            "hdnk_canhan": "Ngoại khóa Cá nhân",
+            "match_hoso": "Case Study 10 năm",
+            "danhgia_all": "Đánh giá Toàn diện",
+            "hoidapchung": "Hướng nghiệp Tổng quát",
+        }
+        expected_display = AGENT_DISPLAY_MAP.get(item["expected_agent"], item["expected_agent"])
+        routing_ok = 1.0 if predicted_agent == expected_display else 0.0
+
         # Citation is valid if there are source tags in answer AND sources list is not empty
         citation_ok = 1.0 if (re.search(r"\[\d+\]", answer) and sources) else 0.0
 
@@ -152,6 +164,7 @@ def run_evaluation(dataset=None, live=False, api_base="http://localhost:8000"):
             "rouge_l": rouge,
             "bertscore": bert,
             "citation_correct": citation_ok,
+            "response_time": elapsed,
             "answer": answer
         })
 
@@ -159,7 +172,8 @@ def run_evaluation(dataset=None, live=False, api_base="http://localhost:8000"):
         "routing_accuracy": sum(r["routing_correct"] for r in results) / len(results),
         "rouge_l": sum(r["rouge_l"] for r in results) / len(results),
         "bertscore_f1": sum(r["bertscore"] for r in results) / len(results),
-        "citation_accuracy": sum(r["citation_correct"] for r in results) / len(results)
+        "citation_accuracy": sum(r["citation_correct"] for r in results) / len(results),
+        "response_time": sum(r["response_time"] for r in results) / len(results)
     }
     return results, summary
 

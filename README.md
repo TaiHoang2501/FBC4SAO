@@ -1,6 +1,8 @@
-# Hệ Thống Adaptive Agentic RAG (Tư vấn Du học & Khướng nghiệp)
+# FBC4SAO: Adaptive Agentic RAG Chatbot for Study Abroad Orientation
 
-Hệ thống RAG đa tác nhân thích ứng được thiết kế để cung cấp câu trả lời chính xác, có cơ sở và minh bạch cho các câu hỏi về hướng nghiệp (theo mã Holland/RIASEC) và du học. Hệ thống kết hợp khả năng suy luận của LLM (Ollama) với hạ tầng sự kiện bất đồng bộ (Inngest) và tìm kiếm lai (Hybrid Search).
+> **FBC4SAO**: *A Framework of Building Chatbot to Advise on Extracurricular Activities for Study Abroad Orientation*
+
+Hệ thống RAG đa tác nhân thích ứng (Adaptive Agentic RAG) được thiết kế để tư vấn hoạt động ngoại khóa và hướng nghiệp du học dựa trên lý thuyết mật mã Holland (RIASEC). Hệ thống kết hợp khả năng suy luận của LLM với hạ tầng sự kiện bất đồng bộ (Inngest) và tìm kiếm lai (Hybrid Search BM25 + Dense Vector).
 
 ## 🚀 Các Tính Năng Chính
 

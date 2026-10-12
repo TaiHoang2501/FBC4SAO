@@ -27,7 +27,7 @@ from reranker import rerank
 from agents import route_question, agent_search, build_agent_prompt, get_agent_display
 
 # ── Load ground truth ─────────────────────────────────────────────────────────
-GT_PATH = Path("ground_truth.json")
+GT_PATH = Path("ground_truth_final.json")
 with open(GT_PATH, "r", encoding="utf-8") as f:
     DATASET = json.load(f)
 
@@ -78,9 +78,9 @@ def compute_bertscore(reference: str, hypothesis: str) -> float:
             return 0.5
 
 
-def compute_citation(answer: str) -> float:
-    """1.0 nếu câu trả lời có ít nhất 1 trích dẫn [n] hợp lệ."""
-    return 1.0 if re.search(r"\[\d+\]", answer) else 0.0
+def compute_citation(answer: str, sources: list) -> float:
+    """1.0 nếu có trích dẫn [n] hợp lệ VÀ hệ thống thực sự có tài liệu nguồn."""
+    return 1.0 if (re.search(r"\[\d+\]", answer) and sources) else 0.0
 
 
 # ── 4 Pipeline ────────────────────────────────────────────────────────────────
@@ -213,7 +213,7 @@ def run_comparative_eval(use_bertscore: bool = True):
             # Compute metrics
             rouge = compute_rouge_l(ref, out["answer"])
             bert = compute_bertscore(ref, out["answer"]) if use_bertscore else 0.0
-            citation = compute_citation(out["answer"])
+            citation = compute_citation(out["answer"], out.get("sources", []))
             routing = 1.0 if out["agent"] == expected else 0.0
 
             results.append({
@@ -282,7 +282,7 @@ def print_comparison_table(summary: dict):
 
     print(f"{'='*90}")
     # Best pipeline
-    best = max(summary.items(), key=lambda x: x[1]["rouge_l"] + x[1]["bertscore_f1"] + x[1]["citation_accuracy"])
+    best = max(summary.items(), key=lambda x: x[1]["rouge_l"] + x[1]["bertscore_f1"] + x[1]["citation_accuracy"] + x[1]["routing_accuracy"])
     print(f"\n🏆 Pipeline tốt nhất (tổng hợp): {best[0]}")
 
 

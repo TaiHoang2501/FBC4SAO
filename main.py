@@ -270,9 +270,10 @@ async def query_rag_stream(request: Request, req: Optional[QueryRequest] = None)
         except:
             pass
 
-        async def _empty():
-            yield f"data: {json.dumps({'type': 'error', 'message': 'Không tìm thấy thông tin'})}\n\n"
-        return StreamingResponse(_empty(), media_type="text/event-stream")
+        if not contexts:
+            async def _empty():
+                yield f"data: {json.dumps({'type': 'error', 'message': 'Không tìm thấy thông tin'})}\n\n"
+            return StreamingResponse(_empty(), media_type="text/event-stream")
 
     # Build prompt
     history = get_history(session_id, limit=10)

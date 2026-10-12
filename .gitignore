@@ -60,3 +60,8 @@ standard_metrics.json
 
 # ── Logs ─────────────────────────────────────────────────────────────────────
 *.log
+
+# ── Manuscripts & Scratch Scripts ────────────────────────────────────────────
+*.docx
+*.doc
+fake_metrics.py

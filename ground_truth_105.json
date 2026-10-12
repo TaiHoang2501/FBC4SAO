@@ -1,0 +1,737 @@
+[
+  {
+    "scenario": "S1",
+    "scenario_type": "standard",
+    "question": "Em hay thích tháo lắp máy móc và làm thủ công. Em thuộc nhóm Holland nào?",
+    "expected_agent": "test_riasec",
+    "reference": "Dựa trên sở thích tháo lắp máy móc và làm thủ công, bạn thuộc nhóm Realistic (R) trong hệ thống Holland RIASEC. Nhóm R có đặc điểm thích làm việc với đồ vật, máy móc, công cụ và thiên nhiên. Người thuộc nhóm này thường ưa thích các hoạt động thực hành, có kỹ năng kỹ thuật tốt và thích giải quyết vấn đề cụ thể. Các ngành nghề phù hợp bao gồm kỹ sư cơ khí, thợ điện, kiến trúc sư [1]. Nguồn: [1] holland_open_dataset."
+  },
+  {
+    "scenario": "S1",
+    "scenario_type": "variant",
+    "question": "Tính cách tôi: thích giải quyết vấn đề thực tế, không thích nói nhiều, làm tốt hơn nói. RIASEC là gì?",
+    "expected_agent": "test_riasec",
+    "reference": "RIASEC là hệ thống phân loại nghề nghiệp của John Holland gồm 6 nhóm: Realistic, Investigative, Artistic, Social, Enterprising, Conventional. Với tính cách thích giải quyết vấn đề thực tế và ít nói, bạn có tố chất của nhóm Realistic (R) hoặc Investigative (I). Nhóm R thích làm việc thực hành với máy móc, công cụ. Nhóm I thích phân tích, nghiên cứu và giải quyết vấn đề logic [1]. Nguồn: [1] holland_open_dataset."
+  },
+  {
+    "scenario": "S1",
+    "scenario_type": "edge",
+    "question": "Em không biết mình thích gì, nhưng không ghét môn nào cả. Làm sao xác định Holland?",
+    "expected_agent": "test_riasec",
+    "reference": "Khi chưa xác định rõ sở thích, bạn có thể làm bài trắc nghiệm Holland RIASEC để khám phá nhóm tính cách phù hợp. Bài trắc nghiệm gồm các câu hỏi về sở thích, hoạt động yêu thích và kỹ năng. Việc không ghét môn nào cho thấy bạn có thể có sự cân bằng giữa nhiều nhóm Holland. Hãy thử chia sẻ thêm về những hoạt động bạn cảm thấy hứng thú nhất để tôi có thể chẩn đoán chính xác hơn [1]. Nguồn: [1] holland_open_dataset."
+  },
+  {
+    "scenario": "S2",
+    "scenario_type": "standard",
+    "question": "Em mã Holland là Social (S). Nên tham gia ngoại khóa nền tảng nào để phát triển kỹ năng mềm?",
+    "expected_agent": "hdnk_nentang",
+    "reference": "Với mã Holland Social (S), bạn nên tham gia các hoạt động ngoại khóa nền tảng phát triển kỹ năng mềm như: câu lạc bộ tình nguyện để rèn kỹ năng giao tiếp và làm việc nhóm, tham gia hướng dẫn sự kiện Orientation để phát triển khả năng lãnh đạo, hoạt động cộng đồng và mentor học sinh mới. Những hoạt động này giúp chuyển hóa tố chất Social thành kỹ năng mềm chuyên nghiệp [1][2][3]. Nguồn: [1] Nhi Le_CV.docx, [2] RESUME HOANG GIA BACH.pdf, [3] Khue's CV_pdf.pdf."
+  },
+  {
+    "scenario": "S2",
+    "scenario_type": "variant",
+    "question": "Tôi hướng nội, thuộc nhóm Investigative. Hoạt động ngoại khóa nào giúp tôi xây nền tảng mà không phải nói trước đám đông?",
+    "expected_agent": "hdnk_nentang",
+    "reference": "Với nhóm Investigative và tính cách hướng nội, bạn có thể tham gia các hoạt động nền tảng không yêu cầu thuyết trình trước đám đông: câu lạc bộ nghiên cứu khoa học để làm việc trong nhóm nhỏ, viết blog hoặc bài nghiên cứu, tham gia dự án phân tích dữ liệu, hoặc câu lạc bộ đọc sách. Những hoạt động này phù hợp với xu hướng thích phân tích và tìm kiếm câu trả lời của nhóm I [1][2]. Nguồn: [1] Nhi Le_CV.docx, [2] Khue's CV_pdf.pdf."
+  },
+  {
+    "scenario": "S2",
+    "scenario_type": "edge",
+    "question": "Em bận học, không có thời gian. Hoạt động ngoại khóa nền tảng nào ngắn nhất?",
+    "expected_agent": "hdnk_nentang",
+    "reference": "Khi bận học, bạn có thể tham gia các hoạt động ngoại khóa nền tảng ngắn hạn như: dự án nghiên cứu ngắn hạn trong vài tuần, câu lạc bộ học thuật với buổi họp ngắn hàng tuần, hoặc tình nguyện sự kiện một ngày. Những hoạt động này không yêu cầu cam kết thời gian dài nhưng vẫn giúp phát triển kỹ năng mềm và tạo điểm nhấn cho hồ sơ [1][2]. Nguồn: [1] Nhi Le_CV.docx, [2] RESUME HOANG GIA BACH.pdf."
+  },
+  {
+    "scenario": "S3",
+    "scenario_type": "standard",
+    "question": "Em muốn làm hồ sơ chuyên môn về AI. Ngoại khóa chuyên sâu nào phù hợp?",
+    "expected_agent": "hdnk_chuyenmon",
+    "reference": "Để xây dựng hồ sơ chuyên môn về AI, bạn có thể tham gia các hoạt động ngoại khóa chuyên sâu: thực tập tại công ty công nghệ hoặc phòng nghiên cứu AI, tham gia cuộc thi hackathon về machine learning, phát triển dự án cá nhân ứng dụng AI, hoặc nghiên cứu khoa học về deep learning. Những hoạt động này cho thấy năng lực chuyên môn thực tế và đam mê trong lĩnh vực trí tuệ nhân tạo [1][2][3]. Nguồn: [1] Nhi Le_CV.docx, [2] RESUME HOANG GIA BACH.pdf, [3] Khue's CV_pdf.pdf."
+  },
+  {
+    "scenario": "S3",
+    "scenario_type": "variant",
+    "question": "Nhóm Enterprising (E) có thể làm startup hoặc dự án kinh doanh nào để đẹp hồ sơ chuyên môn?",
+    "expected_agent": "hdnk_chuyenmon",
+    "reference": "Nhóm Enterprising (E) có thể làm đẹp hồ sơ chuyên môn qua các dự án: khởi nghiệp phát triển ứng dụng hoặc nền tảng trực tuyến, tổ chức sự kiện kinh doanh hoặc hội thảo đổi mới sáng tạo, xây dựng chiến dịch marketing cho sản phẩm mới, hoặc tham gia các cuộc thi khởi nghiệp. Những dự án này thể hiện khả năng lãnh đạo, quản lý và tinh thần doanh nhân [1][2]. Nguồn: [1] Nhi Le_CV.docx, [2] RESUME HOANG GIA BACH.pdf."
+  },
+  {
+    "scenario": "S3",
+    "scenario_type": "edge",
+    "question": "Em ở tỉnh, không có cơ hội thực tập ở công ty lớn. Có cách nào làm ngoại khóa chuyên môn không?",
+    "expected_agent": "hdnk_chuyenmon",
+    "reference": "Ở tỉnh vẫn có thể làm ngoại khóa chuyên môn: tham gia dự án nghiên cứu trực tuyến, phát triển dự án cá nhân như blog, kênh YouTube hoặc ứng dụng, thực tập từ xa tại các công ty công nghệ, hoặc tham gia các khóa học chuyên sâu trực tuyến và lấy chứng chỉ. Những hoạt động này không yêu cầu ở thành phố lớn nhưng vẫn thể hiện được năng lực chuyên môn [1][2]. Nguồn: [1] Nhi Le_CV.docx, [2] Khue's CV_pdf.pdf."
+  },
+  {
+    "scenario": "S4",
+    "scenario_type": "standard",
+    "question": "Em thích âm nhạc và nghệ thuật. Làm sao biến sở thích cá nhân thành điểm nhấn hồ sơ?",
+    "expected_agent": "hdnk_canhan",
+    "reference": "Để biến sở thích âm nhạc và nghệ thuật thành điểm nhấn hồ sơ: tham gia câu lạc bộ âm nhạc hoặc nghệ thuật tại trường, tổ chức buổi biểu diễn hoặc triển lãm, sáng tạo nội dung nghệ thuật trên mạng xã hội, hoặc tham gia các cuộc thi âm nhạc. Những hoạt động này thể hiện sự sáng tạo, khả năng tự thể hiện và đam mê cá nhân, tạo dấu ấn riêng biệt trong hồ sơ [1][2]. Nguồn: [1] Nhi Le_CV.docx, [2] Khue's CV_pdf.pdf."
+  },
+  {
+    "scenario": "S4",
+    "scenario_type": "variant",
+    "question": "Em chơi cờ vua từ nhỏ. Cờ vua có được tính là ngoại khóa cá nhân giá trị không?",
+    "expected_agent": "hdnk_canhan",
+    "reference": "Cờ vua chắc chắn là hoạt động ngoại khóa cá nhân có giá trị. Cờ vua rèn luyện tư duy chiến lược, tính kiên nhẫn, khả năng phân tích và ra quyết định. Tham gia câu lạc bộ cờ vua hoặc các giải đấu giúp phát triển kỹ năng cạnh tranh lành mạnh và xây dựng mạng lưới quan hệ. Đây là sở thích thể hiện trí tuệ và kỷ luật, tạo điểm nhấn đặc biệt trong hồ sơ [1][2]. Nguồn: [1] holland_open_dataset, [2] Nhi Le_CV.docx."
+  },
+  {
+    "scenario": "S4",
+    "scenario_type": "edge",
+    "question": "Em không có sở thích đặc biệt gì. Mọi người bảo cần có hoạt động cá nhân thì phải làm sao?",
+    "expected_agent": "hdnk_canhan",
+    "reference": "Nếu chưa có sở thích đặc biệt, bạn có thể khám phá qua: thử tham gia nhiều câu lạc bộ khác nhau tại trường, tham gia hoạt động tình nguyện để tìm đam mê, thử các hoạt động sáng tạo như vẽ tranh, chơi nhạc cụ, hoặc thể thao. Việc tìm kiếm sở thích là một hành trình, và bạn có thể khám phá nhiều điều thú vị qua trải nghiệm thực tế [1][2]. Nguồn: [1] Nhi Le_CV.docx, [2] Khue's CV_pdf.pdf."
+  },
+  {
+    "scenario": "S5",
+    "scenario_type": "standard",
+    "question": "Em mã Holland là IA, muốn học ngành Khoa học máy tính. Có anh chị nào tương tự không?",
+    "expected_agent": "match_hoso",
+    "reference": "Mã Holland IA (Investigative-Artistic) phù hợp với ngành Khoa học máy tính. Trong cơ sở dữ liệu hồ sơ sinh viên, có nhiều anh chị có mã Holland tương tự đã thành công trong lĩnh vực CNTT. Họ đã tham gia các hoạt động như nghiên cứu khoa học, phát triển phần mềm và thực tập tại các công ty công nghệ. Lộ trình của họ cho thấy sự kết hợp giữa nền tảng học thuật vững và kinh nghiệm thực hành [1][2][3]. Nguồn: [1] RESUME HOANG GIA BACH.pdf, [2] Nhi Le_CV.docx, [3] Khue's CV_pdf.pdf."
+  },
+  {
+    "scenario": "S5",
+    "scenario_type": "variant",
+    "question": "Cho tôi xem hồ sơ của những bạn xuất phát điểm bình thường nhưng sau vẫn trúng tuyển đại học tốt.",
+    "expected_agent": "match_hoso",
+    "reference": "Có nhiều hồ sơ sinh viên xuất phát điểm bình thường nhưng trúng tuyển đại học tốt nhờ chuẩn bị hồ sơ đồng đều. Họ thể hiện đam mê qua hoạt động ngoại khóa đa dạng, dự án cá nhân nổi bật và thư giới thiệu ấn tượng. Điểm chung là sự chuẩn bị kỹ lưỡng và thể hiện bản thân chân thực, không chỉ dựa vào điểm số [1][2][3]. Nguồn: [1] RESUME HOANG GIA BACH.pdf, [2] Nhi Le_CV.docx, [3] Khue's CV_pdf.pdf."
+  },
+  {
+    "scenario": "S5",
+    "scenario_type": "edge",
+    "question": "Em muốn tìm hồ sơ anh chị nhóm Conventional (C) học ngành Kế toán, có không?",
+    "expected_agent": "match_hoso",
+    "reference": "Nhóm Conventional (C) phù hợp với ngành Kế toán vì nhóm này thích làm việc có hệ thống, chính xác và tuân thủ quy trình. Trong cơ sở dữ liệu, có thể tìm thấy các hồ sơ sinh viên có đặc điểm tương tự nhóm C với kỹ năng tổ chức, quản lý tài liệu và phân tích số liệu. Họ đã tham gia các hoạt động liên quan đến quản lý và tài chính [1][2][3]. Nguồn: [1] RESUME HOANG GIA BACH.pdf, [2] Nhi Le_CV.docx, [3] Khue's CV_pdf.pdf."
+  },
+  {
+    "scenario": "S6",
+    "scenario_type": "standard",
+    "question": "Em tên Minh, thích toán và lập trình, ghét giao tiếp đám đông, muốn làm kỹ sư phần mềm. Phân tích hồ sơ và lộ trình ngoại khóa cho em.",
+    "expected_agent": "danhgia_all",
+    "reference": "Dựa trên sở thích toán và lập trình, bạn thuộc nhóm Investigative (I) hoặc Realistic (R). Lộ trình ngoại khóa 3 cấp độ: Nền tảng gồm câu lạc bộ lập trình và khóa học trực tuyến, Chuyên môn gồm dự án phần mềm và thực tập IT, Cá nhân gồm blog kỹ thuật hoặc dự án open source. Hồ sơ sinh viên tương tự cho thấy thành công trong ngành kỹ sư phần mềm [1][2]. Nguồn: [1] holland_open_dataset, [2] RESUME HOANG GIA BACH.pdf."
+  },
+  {
+    "scenario": "S6",
+    "scenario_type": "variant",
+    "question": "CV em: Trưởng CLB Thiện nguyện, MC sự kiện trường, điểm Văn cao. Mã Holland và lộ trình ngoại khóa phù hợp?",
+    "expected_agent": "danhgia_all",
+    "reference": "Từ CV với vai trò Trưởng CLB Thiện nguyện và MC sự kiện, bạn thuộc nhóm Social (S) và Enterprising (E). Lộ trình ngoại khóa 3 cấp độ: Nền tảng gồm phát triển kỹ năng lãnh đạo và giao tiếp, Chuyên môn gồm tổ chức sự kiện lớn và dự án cộng đồng, Cá nhân gồm xây dựng thương hiệu cá nhân trên mạng xã hội. Các hồ sơ tương đồng cho thấy thành công trong lĩnh vực quản lý và truyền thông [1][2]. Nguồn: [1] holland_open_dataset, [2] Nhi Le_CV.docx."
+  },
+  {
+    "scenario": "S6",
+    "scenario_type": "edge",
+    "question": "Em chưa làm gì cả, học lớp 10, chưa biết mình thích gì. Vẫn cần đánh giá toàn diện không?",
+    "expected_agent": "danhgia_all",
+    "reference": "Đánh giá toàn diện rất cần thiết cho học sinh lớp 10 chưa xác định sở thích. Bạn nên bắt đầu bằng bài trắc nghiệm Holland RIASEC để khám phá nhóm tính cách. Lộ trình ngoại khóa 3 cấp độ: Nền tảng gồm tham gia nhiều câu lạc bộ khác nhau để thử nghiệm, Chuyên môn gồm khóa học trực tuyến về các lĩnh vực khác nhau, Cá nhân gồm khám phá sở thích qua hoạt động sáng tạo. Việc bắt đầu sớm giúp có nhiều thời gian khám phá [1][2]. Nguồn: [1] holland_open_dataset, [2] Nhi Le_CV.docx."
+  },
+  {
+    "scenario": "S7",
+    "scenario_type": "standard",
+    "question": "Mã Holland là gì? Giải thích ngắn gọn.",
+    "expected_agent": "hoidapchung",
+    "reference": "Mã Holland là hệ thống phân loại nghề nghiệp do John Holland phát triển, chia thành 6 nhóm tính cách: Realistic (thực tế), Investigative (nghiên cứu), Artistic (nghệ thuật), Social (xã hội), Enterprising (quản lý), Conventional (công chức). Mỗi người có mã gồm 2-3 nhóm nổi bật nhất, giúp xác định xu hướng nghề nghiệp phù hợp. Trắc nghiệm Holland giúp học sinh hiểu bản thân và lựa chọn ngành học đúng đắn [1]. Nguồn: [1] holland_open_dataset."
+  },
+  {
+    "scenario": "S7",
+    "scenario_type": "variant",
+    "question": "Hệ thống này tư vấn được những gì cho học sinh?",
+    "expected_agent": "hoidapchung",
+    "reference": "Hệ thống tư vấn hướng nghiệp này hỗ trợ học sinh: chẩn đoán nhóm tính cách Holland RIASEC, đề xuất hoạt động ngoại khóa nền tảng phát triển kỹ năng mềm, gợi ý ngoại khóa chuyên môn theo lĩnh vực quan tâm, tư vấn hoạt động cá nhân phù hợp sở thích, đối chiếu hồ sơ với sinh viên thành công tương tự, và đánh giá toàn diện kèm lộ trình 3 cấp độ [1][2]. Nguồn: [1] holland_open_dataset, [2] Nhi Le_CV.docx."
+  },
+  {
+    "scenario": "S7",
+    "scenario_type": "edge",
+    "question": "Bạn có thể nói chuyện bằng tiếng Anh không?",
+    "expected_agent": "hoidapchung",
+    "reference": "Hệ thống chủ yếu hoạt động bằng tiếng Việt và chuyên về tư vấn hướng nghiệp Holland RIASEC và hoạt động ngoại khóa. Tôi có thể hỗ trợ bạn về: xác định mã Holland, gợi ý ngoại khóa phù hợp, đối chiếu hồ sơ sinh viên thành công và thiết kế lộ trình phát triển cá nhân. Hãy đặt câu hỏi bằng tiếng Việt để được tư vấn tốt nhất [1]. Nguồn: [1] holland_open_dataset."
+  },
+  {
+    "scenario": "S1",
+    "scenario_type": "tricky",
+    "question": "Tôi thích vẽ tranh nhưng lại muốn học kinh tế để kiếm nhiều tiền. Thế tôi nên theo nhóm nào trong Holland để sau này làm marketing?",
+    "expected_agent": "test_riasec",
+    "reference": "Trường hợp của bạn cho thấy sự kết hợp giữa nhóm Artistic (thích vẽ, sáng tạo) và Enterprising (kinh doanh, kiếm tiền). Mã Holland của bạn có thể là AE hoặc EA. Để làm marketing, yếu tố Enterprising và Artistic đều rất quan trọng vì ngành này cần cả sự sáng tạo lẫn tư duy kinh doanh. Bạn nên làm bài test đầy đủ để xem nhóm nào chiếm tỷ trọng cao hơn [1]."
+  },
+  {
+    "scenario": "S1",
+    "scenario_type": "tricky",
+    "question": "Mọi người nói em hợp làm giáo viên vì em hay giảng bài cho bạn, nhưng em lại rất thích ở một mình code. Vậy Holland của em có bị mâu thuẫn không?",
+    "expected_agent": "test_riasec",
+    "reference": "Không hề mâu thuẫn. Việc thích giảng bài cho thấy bạn có đặc điểm của nhóm Social (S), trong khi sở thích code một mình thuộc về nhóm Investigative (I) hoặc Realistic (R). Mã Holland của bạn có thể là SI hoặc IS. Nhiều kỹ sư phần mềm giỏi hoặc giảng viên CNTT đều có sự kết hợp này [1]."
+  },
+  {
+    "scenario": "S2",
+    "scenario_type": "tricky",
+    "question": "Em muốn tham gia ngoại khóa nhưng trường em không có câu lạc bộ nào cả, đoàn trường cũng rất ít hoạt động. Em phải làm sao để có kỹ năng nền tảng?",
+    "expected_agent": "hdnk_nentang",
+    "reference": "Nếu trường không có sẵn CLB, bạn có thể tự tạo cơ hội bằng cách: tham gia các dự án tình nguyện online, tham gia các tổ chức phi chính phủ (NGO) tuyển tình nguyện viên từ xa, tự lập một nhóm học tập nhỏ, hoặc tham gia các khóa học kỹ năng mềm trực tuyến. Kỹ năng nền tảng không nhất thiết phải đến từ CLB của trường [1][2]."
+  },
+  {
+    "scenario": "S2",
+    "scenario_type": "tricky",
+    "question": "Tham gia đội tuyển học sinh giỏi Toán có được tính là ngoại khóa nền tảng không ạ?",
+    "expected_agent": "hdnk_nentang",
+    "reference": "Đội tuyển học sinh giỏi thiên về thành tích học thuật hơn là ngoại khóa nền tảng (vốn tập trung vào kỹ năng mềm như giao tiếp, làm việc nhóm). Tuy nhiên, quá trình học nhóm trong đội tuyển vẫn giúp bạn rèn tư duy logic và sự kiên nhẫn. Để hồ sơ toàn diện hơn, bạn nên bổ sung thêm các hoạt động mang tính cộng đồng hoặc xã hội [1][2]."
+  },
+  {
+    "scenario": "S3",
+    "scenario_type": "tricky",
+    "question": "Em định xin thực tập ở một công ty IT nhưng em mới học lớp 11, họ không nhận. Có cách nào khác để làm ngoại khóa chuyên sâu CNTT không?",
+    "expected_agent": "hdnk_chuyenmon",
+    "reference": "Nếu chưa xin được thực tập, bạn có thể làm ngoại khóa chuyên sâu bằng cách: đóng góp mã nguồn cho các dự án Open Source trên GitHub, tự xây dựng một ứng dụng/website nhỏ và publish lên mạng, hoặc tham gia các kỳ thi lập trình (hackathon) dành cho học sinh. Các dự án cá nhân này đôi khi còn được đánh giá cao hơn cả thực tập [1][2]."
+  },
+  {
+    "scenario": "S3",
+    "scenario_type": "tricky",
+    "question": "Viết báo khoa học nhưng không được đăng báo quốc tế thì có tính là ngoại khóa chuyên môn xịn không?",
+    "expected_agent": "hdnk_chuyenmon",
+    "reference": "Vẫn được tính là ngoại khóa chuyên môn rất giá trị. Dù không được đăng quốc tế, quá trình nghiên cứu khoa học cho thấy bạn có tư duy phân tích, khả năng đọc hiểu tài liệu và tinh thần học hỏi sâu. Bạn có thể tóm tắt nghiên cứu đó vào portfolio hoặc đăng trên các nền tảng chia sẻ học thuật [1][2]."
+  },
+  {
+    "scenario": "S4",
+    "scenario_type": "tricky",
+    "question": "Em rất thích chơi game online. Làm sao để ghi cái này vào hồ sơ ngoại khóa cá nhân mà không bị đánh giá xấu?",
+    "expected_agent": "hdnk_canhan",
+    "reference": "Bạn có thể biến sở thích chơi game thành điểm nhấn nếu thể hiện được kỹ năng: ví dụ bạn từng tổ chức hoặc quản lý một team/clan lớn (thể hiện kỹ năng lãnh đạo), tự build cấu hình máy tính (kỹ năng kỹ thuật), hoặc viết blog/review phân tích chiến thuật game (tư duy phân tích). Quan trọng là bạn học được gì từ quá trình đó [1][2]."
+  },
+  {
+    "scenario": "S4",
+    "scenario_type": "tricky",
+    "question": "Sở thích cá nhân của em là nấu ăn cho gia đình. Điều này có ý nghĩa gì cho hồ sơ du học ngành kỹ thuật không?",
+    "expected_agent": "hdnk_canhan",
+    "reference": "Nấu ăn có vẻ không liên quan đến kỹ thuật, nhưng nó thể hiện bạn là một người cân bằng, biết chăm sóc bản thân và gia đình. Trong ngành kỹ thuật căng thẳng, những sở thích giúp giải tỏa áp lực và duy trì sức khỏe tinh thần rất được trân trọng. Nó cho thấy bạn có đời sống tinh thần phong phú [1][2]."
+  },
+  {
+    "scenario": "S5",
+    "scenario_type": "tricky",
+    "question": "Hồ sơ của em y hệt một anh chị đã đậu thủ khoa, liệu em có chắc chắn đậu không?",
+    "expected_agent": "match_hoso",
+    "reference": "Không có gì là chắc chắn. Tuy hồ sơ của bạn tương đồng với một sinh viên thành công, hội đồng tuyển sinh còn đánh giá qua cách bạn viết bài luận cá nhân, vòng phỏng vấn và sự phù hợp với văn hóa trường ở thời điểm hiện tại. Hồ sơ tương đồng chỉ là một hệ quy chiếu giúp bạn tự tin hơn về định hướng, chứ không phải giấy báo trúng tuyển [1][2]."
+  },
+  {
+    "scenario": "S5",
+    "scenario_type": "tricky",
+    "question": "Có hồ sơ nào của người hướng nội mà lại thành công trong ngành sale/marketing không?",
+    "expected_agent": "match_hoso",
+    "reference": "Có rất nhiều. Người hướng nội (như nhóm Investigative hoặc Artistic) trong ngành marketing thường thành công nhờ tư duy phân tích dữ liệu sâu sắc, khả năng sáng tạo nội dung xuất sắc và thấu hiểu tâm lý khách hàng thay vì giao tiếp ồn ào. Trong cơ sở dữ liệu có những sinh viên tương tự đã dùng thế mạnh lắng nghe để chốt sale hiệu quả [1][2][3]."
+  },
+  {
+    "scenario": "S6",
+    "scenario_type": "tricky",
+    "question": "Mã Holland của em là Social, thích làm tình nguyện, nhưng gia đình ép học y. Em nên xây dựng lộ trình ngoại khóa thế nào để vừa ý bố mẹ vừa đúng đam mê?",
+    "expected_agent": "danhgia_all",
+    "reference": "Bạn có thể dung hòa cả hai bằng cách kết hợp nhóm Social và ngành Y: tham gia các dự án y tế cộng đồng, chiến dịch hiến máu, hoặc làm tình nguyện viên tại các trạm xá/bệnh viện. Lộ trình này vừa giúp bạn thỏa mãn đam mê đóng góp cho xã hội, vừa xây dựng được một hồ sơ y khoa giàu lòng nhân ái - điều kiện cực kỳ quan trọng cho ngành y [1][2]."
+  },
+  {
+    "scenario": "S6",
+    "scenario_type": "tricky",
+    "question": "Đánh giá giúp hồ sơ của em: Điểm SAT 1550, GPA 9.8 nhưng ngoại khóa chỉ có 1 hoạt động duy nhất là đánh đàn piano ở nhà.",
+    "expected_agent": "danhgia_all",
+    "reference": "Hồ sơ của bạn có điểm nhấn học thuật rất mạnh (Investigative/Conventional) nhưng đang thiếu hụt trầm trọng kỹ năng mềm và khả năng làm việc cộng đồng (Social). Với chỉ một hoạt động piano ở nhà, bạn sẽ gặp khó khăn khi cạnh tranh vào các trường đại học hàng đầu đề cao sự toàn diện. Cần ngay lập tức bổ sung các hoạt động ngoại khóa nền tảng như dự án cộng đồng hoặc CLB [1][2]."
+  },
+  {
+    "scenario": "S7",
+    "scenario_type": "tricky",
+    "question": "Trắc nghiệm Holland có bao giờ bị sai không? Cảm giác kết quả không giống em lắm.",
+    "expected_agent": "hoidapchung",
+    "reference": "Trắc nghiệm Holland là công cụ tâm lý học nên vẫn có thể có độ lệch, nhất là khi tâm trạng bạn không ổn định lúc làm bài hoặc bạn chưa hiểu rõ bản thân. Nếu thấy kết quả không đúng, bạn nên xem xét lại các hoạt động thực tế mình từng làm, kết hợp tham vấn chuyên gia hướng nghiệp để có góc nhìn khách quan hơn [1]."
+  },
+  {
+    "scenario": "S7",
+    "scenario_type": "tricky",
+    "question": "Em có thể dùng bài kiểm tra MBTI thay cho Holland khi dùng hệ thống này được không?",
+    "expected_agent": "hoidapchung",
+    "reference": "Hệ thống này được thiết kế chuyên biệt dựa trên lý thuyết Holland RIASEC, vốn tập trung vào sở thích và môi trường nghề nghiệp. MBTI tập trung vào xu hướng tính cách. Bạn không thể thay thế trực tiếp, nhưng có thể dùng MBTI như một nguồn tham khảo bổ trợ để hiểu sâu hơn về bản thân. Tuy nhiên, hệ thống tư vấn ngoại khóa sẽ chỉ dùng mã Holland để gợi ý [1]."
+  },
+  {
+    "scenario": "S1",
+    "scenario_type": "variation",
+    "question": "Anh/chị ơi, em hay thích tháo lắp máy móc và làm thủ công. em thuộc nhóm holland nào? Cảm ơn bạn.",
+    "expected_agent": "test_riasec",
+    "reference": "Dựa trên sở thích tháo lắp máy móc và làm thủ công, bạn thuộc nhóm Realistic (R) trong hệ thống Holland RIASEC. Nhóm R có đặc điểm thích làm việc với đồ vật, máy móc, công cụ và thiên nhiên. Người thuộc nhóm này thường ưa thích các hoạt động thực hành, có kỹ năng kỹ thuật tốt và thích giải quyết vấn đề cụ thể. Các ngành nghề phù hợp bao gồm kỹ sư cơ khí, thợ điện, kiến trúc sư [1]. Nguồn: [1] holland_open_dataset."
+  },
+  {
+    "scenario": "S1",
+    "scenario_type": "variation",
+    "question": "Anh/chị ơi, tính cách tôi: thích giải quyết vấn đề thực tế, không thích nói nhiều, làm tốt hơn nói. riasec là gì? Cảm ơn bạn.",
+    "expected_agent": "test_riasec",
+    "reference": "RIASEC là hệ thống phân loại nghề nghiệp của John Holland gồm 6 nhóm: Realistic, Investigative, Artistic, Social, Enterprising, Conventional. Với tính cách thích giải quyết vấn đề thực tế và ít nói, bạn có tố chất của nhóm Realistic (R) hoặc Investigative (I). Nhóm R thích làm việc thực hành với máy móc, công cụ. Nhóm I thích phân tích, nghiên cứu và giải quyết vấn đề logic [1]. Nguồn: [1] holland_open_dataset."
+  },
+  {
+    "scenario": "S1",
+    "scenario_type": "variation",
+    "question": "Tư vấn giúp em: mình không biết mình thích gì, nhưng không ghét môn nào cả. làm sao xác định holland? Mình đang cần gấp.",
+    "expected_agent": "test_riasec",
+    "reference": "Khi chưa xác định rõ sở thích, bạn có thể làm bài trắc nghiệm Holland RIASEC để khám phá nhóm tính cách phù hợp. Bài trắc nghiệm gồm các câu hỏi về sở thích, hoạt động yêu thích và kỹ năng. Việc không ghét môn nào cho thấy bạn có thể có sự cân bằng giữa nhiều nhóm Holland. Hãy thử chia sẻ thêm về những hoạt động bạn cảm thấy hứng thú nhất để tôi có thể chẩn đoán chính xác hơn [1]. Nguồn: [1] holland_open_dataset."
+  },
+  {
+    "scenario": "S2",
+    "scenario_type": "variation",
+    "question": "Hệ thống cho mình biết, em mã holland là social (s). nên tham gia ngoại khóa nền tảng nào để phát triển kỹ năng mềm? Mình đang cần gấp.",
+    "expected_agent": "hdnk_nentang",
+    "reference": "Với mã Holland Social (S), bạn nên tham gia các hoạt động ngoại khóa nền tảng phát triển kỹ năng mềm như: câu lạc bộ tình nguyện để rèn kỹ năng giao tiếp và làm việc nhóm, tham gia hướng dẫn sự kiện Orientation để phát triển khả năng lãnh đạo, hoạt động cộng đồng và mentor học sinh mới. Những hoạt động này giúp chuyển hóa tố chất Social thành kỹ năng mềm chuyên nghiệp [1][2][3]. Nguồn: [1] Nhi Le_CV.docx, [2] RESUME HOANG GIA BACH.pdf, [3] Khue's CV_pdf.pdf."
+  },
+  {
+    "scenario": "S2",
+    "scenario_type": "variation",
+    "question": "Hệ thống cho mình biết, mình hướng nội, thuộc nhóm investigative. hoạt động ngoại khóa nào giúp tôi xây nền tảng mà không phải nói trước đám đông? Mình đang cần gấp.",
+    "expected_agent": "hdnk_nentang",
+    "reference": "Với nhóm Investigative và tính cách hướng nội, bạn có thể tham gia các hoạt động nền tảng không yêu cầu thuyết trình trước đám đông: câu lạc bộ nghiên cứu khoa học để làm việc trong nhóm nhỏ, viết blog hoặc bài nghiên cứu, tham gia dự án phân tích dữ liệu, hoặc câu lạc bộ đọc sách. Những hoạt động này phù hợp với xu hướng thích phân tích và tìm kiếm câu trả lời của nhóm I [1][2]. Nguồn: [1] Nhi Le_CV.docx, [2] Khue's CV_pdf.pdf."
+  },
+  {
+    "scenario": "S2",
+    "scenario_type": "variation",
+    "question": "Xin chào, mình bận học, không có thời gian. hoạt động ngoại khóa nền tảng nào ngắn nhất? Cảm ơn bạn.",
+    "expected_agent": "hdnk_nentang",
+    "reference": "Khi bận học, bạn có thể tham gia các hoạt động ngoại khóa nền tảng ngắn hạn như: dự án nghiên cứu ngắn hạn trong vài tuần, câu lạc bộ học thuật với buổi họp ngắn hàng tuần, hoặc tình nguyện sự kiện một ngày. Những hoạt động này không yêu cầu cam kết thời gian dài nhưng vẫn giúp phát triển kỹ năng mềm và tạo điểm nhấn cho hồ sơ [1][2]. Nguồn: [1] Nhi Le_CV.docx, [2] RESUME HOANG GIA BACH.pdf."
+  },
+  {
+    "scenario": "S3",
+    "scenario_type": "variation",
+    "question": "Dạ cho em hỏi, mình muốn làm profile chuyên môn về ai. ngoại khóa chuyên sâu nào phù hợp? Trả lời giúp mình nhé.",
+    "expected_agent": "hdnk_chuyenmon",
+    "reference": "Để xây dựng hồ sơ chuyên môn về AI, bạn có thể tham gia các hoạt động ngoại khóa chuyên sâu: thực tập tại công ty công nghệ hoặc phòng nghiên cứu AI, tham gia cuộc thi hackathon về machine learning, phát triển dự án cá nhân ứng dụng AI, hoặc nghiên cứu khoa học về deep learning. Những hoạt động này cho thấy năng lực chuyên môn thực tế và đam mê trong lĩnh vực trí tuệ nhân tạo [1][2][3]. Nguồn: [1] Nhi Le_CV.docx, [2] RESUME HOANG GIA BACH.pdf, [3] Khue's CV_pdf.pdf."
+  },
+  {
+    "scenario": "S3",
+    "scenario_type": "variation",
+    "question": "Cho mình hỏi, nhóm enterprising (e) có thể làm startup hoặc dự án kinh doanh nào để đẹp hồ sơ chuyên môn? Xin cảm ơn.",
+    "expected_agent": "hdnk_chuyenmon",
+    "reference": "Nhóm Enterprising (E) có thể làm đẹp hồ sơ chuyên môn qua các dự án: khởi nghiệp phát triển ứng dụng hoặc nền tảng trực tuyến, tổ chức sự kiện kinh doanh hoặc hội thảo đổi mới sáng tạo, xây dựng chiến dịch marketing cho sản phẩm mới, hoặc tham gia các cuộc thi khởi nghiệp. Những dự án này thể hiện khả năng lãnh đạo, quản lý và tinh thần doanh nhân [1][2]. Nguồn: [1] Nhi Le_CV.docx, [2] RESUME HOANG GIA BACH.pdf."
+  },
+  {
+    "scenario": "S3",
+    "scenario_type": "variation",
+    "question": "Dạ cho em hỏi, em ở tỉnh, không có cơ hội thực tập ở công ty lớn. có cách nào làm hoạt động ngoại khóa chuyên môn không?",
+    "expected_agent": "hdnk_chuyenmon",
+    "reference": "Ở tỉnh vẫn có thể làm ngoại khóa chuyên môn: tham gia dự án nghiên cứu trực tuyến, phát triển dự án cá nhân như blog, kênh YouTube hoặc ứng dụng, thực tập từ xa tại các công ty công nghệ, hoặc tham gia các khóa học chuyên sâu trực tuyến và lấy chứng chỉ. Những hoạt động này không yêu cầu ở thành phố lớn nhưng vẫn thể hiện được năng lực chuyên môn [1][2]. Nguồn: [1] Nhi Le_CV.docx, [2] Khue's CV_pdf.pdf."
+  },
+  {
+    "scenario": "S4",
+    "scenario_type": "variation",
+    "question": "Cho mình hỏi, em thích âm nhạc và nghệ thuật. làm sao biến sở thích cá nhân thành điểm nhấn hồ sơ? Tư vấn chi tiết giúp mình.",
+    "expected_agent": "hdnk_canhan",
+    "reference": "Để biến sở thích âm nhạc và nghệ thuật thành điểm nhấn hồ sơ: tham gia câu lạc bộ âm nhạc hoặc nghệ thuật tại trường, tổ chức buổi biểu diễn hoặc triển lãm, sáng tạo nội dung nghệ thuật trên mạng xã hội, hoặc tham gia các cuộc thi âm nhạc. Những hoạt động này thể hiện sự sáng tạo, khả năng tự thể hiện và đam mê cá nhân, tạo dấu ấn riêng biệt trong hồ sơ [1][2]. Nguồn: [1] Nhi Le_CV.docx, [2] Khue's CV_pdf.pdf."
+  },
+  {
+    "scenario": "S4",
+    "scenario_type": "variation",
+    "question": "Anh/chị ơi, em không có sở đam mê đặc biệt gì. mọi người bảo cần có hoạt động cá nhân thì phải làm sao? Nhờ hệ thống phân tích.",
+    "expected_agent": "hdnk_canhan",
+    "reference": "Nếu chưa có sở thích đặc biệt, bạn có thể khám phá qua: thử tham gia nhiều câu lạc bộ khác nhau tại trường, tham gia hoạt động tình nguyện để tìm đam mê, thử các hoạt động sáng tạo như vẽ tranh, chơi nhạc cụ, hoặc thể thao. Việc tìm kiếm sở thích là một hành trình, và bạn có thể khám phá nhiều điều thú vị qua trải nghiệm thực tế [1][2]. Nguồn: [1] Nhi Le_CV.docx, [2] Khue's CV_pdf.pdf."
+  },
+  {
+    "scenario": "S5",
+    "scenario_type": "variation",
+    "question": "Mình mã Holland là IA, muốn học ngành Khoa học máy tính. Có anh chị nào tương tự không? Mình đang cần gấp.",
+    "expected_agent": "match_hoso",
+    "reference": "Mã Holland IA (Investigative-Artistic) phù hợp với ngành Khoa học máy tính. Trong cơ sở dữ liệu hồ sơ sinh viên, có nhiều anh chị có mã Holland tương tự đã thành công trong lĩnh vực CNTT. Họ đã tham gia các hoạt động như nghiên cứu khoa học, phát triển phần mềm và thực tập tại các công ty công nghệ. Lộ trình của họ cho thấy sự kết hợp giữa nền tảng học thuật vững và kinh nghiệm thực hành [1][2][3]. Nguồn: [1] RESUME HOANG GIA BACH.pdf, [2] Nhi Le_CV.docx, [3] Khue's CV_pdf.pdf."
+  },
+  {
+    "scenario": "S5",
+    "scenario_type": "variation",
+    "question": "Anh/chị ơi, cho mình xem hồ sơ của những bạn xuất phát điểm bình thường nhưng sau vẫn trúng tuyển đại học tốt. Tư vấn chi tiết giúp mình.",
+    "expected_agent": "match_hoso",
+    "reference": "Có nhiều hồ sơ sinh viên xuất phát điểm bình thường nhưng trúng tuyển đại học tốt nhờ chuẩn bị hồ sơ đồng đều. Họ thể hiện đam mê qua hoạt động ngoại khóa đa dạng, dự án cá nhân nổi bật và thư giới thiệu ấn tượng. Điểm chung là sự chuẩn bị kỹ lưỡng và thể hiện bản thân chân thực, không chỉ dựa vào điểm số [1][2][3]. Nguồn: [1] RESUME HOANG GIA BACH.pdf, [2] Nhi Le_CV.docx, [3] Khue's CV_pdf.pdf."
+  },
+  {
+    "scenario": "S5",
+    "scenario_type": "variation",
+    "question": "Câu hỏi của mình là: mình muốn tìm profile anh chị nhóm conventional (c) học ngành kế toán, có không? Tư vấn chi tiết giúp mình.",
+    "expected_agent": "match_hoso",
+    "reference": "Nhóm Conventional (C) phù hợp với ngành Kế toán vì nhóm này thích làm việc có hệ thống, chính xác và tuân thủ quy trình. Trong cơ sở dữ liệu, có thể tìm thấy các hồ sơ sinh viên có đặc điểm tương tự nhóm C với kỹ năng tổ chức, quản lý tài liệu và phân tích số liệu. Họ đã tham gia các hoạt động liên quan đến quản lý và tài chính [1][2][3]. Nguồn: [1] RESUME HOANG GIA BACH.pdf, [2] Nhi Le_CV.docx, [3] Khue's CV_pdf.pdf."
+  },
+  {
+    "scenario": "S6",
+    "scenario_type": "variation",
+    "question": "Hệ thống cho mình biết, em tên minh, đam mê toán và lập trình, ghét giao tiếp đám đông, muốn làm kỹ sư phần mềm. phân tích profile và lộ trình ngoại khóa cho em. Nhờ hệ thống phân tích.",
+    "expected_agent": "danhgia_all",
+    "reference": "Dựa trên sở thích toán và lập trình, bạn thuộc nhóm Investigative (I) hoặc Realistic (R). Lộ trình ngoại khóa 3 cấp độ: Nền tảng gồm câu lạc bộ lập trình và khóa học trực tuyến, Chuyên môn gồm dự án phần mềm và thực tập IT, Cá nhân gồm blog kỹ thuật hoặc dự án open source. Hồ sơ sinh viên tương tự cho thấy thành công trong ngành kỹ sư phần mềm [1][2]. Nguồn: [1] holland_open_dataset, [2] RESUME HOANG GIA BACH.pdf."
+  },
+  {
+    "scenario": "S6",
+    "scenario_type": "variation",
+    "question": "Anh/chị ơi, cv em: trưởng clb thiện nguyện, mc sự kiện trường, điểm văn cao. mã holland và lộ trình ngoại khóa tương thích? Tư vấn chi tiết giúp mình.",
+    "expected_agent": "danhgia_all",
+    "reference": "Từ CV với vai trò Trưởng CLB Thiện nguyện và MC sự kiện, bạn thuộc nhóm Social (S) và Enterprising (E). Lộ trình ngoại khóa 3 cấp độ: Nền tảng gồm phát triển kỹ năng lãnh đạo và giao tiếp, Chuyên môn gồm tổ chức sự kiện lớn và dự án cộng đồng, Cá nhân gồm xây dựng thương hiệu cá nhân trên mạng xã hội. Các hồ sơ tương đồng cho thấy thành công trong lĩnh vực quản lý và truyền thông [1][2]. Nguồn: [1] holland_open_dataset, [2] Nhi Le_CV.docx."
+  },
+  {
+    "scenario": "S6",
+    "scenario_type": "variation",
+    "question": "Hệ thống cho mình biết, mình chưa làm gì cả, học lớp 10, chưa biết mình thích gì. vẫn cần đánh giá toàn diện không? Xin cảm ơn.",
+    "expected_agent": "danhgia_all",
+    "reference": "Đánh giá toàn diện rất cần thiết cho học sinh lớp 10 chưa xác định sở thích. Bạn nên bắt đầu bằng bài trắc nghiệm Holland RIASEC để khám phá nhóm tính cách. Lộ trình ngoại khóa 3 cấp độ: Nền tảng gồm tham gia nhiều câu lạc bộ khác nhau để thử nghiệm, Chuyên môn gồm khóa học trực tuyến về các lĩnh vực khác nhau, Cá nhân gồm khám phá sở thích qua hoạt động sáng tạo. Việc bắt đầu sớm giúp có nhiều thời gian khám phá [1][2]. Nguồn: [1] holland_open_dataset, [2] Nhi Le_CV.docx."
+  },
+  {
+    "scenario": "S7",
+    "scenario_type": "variation",
+    "question": "Tư vấn giúp em: mã holland là gì? giải thích ngắn gọn. Nhờ hệ thống phân tích.",
+    "expected_agent": "hoidapchung",
+    "reference": "Mã Holland là hệ thống phân loại nghề nghiệp do John Holland phát triển, chia thành 6 nhóm tính cách: Realistic (thực tế), Investigative (nghiên cứu), Artistic (nghệ thuật), Social (xã hội), Enterprising (quản lý), Conventional (công chức). Mỗi người có mã gồm 2-3 nhóm nổi bật nhất, giúp xác định xu hướng nghề nghiệp phù hợp. Trắc nghiệm Holland giúp học sinh hiểu bản thân và lựa chọn ngành học đúng đắn [1]. Nguồn: [1] holland_open_dataset."
+  },
+  {
+    "scenario": "S7",
+    "scenario_type": "variation",
+    "question": "Dạ cho em hỏi, hệ thống này tư vấn được những gì cho học sinh? Cảm ơn bạn.",
+    "expected_agent": "hoidapchung",
+    "reference": "Hệ thống tư vấn hướng nghiệp này hỗ trợ học sinh: chẩn đoán nhóm tính cách Holland RIASEC, đề xuất hoạt động ngoại khóa nền tảng phát triển kỹ năng mềm, gợi ý ngoại khóa chuyên môn theo lĩnh vực quan tâm, tư vấn hoạt động cá nhân phù hợp sở thích, đối chiếu hồ sơ với sinh viên thành công tương tự, và đánh giá toàn diện kèm lộ trình 3 cấp độ [1][2]. Nguồn: [1] holland_open_dataset, [2] Nhi Le_CV.docx."
+  },
+  {
+    "scenario": "S7",
+    "scenario_type": "variation",
+    "question": "Xin chào, bạn có thể nói chuyện bằng tiếng anh không? Xin cảm ơn.",
+    "expected_agent": "hoidapchung",
+    "reference": "Hệ thống chủ yếu hoạt động bằng tiếng Việt và chuyên về tư vấn hướng nghiệp Holland RIASEC và hoạt động ngoại khóa. Tôi có thể hỗ trợ bạn về: xác định mã Holland, gợi ý ngoại khóa phù hợp, đối chiếu hồ sơ sinh viên thành công và thiết kế lộ trình phát triển cá nhân. Hãy đặt câu hỏi bằng tiếng Việt để được tư vấn tốt nhất [1]. Nguồn: [1] holland_open_dataset."
+  },
+  {
+    "scenario": "S1",
+    "scenario_type": "variation",
+    "question": "Hệ thống cho mình biết, tôi thích vẽ tranh nhưng lại muốn học kinh tế để kiếm nhiều tiền. thế mình nên theo nhóm nào trong holland để sau này làm marketing? Mong nhận được lời khuyên.",
+    "expected_agent": "test_riasec",
+    "reference": "Trường hợp của bạn cho thấy sự kết hợp giữa nhóm Artistic (thích vẽ, sáng tạo) và Enterprising (kinh doanh, kiếm tiền). Mã Holland của bạn có thể là AE hoặc EA. Để làm marketing, yếu tố Enterprising và Artistic đều rất quan trọng vì ngành này cần cả sự sáng tạo lẫn tư duy kinh doanh. Bạn nên làm bài test đầy đủ để xem nhóm nào chiếm tỷ trọng cao hơn [1]."
+  },
+  {
+    "scenario": "S1",
+    "scenario_type": "variation",
+    "question": "Mọi người nói em hợp làm giáo viên vì em hay giảng bài cho bạn, nhưng em lại rất đam mê ở một mình code. Vậy Holland của em có bị mâu thuẫn không? Trả lời giúp mình nhé.",
+    "expected_agent": "test_riasec",
+    "reference": "Không hề mâu thuẫn. Việc thích giảng bài cho thấy bạn có đặc điểm của nhóm Social (S), trong khi sở thích code một mình thuộc về nhóm Investigative (I) hoặc Realistic (R). Mã Holland của bạn có thể là SI hoặc IS. Nhiều kỹ sư phần mềm giỏi hoặc giảng viên CNTT đều có sự kết hợp này [1]."
+  },
+  {
+    "scenario": "S2",
+    "scenario_type": "variation",
+    "question": "Hệ thống cho mình biết, em muốn tham gia hoạt động ngoại khóa nhưng trường em không có câu lạc bộ nào cả, đoàn trường cũng rất ít hoạt động. em phải làm sao để có kỹ năng nền tảng? Xin cảm ơn.",
+    "expected_agent": "hdnk_nentang",
+    "reference": "Nếu trường không có sẵn CLB, bạn có thể tự tạo cơ hội bằng cách: tham gia các dự án tình nguyện online, tham gia các tổ chức phi chính phủ (NGO) tuyển tình nguyện viên từ xa, tự lập một nhóm học tập nhỏ, hoặc tham gia các khóa học kỹ năng mềm trực tuyến. Kỹ năng nền tảng không nhất thiết phải đến từ CLB của trường [1][2]."
+  },
+  {
+    "scenario": "S2",
+    "scenario_type": "variation",
+    "question": "Xin chào, tham gia đội tuyển học sinh giỏi toán có được tính là hoạt động ngoại khóa nền tảng không ạ? Cảm ơn bạn.",
+    "expected_agent": "hdnk_nentang",
+    "reference": "Đội tuyển học sinh giỏi thiên về thành tích học thuật hơn là ngoại khóa nền tảng (vốn tập trung vào kỹ năng mềm như giao tiếp, làm việc nhóm). Tuy nhiên, quá trình học nhóm trong đội tuyển vẫn giúp bạn rèn tư duy logic và sự kiên nhẫn. Để hồ sơ toàn diện hơn, bạn nên bổ sung thêm các hoạt động mang tính cộng đồng hoặc xã hội [1][2]."
+  },
+  {
+    "scenario": "S3",
+    "scenario_type": "variation",
+    "question": "Em định xin thực tập ở một công ty IT nhưng mình mới học lớp 11, họ không nhận. Có cách nào khác để làm ngoại khóa chuyên sâu CNTT không? Trả lời giúp mình nhé.",
+    "expected_agent": "hdnk_chuyenmon",
+    "reference": "Nếu chưa xin được thực tập, bạn có thể làm ngoại khóa chuyên sâu bằng cách: đóng góp mã nguồn cho các dự án Open Source trên GitHub, tự xây dựng một ứng dụng/website nhỏ và publish lên mạng, hoặc tham gia các kỳ thi lập trình (hackathon) dành cho học sinh. Các dự án cá nhân này đôi khi còn được đánh giá cao hơn cả thực tập [1][2]."
+  },
+  {
+    "scenario": "S3",
+    "scenario_type": "variation",
+    "question": "Dạ cho em hỏi, viết báo khoa học nhưng không được đăng báo quốc tế thì có tính là ngoại khóa chuyên môn xịn không? Mình đang cần gấp.",
+    "expected_agent": "hdnk_chuyenmon",
+    "reference": "Vẫn được tính là ngoại khóa chuyên môn rất giá trị. Dù không được đăng quốc tế, quá trình nghiên cứu khoa học cho thấy bạn có tư duy phân tích, khả năng đọc hiểu tài liệu và tinh thần học hỏi sâu. Bạn có thể tóm tắt nghiên cứu đó vào portfolio hoặc đăng trên các nền tảng chia sẻ học thuật [1][2]."
+  },
+  {
+    "scenario": "S4",
+    "scenario_type": "variation",
+    "question": "Câu hỏi của mình là: em rất thích chơi game online. làm sao để ghi cái này vào profile ngoại khóa cá nhân mà không bị đánh giá xấu?",
+    "expected_agent": "hdnk_canhan",
+    "reference": "Bạn có thể biến sở thích chơi game thành điểm nhấn nếu thể hiện được kỹ năng: ví dụ bạn từng tổ chức hoặc quản lý một team/clan lớn (thể hiện kỹ năng lãnh đạo), tự build cấu hình máy tính (kỹ năng kỹ thuật), hoặc viết blog/review phân tích chiến thuật game (tư duy phân tích). Quan trọng là bạn học được gì từ quá trình đó [1][2]."
+  },
+  {
+    "scenario": "S4",
+    "scenario_type": "variation",
+    "question": "Tư vấn giúp em: sở thích cá nhân của em là nấu ăn cho gia đình. điều này có ý nghĩa gì cho hồ sơ du học ngành kỹ thuật không? Cảm ơn bạn.",
+    "expected_agent": "hdnk_canhan",
+    "reference": "Nấu ăn có vẻ không liên quan đến kỹ thuật, nhưng nó thể hiện bạn là một người cân bằng, biết chăm sóc bản thân và gia đình. Trong ngành kỹ thuật căng thẳng, những sở thích giúp giải tỏa áp lực và duy trì sức khỏe tinh thần rất được trân trọng. Nó cho thấy bạn có đời sống tinh thần phong phú [1][2]."
+  },
+  {
+    "scenario": "S5",
+    "scenario_type": "variation",
+    "question": "Anh/chị ơi, hồ sơ của em y hệt một anh chị đã đậu thủ khoa, liệu em có chắc chắn đậu không? Mình đang cần gấp.",
+    "expected_agent": "match_hoso",
+    "reference": "Không có gì là chắc chắn. Tuy hồ sơ của bạn tương đồng với một sinh viên thành công, hội đồng tuyển sinh còn đánh giá qua cách bạn viết bài luận cá nhân, vòng phỏng vấn và sự phù hợp với văn hóa trường ở thời điểm hiện tại. Hồ sơ tương đồng chỉ là một hệ quy chiếu giúp bạn tự tin hơn về định hướng, chứ không phải giấy báo trúng tuyển [1][2]."
+  },
+  {
+    "scenario": "S5",
+    "scenario_type": "variation",
+    "question": "Cho mình hỏi, có profile nào của người hướng nội mà lại thành công trong ngành sale/marketing không? Nhờ hệ thống phân tích.",
+    "expected_agent": "match_hoso",
+    "reference": "Có rất nhiều. Người hướng nội (như nhóm Investigative hoặc Artistic) trong ngành marketing thường thành công nhờ tư duy phân tích dữ liệu sâu sắc, khả năng sáng tạo nội dung xuất sắc và thấu hiểu tâm lý khách hàng thay vì giao tiếp ồn ào. Trong cơ sở dữ liệu có những sinh viên tương tự đã dùng thế mạnh lắng nghe để chốt sale hiệu quả [1][2][3]."
+  },
+  {
+    "scenario": "S6",
+    "scenario_type": "variation",
+    "question": "Bạn tư vấn giúp: mã holland của mình là social, đam mê làm tình nguyện, nhưng gia đình ép học y. em nên xây dựng lộ trình ngoại khóa thế nào để vừa ý bố mẹ vừa đúng đam mê?",
+    "expected_agent": "danhgia_all",
+    "reference": "Bạn có thể dung hòa cả hai bằng cách kết hợp nhóm Social và ngành Y: tham gia các dự án y tế cộng đồng, chiến dịch hiến máu, hoặc làm tình nguyện viên tại các trạm xá/bệnh viện. Lộ trình này vừa giúp bạn thỏa mãn đam mê đóng góp cho xã hội, vừa xây dựng được một hồ sơ y khoa giàu lòng nhân ái - điều kiện cực kỳ quan trọng cho ngành y [1][2]."
+  },
+  {
+    "scenario": "S6",
+    "scenario_type": "variation",
+    "question": "Xin chào, đánh giá giúp hồ sơ của em: điểm sat 1550, gpa 9.8 nhưng ngoại khóa chỉ có 1 hoạt động duy nhất là đánh đàn piano ở nhà. Nhờ hệ thống phân tích.",
+    "expected_agent": "danhgia_all",
+    "reference": "Hồ sơ của bạn có điểm nhấn học thuật rất mạnh (Investigative/Conventional) nhưng đang thiếu hụt trầm trọng kỹ năng mềm và khả năng làm việc cộng đồng (Social). Với chỉ một hoạt động piano ở nhà, bạn sẽ gặp khó khăn khi cạnh tranh vào các trường đại học hàng đầu đề cao sự toàn diện. Cần ngay lập tức bổ sung các hoạt động ngoại khóa nền tảng như dự án cộng đồng hoặc CLB [1][2]."
+  },
+  {
+    "scenario": "S7",
+    "scenario_type": "variation",
+    "question": "Bạn tư vấn giúp: trắc nghiệm holland có bao giờ bị sai không? cảm giác kết quả không giống em lắm. Trả lời giúp mình nhé.",
+    "expected_agent": "hoidapchung",
+    "reference": "Trắc nghiệm Holland là công cụ tâm lý học nên vẫn có thể có độ lệch, nhất là khi tâm trạng bạn không ổn định lúc làm bài hoặc bạn chưa hiểu rõ bản thân. Nếu thấy kết quả không đúng, bạn nên xem xét lại các hoạt động thực tế mình từng làm, kết hợp tham vấn chuyên gia hướng nghiệp để có góc nhìn khách quan hơn [1]."
+  },
+  {
+    "scenario": "S7",
+    "scenario_type": "variation",
+    "question": "Tư vấn giúp em: em có thể dùng bài kiểm tra mbti thay cho holland khi dùng hệ thống này được không? Cảm ơn bạn.",
+    "expected_agent": "hoidapchung",
+    "reference": "Hệ thống này được thiết kế chuyên biệt dựa trên lý thuyết Holland RIASEC, vốn tập trung vào sở thích và môi trường nghề nghiệp. MBTI tập trung vào xu hướng tính cách. Bạn không thể thay thế trực tiếp, nhưng có thể dùng MBTI như một nguồn tham khảo bổ trợ để hiểu sâu hơn về bản thân. Tuy nhiên, hệ thống tư vấn ngoại khóa sẽ chỉ dùng mã Holland để gợi ý [1]."
+  },
+  {
+    "scenario": "S1",
+    "scenario_type": "variation",
+    "question": "Mình hay thích tháo lắp máy móc và làm thủ công. Mình thuộc nhóm Holland nào? Tư vấn chi tiết giúp mình.",
+    "expected_agent": "test_riasec",
+    "reference": "Dựa trên sở thích tháo lắp máy móc và làm thủ công, bạn thuộc nhóm Realistic (R) trong hệ thống Holland RIASEC. Nhóm R có đặc điểm thích làm việc với đồ vật, máy móc, công cụ và thiên nhiên. Người thuộc nhóm này thường ưa thích các hoạt động thực hành, có kỹ năng kỹ thuật tốt và thích giải quyết vấn đề cụ thể. Các ngành nghề phù hợp bao gồm kỹ sư cơ khí, thợ điện, kiến trúc sư [1]. Nguồn: [1] holland_open_dataset."
+  },
+  {
+    "scenario": "S1",
+    "scenario_type": "variation",
+    "question": "Giải đáp giúp mình với: tính cách tôi: thích giải quyết vấn đề thực tế, không thích nói nhiều, làm tốt hơn nói. riasec là gì? Mong nhận được lời khuyên.",
+    "expected_agent": "test_riasec",
+    "reference": "RIASEC là hệ thống phân loại nghề nghiệp của John Holland gồm 6 nhóm: Realistic, Investigative, Artistic, Social, Enterprising, Conventional. Với tính cách thích giải quyết vấn đề thực tế và ít nói, bạn có tố chất của nhóm Realistic (R) hoặc Investigative (I). Nhóm R thích làm việc thực hành với máy móc, công cụ. Nhóm I thích phân tích, nghiên cứu và giải quyết vấn đề logic [1]. Nguồn: [1] holland_open_dataset."
+  },
+  {
+    "scenario": "S1",
+    "scenario_type": "variation",
+    "question": "Tư vấn giúp em: em không biết mình đam mê gì, nhưng không ghét môn nào cả. làm sao xác định holland? Mình đang cần gấp.",
+    "expected_agent": "test_riasec",
+    "reference": "Khi chưa xác định rõ sở thích, bạn có thể làm bài trắc nghiệm Holland RIASEC để khám phá nhóm tính cách phù hợp. Bài trắc nghiệm gồm các câu hỏi về sở thích, hoạt động yêu thích và kỹ năng. Việc không ghét môn nào cho thấy bạn có thể có sự cân bằng giữa nhiều nhóm Holland. Hãy thử chia sẻ thêm về những hoạt động bạn cảm thấy hứng thú nhất để tôi có thể chẩn đoán chính xác hơn [1]. Nguồn: [1] holland_open_dataset."
+  },
+  {
+    "scenario": "S2",
+    "scenario_type": "variation",
+    "question": "Cho mình hỏi, em mã holland là social (s). nên tham gia ngoại khóa nền tảng nào để phát triển kỹ năng mềm? Cảm ơn bạn.",
+    "expected_agent": "hdnk_nentang",
+    "reference": "Với mã Holland Social (S), bạn nên tham gia các hoạt động ngoại khóa nền tảng phát triển kỹ năng mềm như: câu lạc bộ tình nguyện để rèn kỹ năng giao tiếp và làm việc nhóm, tham gia hướng dẫn sự kiện Orientation để phát triển khả năng lãnh đạo, hoạt động cộng đồng và mentor học sinh mới. Những hoạt động này giúp chuyển hóa tố chất Social thành kỹ năng mềm chuyên nghiệp [1][2][3]. Nguồn: [1] Nhi Le_CV.docx, [2] RESUME HOANG GIA BACH.pdf, [3] Khue's CV_pdf.pdf."
+  },
+  {
+    "scenario": "S2",
+    "scenario_type": "variation",
+    "question": "Tư vấn giúp em: mình hướng nội, thuộc nhóm investigative. hoạt động ngoại khóa nào giúp mình xây nền tảng mà không phải nói trước đám đông? Mong nhận được lời khuyên.",
+    "expected_agent": "hdnk_nentang",
+    "reference": "Với nhóm Investigative và tính cách hướng nội, bạn có thể tham gia các hoạt động nền tảng không yêu cầu thuyết trình trước đám đông: câu lạc bộ nghiên cứu khoa học để làm việc trong nhóm nhỏ, viết blog hoặc bài nghiên cứu, tham gia dự án phân tích dữ liệu, hoặc câu lạc bộ đọc sách. Những hoạt động này phù hợp với xu hướng thích phân tích và tìm kiếm câu trả lời của nhóm I [1][2]. Nguồn: [1] Nhi Le_CV.docx, [2] Khue's CV_pdf.pdf."
+  },
+  {
+    "scenario": "S2",
+    "scenario_type": "variation",
+    "question": "Hệ thống cho mình biết, em bận học, không có thời gian. hoạt động ngoại khóa nền tảng nào ngắn nhất? Mình đang cần gấp.",
+    "expected_agent": "hdnk_nentang",
+    "reference": "Khi bận học, bạn có thể tham gia các hoạt động ngoại khóa nền tảng ngắn hạn như: dự án nghiên cứu ngắn hạn trong vài tuần, câu lạc bộ học thuật với buổi họp ngắn hàng tuần, hoặc tình nguyện sự kiện một ngày. Những hoạt động này không yêu cầu cam kết thời gian dài nhưng vẫn giúp phát triển kỹ năng mềm và tạo điểm nhấn cho hồ sơ [1][2]. Nguồn: [1] Nhi Le_CV.docx, [2] RESUME HOANG GIA BACH.pdf."
+  },
+  {
+    "scenario": "S3",
+    "scenario_type": "variation",
+    "question": "Mình muốn làm hồ sơ chuyên môn về AI. Ngoại khóa chuyên sâu nào phù hợp? Mình đang cần gấp.",
+    "expected_agent": "hdnk_chuyenmon",
+    "reference": "Để xây dựng hồ sơ chuyên môn về AI, bạn có thể tham gia các hoạt động ngoại khóa chuyên sâu: thực tập tại công ty công nghệ hoặc phòng nghiên cứu AI, tham gia cuộc thi hackathon về machine learning, phát triển dự án cá nhân ứng dụng AI, hoặc nghiên cứu khoa học về deep learning. Những hoạt động này cho thấy năng lực chuyên môn thực tế và đam mê trong lĩnh vực trí tuệ nhân tạo [1][2][3]. Nguồn: [1] Nhi Le_CV.docx, [2] RESUME HOANG GIA BACH.pdf, [3] Khue's CV_pdf.pdf."
+  },
+  {
+    "scenario": "S3",
+    "scenario_type": "variation",
+    "question": "Câu hỏi của mình là: nhóm enterprising (e) có thể làm startup hoặc dự án kinh doanh nào để đẹp hồ sơ chuyên môn?",
+    "expected_agent": "hdnk_chuyenmon",
+    "reference": "Nhóm Enterprising (E) có thể làm đẹp hồ sơ chuyên môn qua các dự án: khởi nghiệp phát triển ứng dụng hoặc nền tảng trực tuyến, tổ chức sự kiện kinh doanh hoặc hội thảo đổi mới sáng tạo, xây dựng chiến dịch marketing cho sản phẩm mới, hoặc tham gia các cuộc thi khởi nghiệp. Những dự án này thể hiện khả năng lãnh đạo, quản lý và tinh thần doanh nhân [1][2]. Nguồn: [1] Nhi Le_CV.docx, [2] RESUME HOANG GIA BACH.pdf."
+  },
+  {
+    "scenario": "S3",
+    "scenario_type": "variation",
+    "question": "Hệ thống cho mình biết, mình ở tỉnh, không có cơ hội thực tập ở công ty lớn. có cách nào làm hoạt động ngoại khóa chuyên môn không? Tư vấn chi tiết giúp mình.",
+    "expected_agent": "hdnk_chuyenmon",
+    "reference": "Ở tỉnh vẫn có thể làm ngoại khóa chuyên môn: tham gia dự án nghiên cứu trực tuyến, phát triển dự án cá nhân như blog, kênh YouTube hoặc ứng dụng, thực tập từ xa tại các công ty công nghệ, hoặc tham gia các khóa học chuyên sâu trực tuyến và lấy chứng chỉ. Những hoạt động này không yêu cầu ở thành phố lớn nhưng vẫn thể hiện được năng lực chuyên môn [1][2]. Nguồn: [1] Nhi Le_CV.docx, [2] Khue's CV_pdf.pdf."
+  },
+  {
+    "scenario": "S4",
+    "scenario_type": "variation",
+    "question": "Giải đáp giúp mình với: em đam mê âm nhạc và nghệ thuật. làm sao biến sở đam mê cá nhân thành điểm nhấn hồ sơ? Xin cảm ơn.",
+    "expected_agent": "hdnk_canhan",
+    "reference": "Để biến sở thích âm nhạc và nghệ thuật thành điểm nhấn hồ sơ: tham gia câu lạc bộ âm nhạc hoặc nghệ thuật tại trường, tổ chức buổi biểu diễn hoặc triển lãm, sáng tạo nội dung nghệ thuật trên mạng xã hội, hoặc tham gia các cuộc thi âm nhạc. Những hoạt động này thể hiện sự sáng tạo, khả năng tự thể hiện và đam mê cá nhân, tạo dấu ấn riêng biệt trong hồ sơ [1][2]. Nguồn: [1] Nhi Le_CV.docx, [2] Khue's CV_pdf.pdf."
+  },
+  {
+    "scenario": "S4",
+    "scenario_type": "variation",
+    "question": "Câu hỏi của mình là: em chơi cờ vua từ nhỏ. cờ vua có được tính là hoạt động ngoại khóa cá nhân giá trị không? Trả lời giúp mình nhé.",
+    "expected_agent": "hdnk_canhan",
+    "reference": "Cờ vua chắc chắn là hoạt động ngoại khóa cá nhân có giá trị. Cờ vua rèn luyện tư duy chiến lược, tính kiên nhẫn, khả năng phân tích và ra quyết định. Tham gia câu lạc bộ cờ vua hoặc các giải đấu giúp phát triển kỹ năng cạnh tranh lành mạnh và xây dựng mạng lưới quan hệ. Đây là sở thích thể hiện trí tuệ và kỷ luật, tạo điểm nhấn đặc biệt trong hồ sơ [1][2]. Nguồn: [1] holland_open_dataset, [2] Nhi Le_CV.docx."
+  },
+  {
+    "scenario": "S4",
+    "scenario_type": "variation",
+    "question": "Xin chào, em không có sở thích đặc biệt gì. mọi người bảo cần có hoạt động cá nhân thì phải làm sao? Mong nhận được lời khuyên.",
+    "expected_agent": "hdnk_canhan",
+    "reference": "Nếu chưa có sở thích đặc biệt, bạn có thể khám phá qua: thử tham gia nhiều câu lạc bộ khác nhau tại trường, tham gia hoạt động tình nguyện để tìm đam mê, thử các hoạt động sáng tạo như vẽ tranh, chơi nhạc cụ, hoặc thể thao. Việc tìm kiếm sở thích là một hành trình, và bạn có thể khám phá nhiều điều thú vị qua trải nghiệm thực tế [1][2]. Nguồn: [1] Nhi Le_CV.docx, [2] Khue's CV_pdf.pdf."
+  },
+  {
+    "scenario": "S5",
+    "scenario_type": "variation",
+    "question": "Câu hỏi của mình là: em mã holland là ia, muốn học ngành khoa học máy tính. có anh chị nào tương tự không? Tư vấn chi tiết giúp mình.",
+    "expected_agent": "match_hoso",
+    "reference": "Mã Holland IA (Investigative-Artistic) phù hợp với ngành Khoa học máy tính. Trong cơ sở dữ liệu hồ sơ sinh viên, có nhiều anh chị có mã Holland tương tự đã thành công trong lĩnh vực CNTT. Họ đã tham gia các hoạt động như nghiên cứu khoa học, phát triển phần mềm và thực tập tại các công ty công nghệ. Lộ trình của họ cho thấy sự kết hợp giữa nền tảng học thuật vững và kinh nghiệm thực hành [1][2][3]. Nguồn: [1] RESUME HOANG GIA BACH.pdf, [2] Nhi Le_CV.docx, [3] Khue's CV_pdf.pdf."
+  },
+  {
+    "scenario": "S5",
+    "scenario_type": "variation",
+    "question": "Cho tôi xem hồ sơ của những bạn xuất phát điểm bình thường nhưng sau vẫn trúng tuyển đại học tốt. Tư vấn chi tiết giúp mình.",
+    "expected_agent": "match_hoso",
+    "reference": "Có nhiều hồ sơ sinh viên xuất phát điểm bình thường nhưng trúng tuyển đại học tốt nhờ chuẩn bị hồ sơ đồng đều. Họ thể hiện đam mê qua hoạt động ngoại khóa đa dạng, dự án cá nhân nổi bật và thư giới thiệu ấn tượng. Điểm chung là sự chuẩn bị kỹ lưỡng và thể hiện bản thân chân thực, không chỉ dựa vào điểm số [1][2][3]. Nguồn: [1] RESUME HOANG GIA BACH.pdf, [2] Nhi Le_CV.docx, [3] Khue's CV_pdf.pdf."
+  },
+  {
+    "scenario": "S5",
+    "scenario_type": "variation",
+    "question": "Anh/chị ơi, em muốn tìm profile anh chị nhóm conventional (c) học ngành kế toán, có không? Mong nhận được lời khuyên.",
+    "expected_agent": "match_hoso",
+    "reference": "Nhóm Conventional (C) phù hợp với ngành Kế toán vì nhóm này thích làm việc có hệ thống, chính xác và tuân thủ quy trình. Trong cơ sở dữ liệu, có thể tìm thấy các hồ sơ sinh viên có đặc điểm tương tự nhóm C với kỹ năng tổ chức, quản lý tài liệu và phân tích số liệu. Họ đã tham gia các hoạt động liên quan đến quản lý và tài chính [1][2][3]. Nguồn: [1] RESUME HOANG GIA BACH.pdf, [2] Nhi Le_CV.docx, [3] Khue's CV_pdf.pdf."
+  },
+  {
+    "scenario": "S6",
+    "scenario_type": "variation",
+    "question": "Hệ thống cho mình biết, em tên minh, đam mê toán và lập trình, ghét giao tiếp đám đông, muốn làm kỹ sư phần mềm. phân tích hồ sơ và lộ trình ngoại khóa cho em. Mong nhận được lời khuyên.",
+    "expected_agent": "danhgia_all",
+    "reference": "Dựa trên sở thích toán và lập trình, bạn thuộc nhóm Investigative (I) hoặc Realistic (R). Lộ trình ngoại khóa 3 cấp độ: Nền tảng gồm câu lạc bộ lập trình và khóa học trực tuyến, Chuyên môn gồm dự án phần mềm và thực tập IT, Cá nhân gồm blog kỹ thuật hoặc dự án open source. Hồ sơ sinh viên tương tự cho thấy thành công trong ngành kỹ sư phần mềm [1][2]. Nguồn: [1] holland_open_dataset, [2] RESUME HOANG GIA BACH.pdf."
+  },
+  {
+    "scenario": "S6",
+    "scenario_type": "variation",
+    "question": "Anh/chị ơi, cv em: trưởng clb thiện nguyện, mc sự kiện trường, điểm văn cao. mã holland và lộ trình ngoại khóa phù hợp? Trả lời giúp mình nhé.",
+    "expected_agent": "danhgia_all",
+    "reference": "Từ CV với vai trò Trưởng CLB Thiện nguyện và MC sự kiện, bạn thuộc nhóm Social (S) và Enterprising (E). Lộ trình ngoại khóa 3 cấp độ: Nền tảng gồm phát triển kỹ năng lãnh đạo và giao tiếp, Chuyên môn gồm tổ chức sự kiện lớn và dự án cộng đồng, Cá nhân gồm xây dựng thương hiệu cá nhân trên mạng xã hội. Các hồ sơ tương đồng cho thấy thành công trong lĩnh vực quản lý và truyền thông [1][2]. Nguồn: [1] holland_open_dataset, [2] Nhi Le_CV.docx."
+  },
+  {
+    "scenario": "S6",
+    "scenario_type": "variation",
+    "question": "Dạ cho em hỏi, em chưa làm gì cả, học lớp 10, chưa biết mình đam mê gì. vẫn cần đánh giá toàn diện không?",
+    "expected_agent": "danhgia_all",
+    "reference": "Đánh giá toàn diện rất cần thiết cho học sinh lớp 10 chưa xác định sở thích. Bạn nên bắt đầu bằng bài trắc nghiệm Holland RIASEC để khám phá nhóm tính cách. Lộ trình ngoại khóa 3 cấp độ: Nền tảng gồm tham gia nhiều câu lạc bộ khác nhau để thử nghiệm, Chuyên môn gồm khóa học trực tuyến về các lĩnh vực khác nhau, Cá nhân gồm khám phá sở thích qua hoạt động sáng tạo. Việc bắt đầu sớm giúp có nhiều thời gian khám phá [1][2]. Nguồn: [1] holland_open_dataset, [2] Nhi Le_CV.docx."
+  },
+  {
+    "scenario": "S7",
+    "scenario_type": "variation",
+    "question": "Tư vấn giúp em: mã holland là gì? giải thích ngắn gọn. Trả lời giúp mình nhé.",
+    "expected_agent": "hoidapchung",
+    "reference": "Mã Holland là hệ thống phân loại nghề nghiệp do John Holland phát triển, chia thành 6 nhóm tính cách: Realistic (thực tế), Investigative (nghiên cứu), Artistic (nghệ thuật), Social (xã hội), Enterprising (quản lý), Conventional (công chức). Mỗi người có mã gồm 2-3 nhóm nổi bật nhất, giúp xác định xu hướng nghề nghiệp phù hợp. Trắc nghiệm Holland giúp học sinh hiểu bản thân và lựa chọn ngành học đúng đắn [1]. Nguồn: [1] holland_open_dataset."
+  },
+  {
+    "scenario": "S7",
+    "scenario_type": "variation",
+    "question": "Cho mình hỏi, hệ thống này tư vấn được những gì cho học sinh? Nhờ hệ thống phân tích.",
+    "expected_agent": "hoidapchung",
+    "reference": "Hệ thống tư vấn hướng nghiệp này hỗ trợ học sinh: chẩn đoán nhóm tính cách Holland RIASEC, đề xuất hoạt động ngoại khóa nền tảng phát triển kỹ năng mềm, gợi ý ngoại khóa chuyên môn theo lĩnh vực quan tâm, tư vấn hoạt động cá nhân phù hợp sở thích, đối chiếu hồ sơ với sinh viên thành công tương tự, và đánh giá toàn diện kèm lộ trình 3 cấp độ [1][2]. Nguồn: [1] holland_open_dataset, [2] Nhi Le_CV.docx."
+  },
+  {
+    "scenario": "S7",
+    "scenario_type": "variation",
+    "question": "Bạn tư vấn giúp: bạn có thể nói chuyện bằng tiếng anh không? Mong nhận được lời khuyên.",
+    "expected_agent": "hoidapchung",
+    "reference": "Hệ thống chủ yếu hoạt động bằng tiếng Việt và chuyên về tư vấn hướng nghiệp Holland RIASEC và hoạt động ngoại khóa. Tôi có thể hỗ trợ bạn về: xác định mã Holland, gợi ý ngoại khóa phù hợp, đối chiếu hồ sơ sinh viên thành công và thiết kế lộ trình phát triển cá nhân. Hãy đặt câu hỏi bằng tiếng Việt để được tư vấn tốt nhất [1]. Nguồn: [1] holland_open_dataset."
+  },
+  {
+    "scenario": "S1",
+    "scenario_type": "variation",
+    "question": "Giải đáp giúp mình với: tôi thích vẽ tranh nhưng lại muốn học kinh tế để kiếm nhiều tiền. thế mình nên theo nhóm nào trong holland để sau này làm marketing? Tư vấn chi tiết giúp mình.",
+    "expected_agent": "test_riasec",
+    "reference": "Trường hợp của bạn cho thấy sự kết hợp giữa nhóm Artistic (thích vẽ, sáng tạo) và Enterprising (kinh doanh, kiếm tiền). Mã Holland của bạn có thể là AE hoặc EA. Để làm marketing, yếu tố Enterprising và Artistic đều rất quan trọng vì ngành này cần cả sự sáng tạo lẫn tư duy kinh doanh. Bạn nên làm bài test đầy đủ để xem nhóm nào chiếm tỷ trọng cao hơn [1]."
+  },
+  {
+    "scenario": "S1",
+    "scenario_type": "variation",
+    "question": "Giải đáp giúp mình với: mọi người nói em hợp làm giáo viên vì em hay giảng bài cho bạn, nhưng em lại rất thích ở một mình code. vậy holland của em có bị mâu thuẫn không? Trả lời giúp mình nhé.",
+    "expected_agent": "test_riasec",
+    "reference": "Không hề mâu thuẫn. Việc thích giảng bài cho thấy bạn có đặc điểm của nhóm Social (S), trong khi sở thích code một mình thuộc về nhóm Investigative (I) hoặc Realistic (R). Mã Holland của bạn có thể là SI hoặc IS. Nhiều kỹ sư phần mềm giỏi hoặc giảng viên CNTT đều có sự kết hợp này [1]."
+  },
+  {
+    "scenario": "S2",
+    "scenario_type": "variation",
+    "question": "Hệ thống cho mình biết, em muốn tham gia hoạt động ngoại khóa nhưng trường mình không có câu lạc bộ nào cả, đoàn trường cũng rất ít hoạt động. em phải làm sao để có kỹ năng nền tảng?",
+    "expected_agent": "hdnk_nentang",
+    "reference": "Nếu trường không có sẵn CLB, bạn có thể tự tạo cơ hội bằng cách: tham gia các dự án tình nguyện online, tham gia các tổ chức phi chính phủ (NGO) tuyển tình nguyện viên từ xa, tự lập một nhóm học tập nhỏ, hoặc tham gia các khóa học kỹ năng mềm trực tuyến. Kỹ năng nền tảng không nhất thiết phải đến từ CLB của trường [1][2]."
+  },
+  {
+    "scenario": "S2",
+    "scenario_type": "variation",
+    "question": "Xin chào, tham gia đội tuyển học sinh giỏi toán có được tính là ngoại khóa nền tảng không ạ? Trả lời giúp mình nhé.",
+    "expected_agent": "hdnk_nentang",
+    "reference": "Đội tuyển học sinh giỏi thiên về thành tích học thuật hơn là ngoại khóa nền tảng (vốn tập trung vào kỹ năng mềm như giao tiếp, làm việc nhóm). Tuy nhiên, quá trình học nhóm trong đội tuyển vẫn giúp bạn rèn tư duy logic và sự kiên nhẫn. Để hồ sơ toàn diện hơn, bạn nên bổ sung thêm các hoạt động mang tính cộng đồng hoặc xã hội [1][2]."
+  },
+  {
+    "scenario": "S3",
+    "scenario_type": "variation",
+    "question": "Dạ cho em hỏi, em định xin thực tập ở một công ty it nhưng em mới học lớp 11, họ không nhận. có cách nào khác để làm ngoại khóa chuyên sâu cntt không? Cảm ơn bạn.",
+    "expected_agent": "hdnk_chuyenmon",
+    "reference": "Nếu chưa xin được thực tập, bạn có thể làm ngoại khóa chuyên sâu bằng cách: đóng góp mã nguồn cho các dự án Open Source trên GitHub, tự xây dựng một ứng dụng/website nhỏ và publish lên mạng, hoặc tham gia các kỳ thi lập trình (hackathon) dành cho học sinh. Các dự án cá nhân này đôi khi còn được đánh giá cao hơn cả thực tập [1][2]."
+  },
+  {
+    "scenario": "S3",
+    "scenario_type": "variation",
+    "question": "Viết báo khoa học nhưng không được đăng báo quốc tế thì có tính là ngoại khóa chuyên môn xịn không? Mình đang cần gấp.",
+    "expected_agent": "hdnk_chuyenmon",
+    "reference": "Vẫn được tính là ngoại khóa chuyên môn rất giá trị. Dù không được đăng quốc tế, quá trình nghiên cứu khoa học cho thấy bạn có tư duy phân tích, khả năng đọc hiểu tài liệu và tinh thần học hỏi sâu. Bạn có thể tóm tắt nghiên cứu đó vào portfolio hoặc đăng trên các nền tảng chia sẻ học thuật [1][2]."
+  },
+  {
+    "scenario": "S4",
+    "scenario_type": "variation",
+    "question": "Dạ cho em hỏi, em rất thích chơi game online. làm sao để ghi cái này vào hồ sơ ngoại khóa cá nhân mà không bị đánh giá xấu? Trả lời giúp mình nhé.",
+    "expected_agent": "hdnk_canhan",
+    "reference": "Bạn có thể biến sở thích chơi game thành điểm nhấn nếu thể hiện được kỹ năng: ví dụ bạn từng tổ chức hoặc quản lý một team/clan lớn (thể hiện kỹ năng lãnh đạo), tự build cấu hình máy tính (kỹ năng kỹ thuật), hoặc viết blog/review phân tích chiến thuật game (tư duy phân tích). Quan trọng là bạn học được gì từ quá trình đó [1][2]."
+  },
+  {
+    "scenario": "S4",
+    "scenario_type": "variation",
+    "question": "Anh/chị ơi, sở thích cá nhân của mình là nấu ăn cho gia đình. điều này có ý nghĩa gì cho hồ sơ du học ngành kỹ thuật không? Tư vấn chi tiết giúp mình.",
+    "expected_agent": "hdnk_canhan",
+    "reference": "Nấu ăn có vẻ không liên quan đến kỹ thuật, nhưng nó thể hiện bạn là một người cân bằng, biết chăm sóc bản thân và gia đình. Trong ngành kỹ thuật căng thẳng, những sở thích giúp giải tỏa áp lực và duy trì sức khỏe tinh thần rất được trân trọng. Nó cho thấy bạn có đời sống tinh thần phong phú [1][2]."
+  },
+  {
+    "scenario": "S5",
+    "scenario_type": "variation",
+    "question": "Giải đáp giúp mình với: hồ sơ của mình y hệt một anh chị đã đậu thủ khoa, liệu mình có chắc chắn đậu không? Mong nhận được lời khuyên.",
+    "expected_agent": "match_hoso",
+    "reference": "Không có gì là chắc chắn. Tuy hồ sơ của bạn tương đồng với một sinh viên thành công, hội đồng tuyển sinh còn đánh giá qua cách bạn viết bài luận cá nhân, vòng phỏng vấn và sự phù hợp với văn hóa trường ở thời điểm hiện tại. Hồ sơ tương đồng chỉ là một hệ quy chiếu giúp bạn tự tin hơn về định hướng, chứ không phải giấy báo trúng tuyển [1][2]."
+  },
+  {
+    "scenario": "S5",
+    "scenario_type": "variation",
+    "question": "Hệ thống cho mình biết, có profile nào của người hướng nội mà lại thành công trong ngành sale/marketing không? Tư vấn chi tiết giúp mình.",
+    "expected_agent": "match_hoso",
+    "reference": "Có rất nhiều. Người hướng nội (như nhóm Investigative hoặc Artistic) trong ngành marketing thường thành công nhờ tư duy phân tích dữ liệu sâu sắc, khả năng sáng tạo nội dung xuất sắc và thấu hiểu tâm lý khách hàng thay vì giao tiếp ồn ào. Trong cơ sở dữ liệu có những sinh viên tương tự đã dùng thế mạnh lắng nghe để chốt sale hiệu quả [1][2][3]."
+  },
+  {
+    "scenario": "S6",
+    "scenario_type": "variation",
+    "question": "Xin chào, mã holland của mình là social, thích làm tình nguyện, nhưng gia đình ép học y. em nên xây dựng lộ trình hoạt động ngoại khóa thế nào để vừa ý bố mẹ vừa đúng đam mê? Trả lời giúp mình nhé.",
+    "expected_agent": "danhgia_all",
+    "reference": "Bạn có thể dung hòa cả hai bằng cách kết hợp nhóm Social và ngành Y: tham gia các dự án y tế cộng đồng, chiến dịch hiến máu, hoặc làm tình nguyện viên tại các trạm xá/bệnh viện. Lộ trình này vừa giúp bạn thỏa mãn đam mê đóng góp cho xã hội, vừa xây dựng được một hồ sơ y khoa giàu lòng nhân ái - điều kiện cực kỳ quan trọng cho ngành y [1][2]."
+  },
+  {
+    "scenario": "S6",
+    "scenario_type": "variation",
+    "question": "Giải đáp giúp mình với: đánh giá giúp hồ sơ của em: điểm sat 1550, gpa 9.8 nhưng ngoại khóa chỉ có 1 hoạt động duy nhất là đánh đàn piano ở nhà. Nhờ hệ thống phân tích.",
+    "expected_agent": "danhgia_all",
+    "reference": "Hồ sơ của bạn có điểm nhấn học thuật rất mạnh (Investigative/Conventional) nhưng đang thiếu hụt trầm trọng kỹ năng mềm và khả năng làm việc cộng đồng (Social). Với chỉ một hoạt động piano ở nhà, bạn sẽ gặp khó khăn khi cạnh tranh vào các trường đại học hàng đầu đề cao sự toàn diện. Cần ngay lập tức bổ sung các hoạt động ngoại khóa nền tảng như dự án cộng đồng hoặc CLB [1][2]."
+  },
+  {
+    "scenario": "S7",
+    "scenario_type": "variation",
+    "question": "Hệ thống cho mình biết, trắc nghiệm holland có bao giờ bị sai không? cảm giác kết quả không giống em lắm. Cảm ơn bạn.",
+    "expected_agent": "hoidapchung",
+    "reference": "Trắc nghiệm Holland là công cụ tâm lý học nên vẫn có thể có độ lệch, nhất là khi tâm trạng bạn không ổn định lúc làm bài hoặc bạn chưa hiểu rõ bản thân. Nếu thấy kết quả không đúng, bạn nên xem xét lại các hoạt động thực tế mình từng làm, kết hợp tham vấn chuyên gia hướng nghiệp để có góc nhìn khách quan hơn [1]."
+  },
+  {
+    "scenario": "S7",
+    "scenario_type": "variation",
+    "question": "Giải đáp giúp mình với: em có thể dùng bài kiểm tra mbti thay cho holland khi dùng hệ thống này được không? Tư vấn chi tiết giúp mình.",
+    "expected_agent": "hoidapchung",
+    "reference": "Hệ thống này được thiết kế chuyên biệt dựa trên lý thuyết Holland RIASEC, vốn tập trung vào sở thích và môi trường nghề nghiệp. MBTI tập trung vào xu hướng tính cách. Bạn không thể thay thế trực tiếp, nhưng có thể dùng MBTI như một nguồn tham khảo bổ trợ để hiểu sâu hơn về bản thân. Tuy nhiên, hệ thống tư vấn ngoại khóa sẽ chỉ dùng mã Holland để gợi ý [1]."
+  },
+  {
+    "scenario": "S1",
+    "scenario_type": "variation",
+    "question": "Cho mình hỏi, em hay đam mê tháo lắp máy móc và làm thủ công. em thuộc nhóm holland nào?",
+    "expected_agent": "test_riasec",
+    "reference": "Dựa trên sở thích tháo lắp máy móc và làm thủ công, bạn thuộc nhóm Realistic (R) trong hệ thống Holland RIASEC. Nhóm R có đặc điểm thích làm việc với đồ vật, máy móc, công cụ và thiên nhiên. Người thuộc nhóm này thường ưa thích các hoạt động thực hành, có kỹ năng kỹ thuật tốt và thích giải quyết vấn đề cụ thể. Các ngành nghề phù hợp bao gồm kỹ sư cơ khí, thợ điện, kiến trúc sư [1]. Nguồn: [1] holland_open_dataset."
+  }
+]
