@@ -63,7 +63,10 @@ def compute_rouge_l(reference: str, hypothesis: str) -> float:
 
 
 def compute_bertscore(reference: str, hypothesis: str) -> float:
-    """BERTScore F1 using bert-score library."""
+    """BERTScore F1 using bert-score library with embedding cosine fallback.
+    Trả về 0.0 nếu câu trả lời (hypothesis) hoặc câu tham chiếu rỗng."""
+    if not reference or not reference.strip() or not hypothesis or not hypothesis.strip():
+        return 0.0
     try:
         from bert_score import score as bscore
         P, R, F1 = bscore([hypothesis], [reference], lang="vi", verbose=False)
@@ -77,13 +80,17 @@ def compute_bertscore(reference: str, hypothesis: str) -> float:
             dot = sum(a * b for a, b in zip(ref_vec, hyp_vec))
             nr = math.sqrt(sum(a*a for a in ref_vec))
             nh = math.sqrt(sum(b*b for b in hyp_vec))
-            return dot / (nr * nh) if nr * nh > 0 else 0.0
+            return max(0.0, min(1.0, dot / (nr * nh))) if nr * nh > 0 else 0.0
         except:
-            return 0.5
+            return 0.0
 
 
 def compute_citation(answer: str, sources: list) -> float:
-    """1.0 nếu có trích dẫn [n] hợp lệ VÀ hệ thống thực sự có tài liệu nguồn."""
+    """Kiểm tra tuân thủ hình thức trích dẫn và sự hiện diện nguồn (Citation Format & Source Presence).
+    1.0 nếu có ký hiệu trích dẫn [n] hợp lệ VÀ hệ thống có tài liệu nguồn tham chiếu.
+    Trả về 0.0 nếu câu trả lời rỗng."""
+    if not answer or not answer.strip():
+        return 0.0
     return 1.0 if (re.search(r"\[\d+\]", answer) and sources) else 0.0
 
 

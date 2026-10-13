@@ -91,7 +91,52 @@ def compute_rouge_l(reference: str, hypothesis: str) -> float:
     if r_lcs + p_lcs == 0: return 0.0
     return (2 * r_lcs * p_lcs) / (r_lcs + p_lcs)
 
-def evaluate_semantic_similarity(reference: str, hypothesis: str) -> float:
+def compute_bertscore(reference: str, hypothesis: str) -> float:
+    """
+    Tính độ tương đồng ngữ nghĩa bằng BERTScore F1.
+    - Ưu tiên: Thư viện bert_score chuẩn (ngôn ngữ vi).
+    - Dự phòng 1: Cosine similarity qua vector embedding (multilingual-e5-large).
+    - Dự phòng 2: LLM-as-a-Judge chấm điểm ngữ nghĩa (0.0 - 1.0).
+    - BẮT BUỘC: Trả về 0.0 nếu câu trả lời (hypothesis) hoặc câu tham chiếu rỗng.
+    """
+    if not reference or not reference.strip() or not hypothesis or not hypothesis.strip():
+        return 0.0
+
+    # 1. Thử dùng bert_score chuẩn
+    try:
+        from bert_score import score as bscore
+        P, R, F1 = bscore([hypothesis], [reference], lang="vi", verbose=False)
+        return float(F1[0])
+    except Exception:
+        pass
+
+    # 2. Thử dùng cosine similarity từ embedding model
+    try:
+        from data_loader import embed_texts
+        import math
+        ref_vec = embed_texts([reference], is_query=False)[0]
+        hyp_vec = embed_texts([hypothesis], is_query=False)[0]
+        dot = sum(a * b for a, b in zip(ref_vec, hyp_vec))
+        nr = math.sqrt(sum(a * a for a in ref_vec))
+        nh = math.sqrt(sum(b * b for b in hyp_vec))
+        if nr * nh > 0:
+            cos_sim = dot / (nr * nh)
+            return max(0.0, min(1.0, float(cos_sim)))
+    except Exception:
+        pass
+
+    # 3. Dự phòng LLM-as-a-Judge
+    return evaluate_llm_judge_similarity(reference, hypothesis)
+
+
+def evaluate_llm_judge_similarity(reference: str, hypothesis: str) -> float:
+    """
+    LLM-as-a-Judge: Đánh giá độ tương đồng ngữ nghĩa giữa Ref và Hyp.
+    Nếu hypothesis rỗng hoặc lỗi phân tích, trả về 0.0 (tuyệt đối không dùng fallback điểm cao).
+    """
+    if not reference or not reference.strip() or not hypothesis or not hypothesis.strip():
+        return 0.0
+
     prompt = f"""Evaluate semantic similarity (0.0 to 1.0) between:
 Ref: {reference}
 Hyp: {hypothesis}
@@ -100,9 +145,26 @@ Output only the numeric score."""
         messages = [{"role": "user", "content": prompt}]
         response = call_llm(messages)
         score = re.findall(r"0\.\d+|1\.0", response)
-        return float(score[0]) if score else 0.7
-    except:
-        return 0.7
+        return float(score[0]) if score else 0.0
+    except Exception:
+        return 0.0
+
+
+def evaluate_semantic_similarity(reference: str, hypothesis: str) -> float:
+    """Wrapper tương thích ngược cho việc đánh giá độ tương đồng ngữ nghĩa."""
+    return compute_bertscore(reference, hypothesis)
+
+
+def evaluate_citation_format_presence(answer: str, sources: list) -> float:
+    """
+    Kiểm tra tính hợp lệ về hình thức trích dẫn và sự hiện diện của nguồn tài liệu:
+    - Yêu cầu: Có ký hiệu trích dẫn dạng [n] trong văn bản VÀ danh sách tài liệu nguồn (sources) không rỗng.
+    - Lưu ý học thuật: Đây là citation-format/source-presence check, đo lường sự tuân thủ quy chuẩn
+      trích dẫn, chưa phải là phép kiểm chứng ngữ nghĩa từng khẳng định đơn lẻ (claim-level NLI entailment).
+    """
+    if not answer or not answer.strip():
+        return 0.0
+    return 1.0 if (re.search(r"\[\d+\]", answer) and sources) else 0.0
 
 def run_evaluation(dataset=None, live=False, api_base="http://localhost:8000"):
     if dataset is None:
@@ -168,8 +230,8 @@ def run_evaluation(dataset=None, live=False, api_base="http://localhost:8000"):
         expected_display = AGENT_DISPLAY_MAP.get(item["expected_agent"], item["expected_agent"])
         routing_ok = 1.0 if predicted_agent == expected_display else 0.0
 
-        # Citation is valid if there are source tags in answer AND sources list is not empty
-        citation_ok = 1.0 if (re.search(r"\[\d+\]", answer) and sources) else 0.0
+        # Kiểm tra quy chuẩn trích dẫn và sự hiện diện nguồn tham chiếu
+        citation_ok = evaluate_citation_format_presence(answer, sources)
 
         results.append({
             "scenario": item.get("scenario", ""),

@@ -1,10 +1,15 @@
-.PHONY: run dev test eval comparative-eval lint format clean
+.PHONY: run dev test eval comparative-eval lint format clean frontend ui
 
 run:
 	uvicorn src.main:app --host 0.0.0.0 --port 8000
 
 dev:
 	uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
+
+frontend:
+	cd frontend && javac HollandRAGGUI.java && java HollandRAGGUI
+
+ui: frontend
 
 test:
 	pytest tests/ -v

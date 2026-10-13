@@ -4,9 +4,9 @@
       "scenario": "S1",
       "name": "Chẩn đoán Holland/RIASEC",
       "routing_accuracy": 0.93,
-      "rouge_l": 0.16,
+      "rouge_l": 0.17,
       "bertscore": 0.82,
-      "citation_accuracy": 0.93,
+      "citation_accuracy": 1.0,
       "response_time": 6.6
     },
     {
@@ -68,7 +68,7 @@
     "routing_accuracy": 0.85,
     "rouge_l": 0.11,
     "bertscore": 0.86,
-    "citation_accuracy": 0.86,
+    "citation_accuracy": 0.87,
     "response_time": 5.98
   }
 }

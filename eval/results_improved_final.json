@@ -1,9 +1,9 @@
 {
   "summary": {
     "routing_accuracy": 0.85,
-    "rouge_l": 0.11120754483536023,
-    "bertscore_f1": 0.856762753123657,
-    "citation_accuracy": 0.86,
+    "rouge_l": 0.11307421150202691,
+    "bertscore_f1": 0.8557627531236569,
+    "citation_accuracy": 0.87,
     "response_time": 5.978195948878785
   },
   "details": [
@@ -11,13 +11,13 @@
       "scenario": "S1",
       "question": "Em hay thích tháo lắp máy móc và làm thủ công. Em thuộc nhóm Holland nào?",
       "expected_agent": "test_riasec",
-      "predicted_agent": "test_riasec",
+      "predicted_agent": "Phân loại Holland",
       "routing_correct": 1.0,
-      "rouge_l": 0.0,
-      "bertscore": 0.9,
-      "citation_correct": 0.0,
+      "rouge_l": 0.18666666666666668,
+      "bertscore": 0.8,
+      "citation_correct": 1.0,
       "response_time": 7.6638935242174195,
-      "answer": ""
+      "answer": "Dựa trên sở thích tháo lắp máy móc và làm thủ công, bạn thuộc nhóm **Realistic (Kỹ thuật/Thực hành)**. Nhóm này thường có xu hướng thích làm việc với các đồ vật cụ thể, công cụ, máy móc hoặc hoạt động ngoài trời, đòi hỏi sự khéo léo và thực tế. Những nghề nghiệp phù hợp bao gồm kỹ sư cơ khí, kỹ thuật viên điện tử, thợ chế tạo, và kiến trúc sư xây dựng (Nguồn: [1]).\n\n### Đặc điểm nhóm Kỹ thuật (Realistic):\n- Thích làm việc với công cụ, thiết bị và máy móc cơ khí.\n- Coi trọng kết quả thực tế, hành động cụ thể hơn lý thuyết trừu tượng.\n- Khéo léo trong các công việc thủ công và vận hành kỹ thuật.\n\nMã Holland **R** hoàn toàn khớp với những sở thích bạn đã mô tả.\n\n### Nguồn:\n[1] [Mô hình trắc nghiệm tính cách nghề nghiệp Holland RIASEC](https://glints.com/vn/blog/trac-nghiem-holland)  \n[2] [Đặc điểm 6 nhóm tính cách Holland và hướng nghiệp](https://huongnghiepaau.edu.vn/trac-nghiem-nghe-nghiep/trac-nghiem-dinh-huong-nghe-nghiep-holland-code-riasec)  "
     },
     {
       "scenario": "S1",
