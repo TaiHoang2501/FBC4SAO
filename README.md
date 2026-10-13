@@ -134,18 +134,23 @@ python eval/comparative_eval.py
 
 #### Bảng so sánh hiệu năng & độ trễ 4 kiến trúc (Comparative Pipeline Evaluation)
 
-| Pipeline Kiến Trúc | ROUGE-L | Semantic Similarity | Citation Compliance Rate\* | Routing Accuracy | Response Time (Avg / p95) | Phân Tích Đánh Đổi Kiến Trúc (Trade-offs) |
+| Pipeline Kiến Trúc | ROUGE-L | Semantic Similarity (BERTScore vi) | Citation Compliance Rate\* | Routing Accuracy | Response Time (Avg / p95) | Phân Tích Đánh Đổi Kiến Trúc (Trade-offs) |
 |:---|:---:|:---:|:---:|:---:|:---:|:---|
-| **Pipeline 1: Standalone LLM** | **0.1324** | **0.6852** | 0.0% | N/A *(Không có Router)* | **4.18s** / 7.07s | Phản hồi tự do theo tri thức pretrain, ROUGE cao nhưng không có retriever dẫn đến **0% Citation** |
-| **Pipeline 2: Naive RAG** | 0.0226 | 0.6171 | 0.0% | N/A *(Không có Router)* | **0.41s** / 0.60s | Vector đơn lẻ cực nhanh nhưng dễ nhiễu ngữ cảnh; ROUGE và điểm tương đồng ngữ nghĩa thấp nhất |
-| **Pipeline 3: Hybrid RAG** | 0.1185 | 0.6768 | **100.0%** | N/A *(Không có Router)* | 9.46s / 14.12s | BM25 + Vector ép trích dẫn nguồn 100%, nhưng thiếu chuyên biệt hóa theo kịch bản nghiệp vụ |
-| **Pipeline 4: Adaptive Agentic RAG** (Đề xuất) | 0.1273 | 0.6723 | 76.0% | **80.0%** | 12.39s / 24.28s *(Live Cache: **5.98s**)* | Cân bằng tối ưu: đạt **80% Routing** đúng chuyên gia, **76% Citation** có căn cứ, vượt trội hoàn toàn so với Naive RAG |
+| **Pipeline 1: Standalone LLM** | **0.1324** | **0.6852** | 0.0% * | N/A *(Không có Router)* | 4.18s / 7.07s | Tự do ngôn ngữ cao nhất (ROUGE & BERTScore dẫn đầu), nhưng **0% Citation** do không có retriever đối soát |
+| **Pipeline 2: Naive RAG** | 0.0226 | 0.6171 | 0.0% | N/A *(Không có Router)* | **0.41s** / **0.60s** | Tối ưu độ trễ nhất (nhanh gấp ~10 lần), nhưng dễ nhiễu ngữ cảnh; ROUGE và điểm ngữ nghĩa thấp nhất |
+| **Pipeline 3: Hybrid RAG** | 0.1185 | 0.6768 | **100.0%** | N/A *(Không có Router)* | 9.46s / 14.12s | Dẫn đầu về tuân thủ trích dẫn nguồn (**100% Citation**), nhưng thiếu router chuyên môn theo kịch bản |
+| **Pipeline 4: Adaptive Agentic RAG** (Đề xuất) | 0.1273 | 0.6723 | 76.0% | **80.0%** | 12.39s / 24.28s *(Live Cache: **5.98s**)* | Trang bị **80% Routing** đa tác tử và **76% Citation**, cải thiện ROUGE so với Naive RAG, nhưng độ trễ đơn luồng cao hơn |
 
-> 📌 **Phân tích học thuật & Sự đánh đổi khách quan (Trade-offs Analysis):**
-> 1. **Routing Accuracy:** Đối với các baseline (Standalone LLM, Naive RAG, Hybrid RAG), chỉ số này được ghi nhận chính xác là **N/A** vì các hệ thống này không trang bị mô-đun Query Router. Gán 0% sẽ gây hiểu lầm là hệ thống định tuyến sai, trong khi bản chất là chúng không thực hiện chức năng này.
-> 2. **Đánh đổi giữa Citation và Sự tự do ngôn ngữ:** Standalone LLM đạt điểm ROUGE-L (0.1324) và Semantic Similarity (0.6852) cao hơn đôi chút do phản hồi mượt mà không bị ràng buộc bởi các trích đoạn văn bản thực tế. Tuy nhiên, theo định nghĩa giao thức, nó hoàn toàn không có khả năng dẫn chứng nguồn (`Citation Compliance = 0.0%`). Trong bài toán tư vấn học thuật và hướng nghiệp, câu trả lời bắt buộc phải có nguồn chứng thực minh bạch. Adaptive Agentic RAG chấp nhận độ phân tán từ ngữ để đổi lấy **76.0% Citation Compliance** và **80.0% Routing Accuracy**.
-> 3. **Đánh đổi về Độ trễ (Latency Trade-off):** Trong môi trường benchmark không bộ đệm, Adaptive Agentic RAG có độ trễ trung bình cao hơn (12.39s) do phải thực thi qua 2 chặng suy luận (Query Router LLM + Hybrid Search + Reranker + Agent Specialized Prompt LLM). Tuy nhiên, khi vận hành thực tế tại môi trường Live với **Semantic Cache (<5ms)**, độ trễ trung bình toàn hệ thống giảm xuống chỉ còn **5.98s** (đáp ứng SLA ≤ 10.0s).
-> 4. **So sánh với Naive RAG:** Adaptive Agentic RAG vượt trội rõ rệt so với Naive RAG truyền thống: ROUGE-L tăng gấp **5.6 lần** (0.1273 vs 0.0226) và Semantic Similarity tăng từ 0.6171 lên 0.6723.
+> 📌 **Phân tích Đánh đổi Khách quan theo từng Chỉ số (Metric-by-Metric Trade-off Analysis):**
+> Nghiên cứu thực nghiệm cho thấy **không có pipeline nào chiến thắng trên tất cả các chỉ số (No single winner across all metrics)**. Mỗi kiến trúc đại diện cho một phương án đánh đổi kỹ thuật cụ thể:
+>
+> 1. **Khả năng Định tuyến (Routing Accuracy):** Chỉ *Adaptive Agentic RAG* sở hữu mô-đun Query Router và đạt **80.0%** độ chính xác phân loại intent. Ba baseline còn lại không có thành phần định tuyến nên được ghi nhận chính xác là **N/A** (không thể đánh giá).
+> 2. **Trùng khớp từ vựng (ROUGE-L):** *Standalone LLM* đạt điểm cao nhất (**0.1324**) do mô hình tự do sinh từ xuôi chiều theo mẫu tham chiếu. *Adaptive Agentic RAG* đạt **0.1273**, cao hơn so với *Hybrid RAG* (**0.1185**) và *Naive RAG* (**0.0226** — prompt tổng quát của Naive RAG dễ sinh câu trả lời ngắn hoặc lệch định dạng).
+> 3. **Tương đồng Ngữ nghĩa (Semantic Similarity — đo qua BERTScore vi):** *Standalone LLM* dẫn đầu (**0.6852**), bám sát phía sau là *Hybrid RAG* (**0.6768**) và *Adaptive Agentic RAG* (**0.6723**). *Naive RAG* thấp nhất (**0.6171**). Độ chênh lệch giữa Standalone LLM và hai kiến trúc RAG nâng cao là rất nhỏ (~0.01), cho thấy thông tin trích xuất vẫn bảo toàn ngữ nghĩa tốt trong khi bổ sung được dữ liệu nội bộ có kiểm chứng.
+> 4. **Tuân thủ Nguồn trích dẫn (Citation Compliance Rate):** *Hybrid RAG* đạt mức tối đa (**100.0%**) nhờ việc bắt buộc gắn nguồn trên toàn bộ ngữ cảnh tổng hợp. *Adaptive Agentic RAG* đạt **76.0%** (ở offline eval) và **87.0%** (ở live E2E), do một số agent (như giao tiếp chung S7 hoặc trả lời ngắn) ưu tiên giải thích trực tiếp. *Standalone LLM* đạt **0.0%** do giới hạn cấu trúc (không có retriever); *Naive RAG* đạt **0.0%** do prompt cơ bản không yêu cầu ký hiệu `[n]`.
+> 5. **Độ trễ và Thời gian phản hồi (Response Time / Latency):** *Naive RAG* nhanh nhất (**0.41s** trung bình) nhờ chỉ thực thi một lượt vector search cơ bản. *Standalone LLM* mất **4.18s**. *Hybrid RAG* mất **9.46s**. *Adaptive Agentic RAG* có độ trễ đơn luồng cao nhất (**12.39s**, p95: 24.28s) do phải qua 2 vòng suy luận LLM (Router LLM + Agent LLM) và Reranker; tuy nhiên, khi vận hành thực tế tại môi trường Live có **Semantic Cache (<5ms)**, độ trễ trung bình toàn hệ thống giảm xuống chỉ còn **5.98s** (đáp ứng SLA ≤ 10.0s).
+>
+> **Kết luận:** Adaptive Agentic RAG được thiết kế nhằm giải quyết bài toán tư vấn học thuật chuyên sâu: bổ sung năng lực phân định nghiệp vụ đa tác tử và cung cấp căn cứ nguồn trích dẫn rõ ràng, chấp nhận chi phí tính toán cao hơn ở tầng đơn luồng nhưng bù đắp bằng tầng bộ đệm thông minh khi triển khai thực tế.
 
 ---
 
@@ -155,6 +160,6 @@ python eval/comparative_eval.py
 |:---|:---|:---|:---|
 | [`eval/results_improved_final.json`](eval/results_improved_final.json) | Đánh giá E2E hệ thống Live qua API | LLM-as-a-Judge Semantic Rubric, Citation Presence, ROUGE-L | **Chính thức (Canonical)** — 100 câu |
 | [`eval/thesis_metrics.json`](eval/thesis_metrics.json) | Bảng phân rã 7 kịch bản S1–S7 | Tổng hợp Micro-Average (100 câu) & Macro-Average (7 nhóm) | **Chính thức (Canonical)** — Báo cáo Luận văn |
-| [`eval/comparative_results.json`](eval/comparative_results.json) | So sánh 4 Pipeline đối chứng | Benchmark so sánh độc lập (có đo Latency Avg/p95) | **Chính thức (Canonical)** — Phân tích Kiến trúc |
+| [`eval/comparative_results.json`](eval/comparative_results.json) | So sánh 4 Pipeline đối chứng | BERTScore vi (dự phòng embedding cosine), Citation Presence, ROUGE-L, Latency (Avg/p50/p95) | **Chính thức (Canonical)** — Phân tích Kiến trúc |
 | [`eval/archive/standard_metrics_legacy.json`](eval/archive/standard_metrics_legacy.json) | Kết quả sơ khai từ commit `261a8f1` | Đo độ phủ nhị phân và token overlap ban đầu | **Lưu trữ lịch sử (Deprecated Archive)** |
 
