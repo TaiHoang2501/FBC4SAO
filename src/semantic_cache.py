@@ -11,6 +11,7 @@ import time
 import sqlite3
 import json
 import uuid
+from pathlib import Path
 import numpy as np
 
 
@@ -23,6 +24,12 @@ class SemanticCache:
     """
 
     def __init__(self, db_path="semantic_cache.db", threshold: float = 0.92, ttl: int = 3600, max_size: int = 500):
+        if db_path == "semantic_cache.db":
+            p_data = Path(__file__).resolve().parent.parent / "data" / "semantic_cache.db"
+            if p_data.exists():
+                db_path = str(p_data)
+            elif not Path(db_path).exists() and p_data.parent.exists():
+                db_path = str(p_data)
         self.db_path   = db_path
         self.threshold = threshold
         self.ttl       = ttl

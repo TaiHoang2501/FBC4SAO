@@ -36,6 +36,11 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 
+from pathlib import Path
+SRC_DIR = Path(__file__).resolve().parent
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
+
 # ── Local modules ──────────────────────────────────────────────────────────────
 from agents import route_question, agent_search, build_agent_prompt, get_agent_display
 from llm_service import call_llm, stream_llm
@@ -86,7 +91,7 @@ class QueryRequest(BaseModel):
     top_k: int = 5
 
 class IngestURLRequest(BaseModel):
-    url: str
+    url: str = ""
     source_tag: str = "dynamic_web"
 
 

@@ -2,7 +2,8 @@
 import sqlite3
 from pathlib import Path
 
-DB_PATH = Path("conversation.db")
+_data_db = Path(__file__).resolve().parent.parent / "data" / "conversation.db"
+DB_PATH = _data_db if _data_db.exists() or _data_db.parent.exists() else Path("conversation.db")
 
 def _conn():
     conn = sqlite3.connect(DB_PATH)

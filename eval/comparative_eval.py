@@ -20,6 +20,10 @@ from pathlib import Path
 from dotenv import load_dotenv
 load_dotenv()
 
+SRC_DIR = Path(__file__).resolve().parent.parent / "src"
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
+
 from llm_service import call_llm
 from data_loader import embed_texts
 from vector_db import get_storage
@@ -27,7 +31,7 @@ from reranker import rerank
 from agents import route_question, agent_search, build_agent_prompt, get_agent_display
 
 # ── Load ground truth ─────────────────────────────────────────────────────────
-GT_PATH = Path("ground_truth_final.json")
+GT_PATH = Path(__file__).resolve().parent / "ground_truth_final.json" if (Path(__file__).resolve().parent / "ground_truth_final.json").exists() else Path("ground_truth_final.json")
 with open(GT_PATH, "r", encoding="utf-8") as f:
     DATASET = json.load(f)
 
