@@ -39,11 +39,18 @@ with open(GT_PATH, "r", encoding="utf-8") as f:
 
 def compute_rouge_l(reference: str, hypothesis: str) -> float:
     """ROUGE-L based on Longest Common Subsequence."""
-    def clean(t):
-        if not t: return ""
-        t = re.split(r"Nguồ[n|ns]:", t, flags=re.IGNORECASE)[0]
-        t = re.sub(r"\[\d+\]", "", t)
-        return t
+    def clean(t: str) -> str:
+        if not t:
+            return ""
+        # 1. Loại bỏ khối nguồn ở cuối câu trả lời (khớp Nguồn:, Nguồn tham khảo:, Sources:, **Nguồn:**, v.v.)
+        source_pattern = r"(?i)(?:\n+|\s+)(?:\*\*|\*|#+)?\s*(?:nguồn(?:s|\s*(?:tham\s*khảo|trích\s*dẫn|tài\s*liệu|gốc))?|sources?)\s*(?:\*\*|\*)?\s*:"
+        t = re.split(source_pattern, t)[0]
+        # Loại bỏ nếu tiền tố nguồn nằm ở đầu dòng riêng
+        t = re.split(r"(?i)^\s*(?:\*\*|\*|#+)?\s*(?:nguồn(?:s|\s*(?:tham\s*khảo|trích\s*dẫn))?|sources?)\s*(?:\*\*|\*)?\s*:", t, flags=re.MULTILINE)[0]
+        # 2. Loại bỏ các ký hiệu trích dẫn inline dạng [1], [2], [1, 2], [1][2]
+        t = re.sub(r"\[\d+(?:[,\s]+\d+)*\]", "", t)
+        return t.strip()
+
     def lcs(a, b):
         m, n = len(a), len(b)
         dp = [0] * (n + 1)
@@ -54,6 +61,7 @@ def compute_rouge_l(reference: str, hypothesis: str) -> float:
                 else: ndp[j+1] = max(dp[j+1], ndp[j])
             dp = ndp
         return dp[n]
+
     ref = re.findall(r'\w+', clean(reference).lower(), re.UNICODE)
     hyp = re.findall(r'\w+', clean(hypothesis).lower(), re.UNICODE)
     if not ref or not hyp: return 0.0
@@ -269,6 +277,35 @@ def run_comparative_eval(use_bertscore: bool = True):
     return all_results
 
 
+def compute_latency_percentiles(times: list) -> tuple[float, float, float]:
+    """
+    Tính toán chỉ số độ trễ: Average, Median (p50), và 95th Percentile (p95).
+    Quy ước thống kê (Percentile Convention):
+    - Trung bình (Average): sum(times) / n
+    - Trung vị (Median / p50): 50th percentile theo phương pháp nội suy tuyến tính (Linear Interpolation, Type 7).
+    - Phân vị 95 (p95): 95th percentile theo phương pháp nội suy tuyến tính (Linear Interpolation, Type 7 - chuẩn NIST / SciPy).
+    """
+    if not times:
+        return 0.0, 0.0, 0.0
+    n = len(times)
+    avg_val = round(sum(times) / n, 2)
+    try:
+        import numpy as np
+        p50_val = round(float(np.percentile(times, 50)), 2)
+        p95_val = round(float(np.percentile(times, 95)), 2)
+    except ImportError:
+        import math
+        s = sorted(times)
+        def _percentile(data, p):
+            idx = (len(data) - 1) * p
+            low, high = math.floor(idx), math.ceil(idx)
+            w = idx - low
+            return data[low] * (1.0 - w) + data[high] * w
+        p50_val = round(_percentile(s, 0.50), 2)
+        p95_val = round(_percentile(s, 0.95), 2)
+    return avg_val, p50_val, p95_val
+
+
 def compute_summary(all_results: dict) -> dict:
     """Tính trung bình các chỉ số cho từng pipeline."""
     summary = {}
@@ -279,10 +316,7 @@ def compute_summary(all_results: dict) -> dict:
         routing_val = round(sum(r["routing_correct"] for r in results if r.get("routing_correct") is not None) / n, 4) if has_router else None
         
         times = [r.get("response_time", r.get("time", 0.0)) for r in results]
-        times_sorted = sorted(times) if times else [0.0]
-        avg_time = round(sum(times) / n, 2) if n else 0.0
-        p50_time = round(times_sorted[n // 2], 2) if n else 0.0
-        p95_time = round(times_sorted[int(n * 0.95)], 2) if n else 0.0
+        avg_time, p50_time, p95_time = compute_latency_percentiles(times)
 
         # Phân rã phương pháp đo ngữ nghĩa thực tế
         methods_count = {}

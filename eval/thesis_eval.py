@@ -67,12 +67,17 @@ except Exception:
 
 def compute_rouge_l(reference: str, hypothesis: str) -> float:
     def clean_for_rouge(text: str) -> str:
-        if not text: return ""
-        # 1. Loại bỏ phần Nguồn: ... ở cuối
-        text = re.split(r"Nguồ[n|ns]:", text, flags=re.IGNORECASE)[0]
-        # 2. Loại bỏ trích dẫn dạng [1], [2]...
-        text = re.sub(r"\[\d+\]", "", text)
-        return text
+        """Loại bỏ khối nguồn tham chiếu và các ký hiệu trích dẫn [n] trước khi tính ROUGE-L."""
+        if not text:
+            return ""
+        # 1. Loại bỏ khối nguồn ở cuối câu trả lời (hỗ trợ Nguồn:, Nguồn tham khảo:, Sources:, **Nguồn:**, v.v.)
+        source_pattern = r"(?i)(?:\n+|\s+)(?:\*\*|\*|#+)?\s*(?:nguồn(?:s|\s*(?:tham\s*khảo|trích\s*dẫn|tài\s*liệu|gốc))?|sources?)\s*(?:\*\*|\*)?\s*:"
+        text = re.split(source_pattern, text)[0]
+        # Loại bỏ nếu tiền tố nguồn nằm ở đầu dòng riêng
+        text = re.split(r"(?i)^\s*(?:\*\*|\*|#+)?\s*(?:nguồn(?:s|\s*(?:tham\s*khảo|trích\s*dẫn))?|sources?)\s*(?:\*\*|\*)?\s*:", text, flags=re.MULTILINE)[0]
+        # 2. Loại bỏ các ký hiệu trích dẫn inline dạng [1], [2], [1, 2], [1][2]
+        text = re.sub(r"\[\d+(?:[,\s]+\d+)*\]", "", text)
+        return text.strip()
 
     def lcs(a, b):
         m, n = len(a), len(b)

@@ -2,67 +2,63 @@
   "summary": {
     "Standalone LLM": {
       "rouge_l": 0.1324,
+      "semantic_similarity": 0.6852,
+      "semantic_metric_breakdown": {
+        "bert_score": 100
+      },
+      "citation_compliance_rate": 0.0,
+      "routing_accuracy": null,
+      "response_time_avg": 4.18,
+      "response_time_p50": 4.24,
+      "response_time_p95": 6.92,
       "bertscore_f1": 0.6852,
       "citation_accuracy": 0.0,
-      "routing_accuracy": null,
-      "n_samples": 100,
-      "semantic_similarity": 0.6852,
-      "citation_compliance_rate": 0.0,
-      "response_time_avg": 4.18,
-      "response_time_p50": 4.29,
-      "response_time_p95": 7.07,
-      "semantic_metric_breakdown": {
-        "bert_score": 100,
-        "embedding_cosine": 0
-      }
+      "n_samples": 100
     },
     "Naive RAG": {
       "rouge_l": 0.0226,
-      "bertscore_f1": 0.6171,
-      "citation_accuracy": 0.0,
-      "routing_accuracy": null,
-      "n_samples": 100,
       "semantic_similarity": 0.6171,
+      "semantic_metric_breakdown": {
+        "bert_score": 100
+      },
       "citation_compliance_rate": 0.0,
+      "routing_accuracy": null,
       "response_time_avg": 0.41,
       "response_time_p50": 0.19,
-      "response_time_p95": 0.6,
-      "semantic_metric_breakdown": {
-        "bert_score": 100,
-        "embedding_cosine": 0
-      }
+      "response_time_p95": 0.51,
+      "bertscore_f1": 0.6171,
+      "citation_accuracy": 0.0,
+      "n_samples": 100
     },
     "Hybrid RAG": {
       "rouge_l": 0.1185,
+      "semantic_similarity": 0.6768,
+      "semantic_metric_breakdown": {
+        "bert_score": 100
+      },
+      "citation_compliance_rate": 1.0,
+      "routing_accuracy": null,
+      "response_time_avg": 9.46,
+      "response_time_p50": 9.02,
+      "response_time_p95": 12.94,
       "bertscore_f1": 0.6768,
       "citation_accuracy": 1.0,
-      "routing_accuracy": null,
-      "n_samples": 100,
-      "semantic_similarity": 0.6768,
-      "citation_compliance_rate": 1.0,
-      "response_time_avg": 9.46,
-      "response_time_p50": 9.06,
-      "response_time_p95": 14.12,
-      "semantic_metric_breakdown": {
-        "bert_score": 100,
-        "embedding_cosine": 0
-      }
+      "n_samples": 100
     },
     "Adaptive Agentic RAG": {
       "rouge_l": 0.1273,
+      "semantic_similarity": 0.6723,
+      "semantic_metric_breakdown": {
+        "bert_score": 100
+      },
+      "citation_compliance_rate": 0.76,
+      "routing_accuracy": 0.8,
+      "response_time_avg": 12.39,
+      "response_time_p50": 12.16,
+      "response_time_p95": 23.12,
       "bertscore_f1": 0.6723,
       "citation_accuracy": 0.76,
-      "routing_accuracy": 0.8,
-      "n_samples": 100,
-      "semantic_similarity": 0.6723,
-      "citation_compliance_rate": 0.76,
-      "response_time_avg": 12.39,
-      "response_time_p50": 12.18,
-      "response_time_p95": 24.28,
-      "semantic_metric_breakdown": {
-        "bert_score": 100,
-        "embedding_cosine": 0
-      }
+      "n_samples": 100
     }
   },
   "details": {
@@ -6093,6 +6089,7 @@
     "semantic_metric": "BERTScore F1 (lang=\"vi\") via bert_score library; fallback to embedding_cosine if unavailable",
     "semantic_metric_method_used": "bert_score",
     "dataset_source": "eval/ground_truth_final.json (100 test questions across 7 RIASEC/extracurricular scenarios)",
-    "hardware_runtime": "Apple Silicon (M-series), Ollama local runtime, model: qwen2.5:7b-instruct-q4_K_M"
+    "hardware_runtime": "Apple Silicon (M-series), Ollama local runtime, model: qwen2.5:7b-instruct-q4_K_M",
+    "latency_convention": "Response times evaluated in controlled offline single-thread benchmark (no cache). Percentiles p50 and p95 computed via standard Type 7 linear interpolation (NIST / SciPy default)."
   }
 }
