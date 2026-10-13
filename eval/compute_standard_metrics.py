@@ -10,19 +10,29 @@ import json
 import os
 import glob
 
-# Try to find the latest results file, or default to comparative_results.json / results_improved_final.json
-file_to_load = "results_improved_final.json"
-if not os.path.exists(file_to_load):
-    if os.path.exists("comparative_results.json"):
-        file_to_load = "comparative_results.json"
-    else:
-        # Just use the first json that looks like results
-        json_files = glob.glob("*results*.json")
-        if json_files:
-            file_to_load = json_files[0]
+from pathlib import Path
 
-if not os.path.exists(file_to_load):
-    print(f"Error: Could not find results file to load.")
+EVAL_DIR = Path(__file__).resolve().parent
+
+candidates = [
+    EVAL_DIR / "results_improved_final.json",
+    Path("results_improved_final.json"),
+    EVAL_DIR / "comparative_results.json",
+    Path("comparative_results.json"),
+]
+file_to_load = None
+for c in candidates:
+    if c.exists():
+        file_to_load = str(c)
+        break
+
+if not file_to_load:
+    json_files = list(EVAL_DIR.glob("*results*.json")) + glob.glob("*results*.json")
+    if json_files:
+        file_to_load = str(json_files[0])
+
+if not file_to_load or not os.path.exists(file_to_load):
+    print("Error: Could not find results file to load.")
     exit(1)
 
 with open(file_to_load, "r", encoding="utf-8") as f:
@@ -87,12 +97,13 @@ if all_results:
     otime = sum(r["response_time"] for r in all_results) / len(all_results)
     print(f"{'TRUNG BÌNH':35s} {oa:12.2f} {orouge:10.2f} {obert:10.2f} {ocit:14.2f} {otime:18.2f}")
 
-    with open("thesis_metrics.json", "w", encoding="utf-8") as f:
+    out_file = EVAL_DIR / "thesis_metrics.json"
+    with open(out_file, "w", encoding="utf-8") as f:
         json.dump({"per_scenario": all_results, "overall": {
             "routing_accuracy": round(oa, 2), "rouge_l": round(orouge, 2),
             "bertscore": round(obert, 2), "citation_accuracy": round(ocit, 2),
             "response_time": round(otime, 2)
         }}, f, ensure_ascii=False, indent=2)
-    print(f"\n📁 Đã lưu: thesis_metrics.json")
+    print(f"\n📁 Đã lưu: {out_file}")
 else:
     print("No valid results found to process.")
