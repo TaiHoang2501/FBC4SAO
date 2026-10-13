@@ -62,15 +62,23 @@ def compute_rouge_l(reference: str, hypothesis: str) -> float:
     return (2 * r * p) / (r + p) if (r + p) > 0 else 0.0
 
 
-def compute_bertscore(reference: str, hypothesis: str) -> float:
-    """BERTScore F1 using bert-score library with embedding cosine fallback.
-    Trả về 0.0 nếu câu trả lời (hypothesis) hoặc câu tham chiếu rỗng."""
+def compute_semantic_similarity(reference: str, hypothesis: str) -> tuple[float, str]:
+    """
+    Tính độ tương đồng ngữ nghĩa và ghi nhận chính xác phương pháp tính:
+    Returns:
+        (score, method):
+        - score: Điểm số từ 0.0 đến 1.0
+        - method:
+            * "bert_score": Tính qua thư viện bert_score chuẩn (ngôn ngữ vi).
+            * "embedding_cosine": Dự phòng Cosine similarity từ vector embedding (multilingual-e5-large).
+            * "empty_input": Câu trả lời hoặc tham chiếu rỗng -> gán 0.0.
+    """
     if not reference or not reference.strip() or not hypothesis or not hypothesis.strip():
-        return 0.0
+        return 0.0, "empty_input"
     try:
         from bert_score import score as bscore
         P, R, F1 = bscore([hypothesis], [reference], lang="vi", verbose=False)
-        return float(F1[0])
+        return float(F1[0]), "bert_score"
     except Exception:
         # Fallback: dùng embedding cosine similarity
         try:
@@ -78,11 +86,18 @@ def compute_bertscore(reference: str, hypothesis: str) -> float:
             hyp_vec = embed_texts([hypothesis], is_query=False)[0]
             import math
             dot = sum(a * b for a, b in zip(ref_vec, hyp_vec))
-            nr = math.sqrt(sum(a*a for a in ref_vec))
-            nh = math.sqrt(sum(b*b for b in hyp_vec))
-            return max(0.0, min(1.0, dot / (nr * nh))) if nr * nh > 0 else 0.0
-        except:
-            return 0.0
+            nr = math.sqrt(sum(a * a for a in ref_vec))
+            nh = math.sqrt(sum(b * b for b in hyp_vec))
+            sim = dot / (nr * nh) if nr * nh > 0 else 0.0
+            return max(0.0, min(1.0, float(sim))), "embedding_cosine"
+        except Exception:
+            return 0.0, "failed"
+
+
+def compute_bertscore(reference: str, hypothesis: str) -> float:
+    """Wrapper tương thích ngược trả về điểm số float."""
+    score, _ = compute_semantic_similarity(reference, hypothesis)
+    return score
 
 
 def compute_citation(answer: str, sources: list) -> float:
@@ -223,9 +238,13 @@ def run_comparative_eval(use_bertscore: bool = True):
 
             # Compute metrics
             rouge = compute_rouge_l(ref, out["answer"])
-            bert = compute_bertscore(ref, out["answer"]) if use_bertscore else 0.0
+            if use_bertscore:
+                bert, sem_method = compute_semantic_similarity(ref, out["answer"])
+            else:
+                bert, sem_method = 0.0, "disabled"
             citation = compute_citation(out["answer"], out.get("sources", []))
-            routing = 1.0 if out["agent"] == expected else 0.0
+            has_router = (pipe_name == "Adaptive Agentic RAG")
+            routing = (1.0 if out["agent"] == expected else 0.0) if has_router else None
 
             results.append({
                 "scenario": item["scenario"],
@@ -235,12 +254,15 @@ def run_comparative_eval(use_bertscore: bool = True):
                 "predicted_agent": out["agent"],
                 "routing_correct": routing,
                 "rouge_l": round(rouge, 4),
-                "bertscore_f1": round(bert, 4),
+                "semantic_similarity": round(bert, 4),
+                "semantic_metric_method": sem_method,
                 "citation": citation,
                 "response_time": round(out["time"], 2),
                 "answer_preview": out["answer"][:200],
+                # Backward compatibility aliases:
+                "bertscore_f1": round(bert, 4),
             })
-            print(f"    → ROUGE={rouge:.3f} BERT={bert:.3f} Cite={citation:.0f} Time={out['time']:.1f}s Agent={out['agent']}")
+            print(f"    → ROUGE={rouge:.3f} Sem={bert:.3f} ({sem_method}) Cite={citation:.0f} Time={out['time']:.1f}s Agent={out['agent']}")
 
         all_results[pipe_name] = results
 
@@ -262,16 +284,23 @@ def compute_summary(all_results: dict) -> dict:
         p50_time = round(times_sorted[n // 2], 2) if n else 0.0
         p95_time = round(times_sorted[int(n * 0.95)], 2) if n else 0.0
 
+        # Phân rã phương pháp đo ngữ nghĩa thực tế
+        methods_count = {}
+        for r in results:
+            m = r.get("semantic_metric_method", "unknown")
+            methods_count[m] = methods_count.get(m, 0) + 1
+
         summary[pipe_name] = {
             "rouge_l":                  round(sum(r["rouge_l"] for r in results) / n, 4),
-            "semantic_similarity":      round(sum(r["bertscore_f1"] for r in results) / n, 4),
+            "semantic_similarity":      round(sum(r.get("semantic_similarity", r.get("bertscore_f1", 0.0)) for r in results) / n, 4),
+            "semantic_metric_breakdown": methods_count,
             "citation_compliance_rate": round(sum(r["citation"] for r in results) / n, 4),
             "routing_accuracy":         routing_val,
             "response_time_avg":        avg_time,
             "response_time_p50":        p50_time,
             "response_time_p95":        p95_time,
             # Backward compatibility aliases:
-            "bertscore_f1":             round(sum(r["bertscore_f1"] for r in results) / n, 4),
+            "bertscore_f1":             round(sum(r.get("semantic_similarity", r.get("bertscore_f1", 0.0)) for r in results) / n, 4),
             "citation_accuracy":        round(sum(r["citation"] for r in results) / n, 4),
             "n_samples":                n,
         }

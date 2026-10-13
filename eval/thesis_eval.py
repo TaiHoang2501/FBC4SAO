@@ -4,8 +4,13 @@ thesis_eval.py — Đánh giá 5 chỉ số theo Luận văn (Bản tối ưu h�
 Chỉ số:
   1. Routing Accuracy          : Tỉ lệ router chọn đúng agent (ngưỡng ≥ 0.85)
   2. ROUGE-L                   : Độ khớp chuỗi con dài nhất (ngưỡng chuẩn hóa ≥ 0.10)
-  3. Semantic Similarity Score : Độ tương đồng ngữ nghĩa qua BERTScore / LLM Judge (ngưỡng ≥ 0.75)
+  3. Semantic Similarity Score : Độ tương đồng ngữ nghĩa qua cơ chế 3 tầng đánh giá:
+                                 (1) Thư viện bert_score chuẩn (ngôn ngữ vi)
+                                 (2) Dự phòng cấp 1: Cosine Similarity từ embedding (multilingual-e5-large)
+                                 (3) Dự phòng cấp 2: LLM-as-a-Judge rubric (thang điểm 0.0 - 1.0)
+                                 (Ngưỡng tiêu chuẩn ≥ 0.75)
   4. Citation Compliance Rate  : Tỉ lệ tuân thủ định dạng trích dẫn [n] & nguồn (ngưỡng ≥ 0.80)
+  5. Response Time (Latency)   : Thời gian xử lý E2E tính bằng giây (ngưỡng SLA ≤ 10.0s)
 """
 
 import argparse
