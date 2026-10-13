@@ -54,8 +54,6 @@ CV/
 
 # ── Test / Eval outputs ───────────────────────────────────────────────────────
 ragas_results.json
-comparative_results.json
-standard_metrics.json
 .pytest_cache/
 
 # ── Logs ─────────────────────────────────────────────────────────────────────

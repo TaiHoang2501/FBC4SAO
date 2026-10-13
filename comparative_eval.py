@@ -1,5 +1,5 @@
 """
-comparative_eval.py — So sánh 4 Pipeline trên 21 Kịch bản Thử nghiệm
+comparative_eval.py — So sánh 4 Pipeline trên 100 Câu hỏi Thử nghiệm (7 Kịch bản)
 
 Pipeline:
   1. Standalone LLM    : Chỉ gọi LLM, không truy xuất
@@ -289,13 +289,13 @@ def print_comparison_table(summary: dict):
 # ── Entry point ───────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="So sánh 4 pipeline RAG trên 21 kịch bản")
+    parser = argparse.ArgumentParser(description="So sánh 4 pipeline RAG trên 100 câu hỏi thử nghiệm")
     parser.add_argument("--output", type=str, default="comparative_results.json")
     parser.add_argument("--no-bert", action="store_true", help="Bỏ qua BERTScore (nhanh hơn)")
     args = parser.parse_args()
 
     print("╔══════════════════════════════════════════════════════════════╗")
-    print("║   COMPARATIVE EVALUATION — 4 Pipelines × 21 Scenarios      ║")
+    print("║   COMPARATIVE EVALUATION — 4 Pipelines × 100 Questions      ║")
     print("║   Adaptive Agentic RAG vs Baselines                        ║")
     print("╚══════════════════════════════════════════════════════════════╝")
 

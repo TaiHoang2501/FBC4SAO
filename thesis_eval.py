@@ -36,7 +36,8 @@ THRESHOLD = {
 
 
 try:
-    with open("ground_truth.json", "r", encoding='utf-8') as f:
+    dataset_file = "ground_truth_final.json" if os.path.exists("ground_truth_final.json") else "ground_truth.json"
+    with open(dataset_file, "r", encoding='utf-8') as f:
         SAMPLE_DATASET = json.load(f)
 except Exception:
     SAMPLE_DATASET = [] # Fallback
