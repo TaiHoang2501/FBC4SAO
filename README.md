@@ -62,7 +62,7 @@ pip install -r requirements.txt  # Hoặc dùng uv: uv sync
 
 Nghiên cứu tiến hành hai thực nghiệm độc lập với mục tiêu và phương pháp luận rõ ràng:
 1. **Phần A — Đánh giá Toàn diện Hệ thống Live (End-to-End Live System Evaluation):** Đánh giá dịch vụ thời gian thực qua REST/SSE API với đầy đủ các tầng chức năng.
-2. **Phần B — Nghiên cứu So sánh Đối chứng 4 Pipeline (Comparative Ablation Study):** Đánh giá đóng góp thành phần (Ablation Study) trong môi trường benchmark cách ly.
+2. **Phần B — Nghiên cứu So sánh 4 Pipeline (Comparative Pipeline Evaluation):** Đánh giá so sánh hiệu năng và sự đánh đổi (trade-offs) giữa 4 kiến trúc trong môi trường benchmark kiểm soát độc lập.
 
 ---
 
@@ -70,12 +70,15 @@ Nghiên cứu tiến hành hai thực nghiệm độc lập với mục tiêu v�
 
 Hệ thống được đánh giá qua tập **100 câu hỏi thử nghiệm chuẩn hóa** ([`eval/ground_truth_final.json`](eval/ground_truth_final.json)) phân bổ đều qua 7 kịch bản nghiệp vụ (S1 – S7) thông qua endpoint API streaming `/query/stream`.
 
-#### Các chỉ số cốt lõi và phương pháp đo:
+#### Các chỉ số cốt lõi và phương pháp đo lường:
 1. **Routing Accuracy** (Ngưỡng ≥ 0.85): Tỉ lệ định tuyến chính xác đến agent chuyên môn tương ứng.
-2. **Semantic Similarity (BERTScore F1 / LLM Judge)** (Ngưỡng ≥ 0.75): Đo độ tương đồng ngữ nghĩa giữa câu trả lời sinh ra và câu trả lời mẫu tham chiếu. Script ưu tiên thư viện `bert_score` chuẩn (tiếng Việt), có fallback embedding cosine similarity và LLM-as-a-Judge. *Các câu trả lời rỗng hoặc lỗi kết nối được gán điểm 0.0 nghiêm ngặt.*
-3. **Citation Compliance Rate\*** (Ngưỡng ≥ 0.80): Tỉ lệ tuân thủ quy chuẩn định dạng trích dẫn `[n]` và sự hiện diện của danh sách nguồn tham khảo từ retriever (*citation-format / source-presence check*).
-4. **ROUGE-L** (Ngưỡng ≥ 0.10): Đo độ khớp chuỗi con dài nhất (Longest Common Subsequence) sau khi lọc nhãn trích dẫn.
-5. **Response Time** (Ngưỡng ≤ 10.0s): Thời gian phản hồi trung bình trên mỗi câu hỏi (bao gồm toàn bộ độ trễ mạng và sinh token).
+2. **LLM-as-a-Judge Semantic Similarity** (Ngưỡng ≥ 0.75): Đo độ tương đồng ngữ nghĩa giữa câu trả lời sinh ra và câu trả lời mẫu tham chiếu (Ground Truth Reference).
+   - **Phương pháp chấm:** Sử dụng mô hình ngôn ngữ lớn (LLM-as-a-Judge) đánh giá theo rubric ngữ nghĩa trên thang điểm chuẩn hóa từ `0.0` đến `1.0`.
+   - **Rubric đánh giá:** Kiểm tra mức độ bảo toàn ý nghĩa cốt lõi, tính chính xác về thông tin phân loại mật mã Holland (RIASEC), và sự liên quan trực tiếp đến định hướng ngoại khóa.
+   - **Độ tin cậy & Tính minh bạch:** Toàn bộ 100 câu hỏi trong bộ kết quả đều được ghi nhận phương pháp này qua trường `"semantic_metric_method": "llm_judge"`. Các trường hợp câu trả lời rỗng hoặc lỗi phân tích được gán điểm `0.0` nghiêm ngặt (loại bỏ hoàn toàn điểm fallback mặc định).
+3. **Citation Compliance Rate\*** (Ngưỡng ≥ 0.80): Tỉ lệ tuân thủ quy chuẩn định dạng trích dẫn `[n]` và sự hiện diện của danh sách tài liệu nguồn tham khảo hợp lệ từ retriever (*citation-format / source-presence check*).
+4. **ROUGE-L** (Ngưỡng chuẩn hóa ≥ 0.10): Đo độ khớp chuỗi con chung dài nhất (Longest Common Subsequence). Ngưỡng ≥ 0.10 là tiêu chuẩn phù hợp cho bài toán tư vấn học thuật tiếng Việt với câu trả lời phân tích mở dài, cho phép mô hình diễn giải tự nhiên mà vẫn bảo toàn từ vựng cốt lõi.
+5. **Response Time** (Ngưỡng ≤ 10.0s): Thời gian phản hồi trung bình trên mỗi câu hỏi (bao gồm toàn bộ độ trễ mạng HTTP/SSE, sinh token và xử lý bộ đệm).
 
 > ⚠️ **Ghi chú phương pháp về Citation Compliance (\*):** Chỉ số này đo lường sự tuân thủ hình thức trích dẫn `[n]` và sự hiện diện của metadata nguồn được truy xuất bởi hệ thống, đóng vai trò là tầng kiểm soát căn cứ ban đầu. Chỉ số này **chưa bao gồm** mô hình suy luận logic ngôn ngữ tự nhiên (NLI Claim-level Entailment) để kiểm chứng tính xác thực ngữ nghĩa từng khẳng định đơn lẻ.
 
@@ -84,19 +87,23 @@ Lệnh chạy đánh giá live:
 python eval/thesis_eval.py --live --api http://localhost:8001 --file eval/ground_truth_final.json
 ```
 
-#### Kết quả thử nghiệm tổng thể hệ thống Live (100 câu hỏi)
+#### Kết quả thử nghiệm tổng thể hệ thống Live (100 câu hỏi chuẩn hóa)
 
-| Chỉ số | Kết quả | Ngưỡng cam kết | Trạng thái |
-|---|---|---|---|
-| **Routing Accuracy** | **0.85** (85.0%) | ≥ 0.85 | ✅ PASS |
-| **Semantic Similarity (BERTScore F1)** | **0.86** (85.6%) | ≥ 0.75 | ✅ PASS |
-| **Citation Compliance Rate\*** | **0.87** (87.0%) | ≥ 0.80 | ✅ PASS |
-| **ROUGE-L** | **0.11** (11.3%) | ≥ 0.10 | ✅ PASS |
-| **Response Time** | **5.98s** | ≤ 10.0s | ✅ PASS |
+| Chỉ số | Micro-Average *(Kết quả chính - 100 câu)* | Macro-Average *(Trung bình 7 kịch bản)* | Ngưỡng cam kết | Trạng thái |
+|---|:---:|:---:|:---:|:---:|
+| **Routing Accuracy** | **0.85** (85.0%) | 0.85 (84.7%) | ≥ 0.85 | ✅ PASS |
+| **LLM-as-a-Judge Semantic Similarity** | **0.86** (85.6%) | 0.86 (85.6%) | ≥ 0.75 | ✅ PASS |
+| **Citation Compliance Rate\*** | **0.87** (87.0%) | 0.87 (86.7%) | ≥ 0.80 | ✅ PASS |
+| **ROUGE-L** | **0.11** (11.3%) | 0.11 (11.3%) | ≥ 0.10 | ✅ PASS |
+| **Response Time** | **5.98s** | 5.98s | ≤ 10.0s | ✅ PASS |
 
-#### Kết quả chi tiết theo 7 kịch bản (Scenario Breakdown)
+*Ghi chú về hai phương pháp tổng hợp:*
+- **Micro-Average (Primary):** Tính trung bình có trọng số theo từng câu hỏi trên toàn bộ 100 mẫu benchmark — phản ánh chính xác kết quả tổng thể trong [`eval/results_improved_final.json`](eval/results_improved_final.json).
+- **Macro-Average:** Tính trung bình không trọng số của 7 kịch bản — được đối chiếu song song trong [`eval/thesis_metrics.json`](eval/thesis_metrics.json).
 
-| Kịch bản | Tên kịch bản | Số câu | Routing Acc | BERTScore F1 | Citation Rate\* | Thời gian TB |
+#### Kết quả chi tiết theo 7 kịch bản nghiệp vụ (Scenario Breakdown)
+
+| Kịch bản | Tên kịch bản | Số câu | Routing Acc | Semantic (LLM) | Citation Rate\* | Thời gian TB |
 |:---|:---|:---:|:---:|:---:|:---:|:---:|
 | **S1** | Chẩn đoán Holland/RIASEC | 14 | 93% | 0.82 | 100% | 6.60s |
 | **S2** | Tư vấn Ngoại khóa Nền tảng | 14 | 64% | 0.84 | 100% | 5.45s |
@@ -105,7 +112,8 @@ python eval/thesis_eval.py --live --api http://localhost:8001 --file eval/ground
 | **S5** | Đối chiếu Hồ sơ | 14 | 93% | 0.88 | 93% | 6.38s |
 | **S6** | Đánh giá Toàn diện | 14 | 93% | 0.85 | 64% | 5.66s |
 | **S7** | Hỏi đáp Tổng quát | 16 | 100% | 0.85 | 100% | 6.09s |
-| **Toàn hệ thống** | **Tổng thể** | **100** | **85%** | **0.86** | **87%** | **5.98s** |
+| **Toàn hệ thống (Micro)** | **Tổng thể 100 câu** | **100** | **85%** | **0.86** | **87%** | **5.98s** |
+| **Toàn hệ thống (Macro)** | **Trung bình 7 nhóm** | **100** | **85%** | **0.86** | **87%** | **5.98s** |
 
 *Nguồn dữ liệu chi tiết: [`eval/results_improved_final.json`](eval/results_improved_final.json) và [`eval/thesis_metrics.json`](eval/thesis_metrics.json).*
 
@@ -113,7 +121,7 @@ python eval/thesis_eval.py --live --api http://localhost:8001 --file eval/ground
 
 ### Phần B: Nghiên cứu So sánh 4 Pipeline (Comparative Pipeline Evaluation)
 
-Để đánh giá tác động của các kỹ thuật thành phần, nghiên cứu thực hiện kiểm thử thực nghiệm so sánh độc lập giữa 4 kiến trúc trên cùng tập benchmark 100 câu hỏi trong môi trường kiểm soát (`eval/comparative_eval.py`):
+Để phân tích khách quan hiệu quả và sự đánh đổi (trade-offs) của từng giải pháp kỹ thuật, nghiên cứu thực hiện kiểm thử so sánh độc lập giữa 4 kiến trúc trên cùng tập benchmark 100 câu hỏi (`eval/comparative_eval.py`):
 1. **Pipeline 1 (Standalone LLM):** Mô hình ngôn ngữ lớn thuần túy, không có thành phần truy xuất dữ liệu.
 2. **Pipeline 2 (Naive RAG):** Truy xuất Dense Vector đơn lẻ + Prompt tổng quát.
 3. **Pipeline 3 (Hybrid RAG):** Kết hợp BM25 + Dense Vector + Prompt tổng quát.
@@ -124,18 +132,29 @@ Lệnh chạy kiểm thử so sánh:
 python eval/comparative_eval.py
 ```
 
-#### Bảng so sánh hiệu năng 4 kiến trúc (Comparative Pipeline Evaluation)
+#### Bảng so sánh hiệu năng & độ trễ 4 kiến trúc (Comparative Pipeline Evaluation)
 
-| Pipeline Kiến Trúc | ROUGE-L | Semantic Similarity (BERTScore F1) | Citation Compliance Rate\* | Routing Accuracy | Phân Tích Đánh Đổi Kiến Trúc (Trade-offs) |
-|:---|:---:|:---:|:---:|:---:|:---|
-| **Pipeline 1: Standalone LLM** | **0.1324** | **0.6852** | 0.0% | N/A *(Không có Router)* | Phản hồi tự do theo tri thức pretrain, ROUGE cao nhưng hoàn toàn không có dẫn chứng (**0% Citation**), ảo giác cao |
-| **Pipeline 2: Naive RAG** | 0.0226 | 0.6171 | 0.0% | N/A *(Không có Router)* | Vector đơn lẻ bị nhiễu ngữ cảnh, ROUGE và điểm tương đồng ngữ nghĩa thấp nhất |
-| **Pipeline 3: Hybrid RAG** | 0.1185 | 0.6768 | **100.0%** | N/A *(Không có Router)* | BM25 + Vector ép trích dẫn nguồn 100%, nhưng thiếu chuyên biệt hóa theo kịch bản nghiệp vụ |
-| **Pipeline 4: Adaptive Agentic RAG** (Đề xuất) | 0.1273 | 0.6723 | 76.0% | **80.0%** | Điểm cân bằng tối ưu: đạt **80% Routing** đúng chuyên gia, **76% Citation** có căn cứ, vượt trội hoàn toàn so với Naive RAG |
+| Pipeline Kiến Trúc | ROUGE-L | Semantic Similarity | Citation Compliance Rate\* | Routing Accuracy | Response Time (Avg / p95) | Phân Tích Đánh Đổi Kiến Trúc (Trade-offs) |
+|:---|:---:|:---:|:---:|:---:|:---:|:---|
+| **Pipeline 1: Standalone LLM** | **0.1324** | **0.6852** | 0.0% | N/A *(Không có Router)* | **4.18s** / 7.07s | Phản hồi tự do theo tri thức pretrain, ROUGE cao nhưng không có retriever dẫn đến **0% Citation** |
+| **Pipeline 2: Naive RAG** | 0.0226 | 0.6171 | 0.0% | N/A *(Không có Router)* | **0.41s** / 0.60s | Vector đơn lẻ cực nhanh nhưng dễ nhiễu ngữ cảnh; ROUGE và điểm tương đồng ngữ nghĩa thấp nhất |
+| **Pipeline 3: Hybrid RAG** | 0.1185 | 0.6768 | **100.0%** | N/A *(Không có Router)* | 9.46s / 14.12s | BM25 + Vector ép trích dẫn nguồn 100%, nhưng thiếu chuyên biệt hóa theo kịch bản nghiệp vụ |
+| **Pipeline 4: Adaptive Agentic RAG** (Đề xuất) | 0.1273 | 0.6723 | 76.0% | **80.0%** | 12.39s / 24.28s *(Live Cache: **5.98s**)* | Cân bằng tối ưu: đạt **80% Routing** đúng chuyên gia, **76% Citation** có căn cứ, vượt trội hoàn toàn so với Naive RAG |
 
-> 📌 **Phân tích học thuật & Sự đánh đổi (Trade-offs Analysis):**
-> - **Routing Accuracy:** Đối với các baseline (Standalone LLM, Naive RAG, Hybrid RAG), chỉ số này được ghi nhận chính xác là **N/A** vì các hệ thống này không trang bị mô-đun Query Router. Gán 0% sẽ gây hiểu lầm là hệ thống định tuyến sai, trong khi bản chất là chúng không thực hiện chức năng này.
-> - **Trade-off giữa Citation và Phong cách phản hồi:** Standalone LLM đạt điểm ROUGE-L (0.1324) và BERTScore (0.6852) cao hơn đôi chút do phản hồi mượt mà không bị ràng buộc bởi các trích đoạn văn bản thực tế. Tuy nhiên, trong bài toán tư vấn học thuật và hướng nghiệp, câu trả lời bắt buộc phải có nguồn chứng thực minh bạch. Adaptive Agentic RAG chấp nhận độ phân tán từ ngữ để đổi lấy **76.0% Citation Compliance** và **80.0% Routing Accuracy**.
-> - **So sánh với Naive RAG:** Adaptive Agentic RAG vượt trội rõ rệt so với Naive RAG truyền thống trên mọi phương diện: ROUGE-L tăng gấp **5.6 lần** (0.1273 vs 0.0226) và Semantic Similarity tăng đáng kể (0.6723 vs 0.6171).
-> - **Phân biệt hai bộ kết quả:** [`results_improved_final.json`](eval/results_improved_final.json) phản ánh năng lực dịch vụ thực tế của sản phẩm hoàn chỉnh (Live Production Service với Semantic Cache, Session Memory, Identity Firewall 3.0), trong khi [`comparative_results.json`](eval/comparative_results.json) là thực nghiệm so sánh độc lập giữa các biến thể kiến trúc. Hai bộ số liệu phục vụ hai mục đích khoa học riêng biệt và không thay thế cho nhau.
+> 📌 **Phân tích học thuật & Sự đánh đổi khách quan (Trade-offs Analysis):**
+> 1. **Routing Accuracy:** Đối với các baseline (Standalone LLM, Naive RAG, Hybrid RAG), chỉ số này được ghi nhận chính xác là **N/A** vì các hệ thống này không trang bị mô-đun Query Router. Gán 0% sẽ gây hiểu lầm là hệ thống định tuyến sai, trong khi bản chất là chúng không thực hiện chức năng này.
+> 2. **Đánh đổi giữa Citation và Sự tự do ngôn ngữ:** Standalone LLM đạt điểm ROUGE-L (0.1324) và Semantic Similarity (0.6852) cao hơn đôi chút do phản hồi mượt mà không bị ràng buộc bởi các trích đoạn văn bản thực tế. Tuy nhiên, theo định nghĩa giao thức, nó hoàn toàn không có khả năng dẫn chứng nguồn (`Citation Compliance = 0.0%`). Trong bài toán tư vấn học thuật và hướng nghiệp, câu trả lời bắt buộc phải có nguồn chứng thực minh bạch. Adaptive Agentic RAG chấp nhận độ phân tán từ ngữ để đổi lấy **76.0% Citation Compliance** và **80.0% Routing Accuracy**.
+> 3. **Đánh đổi về Độ trễ (Latency Trade-off):** Trong môi trường benchmark không bộ đệm, Adaptive Agentic RAG có độ trễ trung bình cao hơn (12.39s) do phải thực thi qua 2 chặng suy luận (Query Router LLM + Hybrid Search + Reranker + Agent Specialized Prompt LLM). Tuy nhiên, khi vận hành thực tế tại môi trường Live với **Semantic Cache (<5ms)**, độ trễ trung bình toàn hệ thống giảm xuống chỉ còn **5.98s** (đáp ứng SLA ≤ 10.0s).
+> 4. **So sánh với Naive RAG:** Adaptive Agentic RAG vượt trội rõ rệt so với Naive RAG truyền thống: ROUGE-L tăng gấp **5.6 lần** (0.1273 vs 0.0226) và Semantic Similarity tăng từ 0.6171 lên 0.6723.
+
+---
+
+### 📂 Ma trận Nguồn gốc Tệp Dữ liệu Thực nghiệm (Provenance Matrix)
+
+| Tệp Dữ Liệu | Mục Đích Sử Dụng | Phương Pháp Đánh Giá | Trạng Thái Học Thuật |
+|:---|:---|:---|:---|
+| [`eval/results_improved_final.json`](eval/results_improved_final.json) | Đánh giá E2E hệ thống Live qua API | LLM-as-a-Judge Semantic Rubric, Citation Presence, ROUGE-L | **Chính thức (Canonical)** — 100 câu |
+| [`eval/thesis_metrics.json`](eval/thesis_metrics.json) | Bảng phân rã 7 kịch bản S1–S7 | Tổng hợp Micro-Average (100 câu) & Macro-Average (7 nhóm) | **Chính thức (Canonical)** — Báo cáo Luận văn |
+| [`eval/comparative_results.json`](eval/comparative_results.json) | So sánh 4 Pipeline đối chứng | Benchmark so sánh độc lập (có đo Latency Avg/p95) | **Chính thức (Canonical)** — Phân tích Kiến trúc |
+| [`eval/archive/standard_metrics_legacy.json`](eval/archive/standard_metrics_legacy.json) | Kết quả sơ khai từ commit `261a8f1` | Đo độ phủ nhị phân và token overlap ban đầu | **Lưu trữ lịch sử (Deprecated Archive)** |
 

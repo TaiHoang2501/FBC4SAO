@@ -256,11 +256,20 @@ def compute_summary(all_results: dict) -> dict:
         has_router = (pipe_name == "Adaptive Agentic RAG")
         routing_val = round(sum(r["routing_correct"] for r in results if r.get("routing_correct") is not None) / n, 4) if has_router else None
         
+        times = [r.get("response_time", r.get("time", 0.0)) for r in results]
+        times_sorted = sorted(times) if times else [0.0]
+        avg_time = round(sum(times) / n, 2) if n else 0.0
+        p50_time = round(times_sorted[n // 2], 2) if n else 0.0
+        p95_time = round(times_sorted[int(n * 0.95)], 2) if n else 0.0
+
         summary[pipe_name] = {
             "rouge_l":                  round(sum(r["rouge_l"] for r in results) / n, 4),
             "semantic_similarity":      round(sum(r["bertscore_f1"] for r in results) / n, 4),
             "citation_compliance_rate": round(sum(r["citation"] for r in results) / n, 4),
             "routing_accuracy":         routing_val,
+            "response_time_avg":        avg_time,
+            "response_time_p50":        p50_time,
+            "response_time_p95":        p95_time,
             # Backward compatibility aliases:
             "bertscore_f1":             round(sum(r["bertscore_f1"] for r in results) / n, 4),
             "citation_accuracy":        round(sum(r["citation"] for r in results) / n, 4),
@@ -275,7 +284,8 @@ def print_comparison_table(summary: dict):
         "rouge_l":                  0.10,  # Chuẩn hóa ngưỡng khả thi cho RAG tiếng Việt
         "semantic_similarity":      0.75,
         "citation_compliance_rate": 0.80,
-        "routing_accuracy":         0.85
+        "routing_accuracy":         0.85,
+        "response_time_avg":        15.0
     }
 
     print(f"\n{'='*95}")
@@ -290,6 +300,8 @@ def print_comparison_table(summary: dict):
         ("Semantic Similarity",      "semantic_similarity"),
         ("Citation Compliance Rate", "citation_compliance_rate"),
         ("Routing Accuracy",         "routing_accuracy"),
+        ("Response Time Avg (s)",    "response_time_avg"),
+        ("Response Time p95 (s)",    "response_time_p95"),
     ]
     for label, key in metrics:
         row = f"{label:<26}"
@@ -298,6 +310,8 @@ def print_comparison_table(summary: dict):
             threshold = thresholds.get(key)
             if val is None:
                 row += f"{'N/A':>13}   "
+            elif key.startswith("response_time"):
+                row += f"{val:>13.2f}s  "
             else:
                 mark = "✅" if (threshold and val >= threshold) else "❌"
                 row += f"{val:>13.3f} {mark:>2}"

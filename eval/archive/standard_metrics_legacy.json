@@ -1,4 +1,14 @@
 {
+  "_provenance": {
+    "status": "deprecated_legacy_artifact",
+    "origin_commit": "261a8f1",
+    "description": "Artifact từ đợt chạy thử nghiệm ban đầu đo độ phủ nhị phân (accuracy=1.0) và trùng khớp token (precision/recall/f1) trong môi trường cold-start (không cache, latency ~17s). Lưu trữ phục vụ truy vết lịch sử thực nghiệm.",
+    "superseded_by": [
+      "eval/results_improved_final.json",
+      "eval/thesis_metrics.json",
+      "eval/comparative_results.json"
+    ]
+  },
   "per_scenario": [
     {
       "scenario": "S1",
