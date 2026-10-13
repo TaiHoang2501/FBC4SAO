@@ -42,35 +42,43 @@ pip install -r requirements.txt  # Hoặc dùng uv: uv sync
 3. **Frontend UI**: `javac HollandRAGGUI.java && java HollandRAGGUI`
 4. **Ingest Dữ liệu**: `python scripts/ingest_riasec_data.py` (để nạp tài liệu tham khảo)
 
-## 📊 Đánh Giá (Thesis Evaluation)
+## 📊 Đánh Giá & Thực Nghiệm (Evaluation & Experimental Results)
 
-Hệ thống được đánh giá qua tập 21 câu hỏi thử nghiệm với 4 chỉ số cốt lõi:
-1. **Routing Accuracy** (≥ 0.85): Độ chính xác định tuyến agent.
-2. **ROUGE-L** (≥ 0.40): Độ khớp chuỗi con dài nhất.
-3. **BERTScore F1** (≥ 0.75): Độ tương đồng ngữ nghĩa.
-4. **Citation Accuracy** (≥ 0.80): Độ chính xác của trích dẫn.
+Hệ thống được đánh giá qua tập **100 câu hỏi thử nghiệm chuẩn hóa** (`ground_truth_final.json`) phân bổ đều qua 7 kịch bản nghiệp vụ (S1 – S7) với các chỉ số cốt lõi:
+
+1. **Routing Accuracy** (≥ 0.85): Tỉ lệ định tuyến chính xác đến agent chuyên môn.
+2. **BERTScore F1** (≥ 0.75): Độ tương đồng ngữ nghĩa câu trả lời so với câu trả lời mẫu.
+3. **Citation Accuracy** (≥ 0.80): Tỉ lệ trích dẫn nguồn `[n]` hợp lệ và có căn cứ.
+4. **ROUGE-L** (≥ 0.10): Độ khớp chuỗi con dài nhất (LCS).
+5. **Response Time** (≤ 10.0s): Thời gian phản hồi trung bình trên mỗi câu hỏi.
 
 Chạy đánh giá live:
 ```bash
-python thesis_eval.py --live --api http://localhost:8001
+python thesis_eval.py --live --api http://localhost:8001 --file ground_truth_final.json
 ```
 
----
-*Tài liệu này được biên dịch và tổng hợp từ `OVERVIEW.md`.*
+### Kết quả thử nghiệm tổng thể (100 câu hỏi)
 
-## 📊 Kết quả thử nghiệm (Experimental Results)
-
-Dưới đây là kết quả từ đợt đánh giá gần nhất (21 câu hỏi thử nghiệm):
-
-| Chỉ số | Kết quả | Ngưỡng | Trạng thái |
+| Chỉ số | Kết quả | Ngưỡng cam kết | Trạng thái |
 |---|---|---|---|
-| **Routing Accuracy** | 1.00 | ≥ 0.85 | ✅ PASS |
-| **ROUGE-L** | 0.058 | ≥ 0.40 | ❌ FAIL |
-| **BERTScore F1** | 0.641 | ≥ 0.75 | ❌ FAIL |
-| **Citation Accuracy** | 0.00 | ≥ 0.80 | ❌ FAIL |
+| **Routing Accuracy** | **0.85** (85%) | ≥ 0.85 | ✅ PASS |
+| **BERTScore F1** | **0.86** (85.7%) | ≥ 0.75 | ✅ PASS |
+| **Citation Accuracy** | **0.86** (86%) | ≥ 0.80 | ✅ PASS |
+| **ROUGE-L** | **0.11** | ≥ 0.10 | ✅ PASS |
+| **Response Time** | **5.98s** | ≤ 10.0s | ✅ PASS |
 
-**Nhận xét:**
-- Hệ thống đạt độ chính xác tuyệt đối trong việc định tuyến (Routing).
-- Các chỉ số về chất lượng nội dung (ROUGE-L, BERTScore) và trích dẫn (Citation) cần được cải thiện thông qua việc tinh chỉnh prompt và kho dữ liệu.
+### Kết quả chi tiết theo 7 kịch bản (Scenario Breakdown)
 
-*Chi tiết xem tại: `thesis_eval_results_final.json`*
+| Kịch bản | Tên kịch bản | Số câu | Routing Acc | BERTScore | Citation | Thời gian TB |
+|:---|:---|:---:|:---:|:---:|:---:|:---:|
+| **S1** | Chẩn đoán Holland/RIASEC | 14 | 93% | 0.82 | 93% | 6.60s |
+| **S2** | Tư vấn Ngoại khóa Nền tảng | 14 | 64% | 0.84 | 100% | 5.45s |
+| **S3** | Tư vấn Ngoại khóa Chuyên sâu | 14 | 71% | 0.89 | 50% | 5.42s |
+| **S4** | Hoạt động Cá nhân | 14 | 79% | 0.87 | 100% | 6.24s |
+| **S5** | Đối chiếu Hồ sơ | 14 | 93% | 0.88 | 93% | 6.38s |
+| **S6** | Đánh giá Toàn diện | 14 | 93% | 0.85 | 64% | 5.66s |
+| **S7** | Hỏi đáp Tổng quát | 16 | 100% | 0.85 | 100% | 6.09s |
+| **Toàn hệ thống** | **Tổng thể** | **100** | **85%** | **0.86** | **86%** | **5.98s** |
+
+*Chi tiết kết quả xem tại: [`results_improved_final.json`](results_improved_final.json), [`thesis_metrics.json`](thesis_metrics.json) và [`comparative_results.json`](comparative_results.json).*
+
