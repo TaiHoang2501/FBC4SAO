@@ -20,6 +20,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+SRC_DIR = Path(__file__).resolve().parent.parent / "src"
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
+
 # Import call_llm from llm_service if available, else define a shim
 try:
     from llm_service import call_llm
@@ -35,9 +39,20 @@ THRESHOLD = {
 }
 
 
+def _find_dataset() -> str:
+    candidates = [
+        Path(__file__).resolve().parent / "ground_truth_final.json",
+        Path("ground_truth_final.json"),
+        Path(__file__).resolve().parent / "ground_truth.json",
+        Path("ground_truth.json")
+    ]
+    for c in candidates:
+        if c.exists():
+            return str(c)
+    return str(candidates[0])
+
 try:
-    dataset_file = "ground_truth_final.json" if os.path.exists("ground_truth_final.json") else "ground_truth.json"
-    with open(dataset_file, "r", encoding='utf-8') as f:
+    with open(_find_dataset(), "r", encoding='utf-8') as f:
         SAMPLE_DATASET = json.load(f)
 except Exception:
     SAMPLE_DATASET = [] # Fallback

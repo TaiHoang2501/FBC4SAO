@@ -8,6 +8,7 @@ collection="docs"
 import os
 import pickle
 import time
+from pathlib import Path
 from rank_bm25 import BM25Okapi
 from qdrant_client import QdrantClient
 from qdrant_client.models import (
@@ -30,19 +31,28 @@ class QdrantStorage:
         # Thử kết nối server, nếu lỗi thì fallback sang local storage
         self.collection = collection
         self.is_fallback = False
+        def _resolve_data_path(name: str) -> str:
+            p_data = Path(__file__).resolve().parent.parent / "data" / name
+            if p_data.exists():
+                return str(p_data)
+            if Path(name).exists():
+                return name
+            return str(p_data)
+
         try:
             self.client = QdrantClient(url, timeout=5)
             # Thử một gọi lệnh nhẹ để check connection
             self.client.get_collections()
             print(f"[VectorDB] Connected to Qdrant server at {url}")
         except Exception:
-            print(f"[VectorDB] Qdrant server not found at {url}. Falling back to local storage: ./qdrant_storage")
-            self.client = QdrantClient(path="./qdrant_storage")
+            local_path = _resolve_data_path("qdrant_storage")
+            print(f"[VectorDB] Qdrant server not found at {url}. Falling back to local storage: {local_path}")
+            self.client = QdrantClient(path=local_path)
             self.is_fallback = True
         
         self._ensure_collection(dim)
         # BM25 index (lazy build, invalidated on upsert)
-        self.bm25_cache_file = "bm25_index.pkl"
+        self.bm25_cache_file = _resolve_data_path("bm25_index.pkl")
         self._bm25_index: BM25Okapi | None = None
         self._bm25_texts:    list[str]  = []
         self._bm25_ids:      list       = []
