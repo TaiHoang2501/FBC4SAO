@@ -71,7 +71,7 @@ def verify_canonical_datasets() -> bool:
 
 def verify_live_aggregation() -> bool:
     print("\n" + "=" * 80)
-    print("2. TÁI LẬP TÍNH TOÁN MICRO & MACRO AVERAGE TỪ RESULTS_IMPROVED_FINAL.JSON")
+    print("2. TÁI LẬP TÍNH TOÁN ĐỘC LẬP MICRO & MACRO AVERAGE TỪ RESULTS_IMPROVED_FINAL.JSON")
     print("=" * 80)
     res_path = EVAL_DIR / "results_improved_final.json"
     thesis_path = EVAL_DIR / "thesis_metrics.json"
@@ -84,33 +84,90 @@ def verify_live_aggregation() -> bool:
     results = live_data.get("details", live_data.get("results", []))
     n = len(results)
 
-    # Micro average
+    errors = []
+
+    # 1. Tái lập Micro-Average (trung bình có trọng số theo 100 mẫu)
     micro_routing = round(sum(r.get("routing_correct", 0) for r in results) / n, 4)
     micro_rouge = round(sum(r.get("rouge_l", 0) for r in results) / n, 4)
     micro_sem = round(sum(r.get("semantic_similarity", r.get("bertscore", 0)) for r in results) / n, 4)
     micro_cite = round(sum(r.get("citation_compliance", r.get("citation_correct", 0)) for r in results) / n, 4)
-    micro_time = round(sum(r.get("response_time", 0) for r in results) / n, 2)
+    micro_time = round(sum(r.get("response_time", 0) for r in results) / n, 4)
 
     stored_micro = thesis_data.get("overall_micro_average", thesis_data.get("micro_average", {}))
-    errors = []
     if abs(micro_routing - stored_micro["routing_accuracy"]) > 1e-4:
-        errors.append(f"Routing mismatch: recomputed {micro_routing} vs stored {stored_micro['routing_accuracy']}")
+        errors.append(f"Micro Routing mismatch: {micro_routing} vs {stored_micro['routing_accuracy']}")
     if abs(micro_rouge - stored_micro["rouge_l"]) > 1e-4:
-        errors.append(f"ROUGE mismatch: recomputed {micro_rouge} vs stored {stored_micro['rouge_l']}")
+        errors.append(f"Micro ROUGE mismatch: {micro_rouge} vs {stored_micro['rouge_l']}")
     if abs(micro_sem - stored_micro["semantic_similarity"]) > 1e-4:
-        errors.append(f"Semantic mismatch: recomputed {micro_sem} vs stored {stored_micro['semantic_similarity']}")
+        errors.append(f"Micro Semantic mismatch: {micro_sem} vs {stored_micro['semantic_similarity']}")
     if abs(micro_cite - stored_micro["citation_compliance_rate"]) > 1e-4:
-        errors.append(f"Citation mismatch: recomputed {micro_cite} vs stored {stored_micro['citation_compliance_rate']}")
-    stored_time = stored_micro.get("response_time", stored_micro.get("response_time_avg", 0.0))
-    if abs(micro_time - stored_time) > 0.05:
-        errors.append(f"Time mismatch: recomputed {micro_time} vs stored {stored_time}")
+        errors.append(f"Micro Citation mismatch: {micro_cite} vs {stored_micro['citation_compliance_rate']}")
+    stored_micro_time = stored_micro.get("response_time", stored_micro.get("response_time_avg", 0.0))
+    if abs(micro_time - stored_micro_time) > 0.05:
+        errors.append(f"Micro Time mismatch: {micro_time} vs {stored_micro_time}")
+
+    # 2. Tái lập theo từng kịch bản (Scenario Breakdown S1 - S7)
+    scenarios = ["S1", "S2", "S3", "S4", "S5", "S6", "S7"]
+    stored_scenarios = {s["scenario"]: s for s in thesis_data.get("per_scenario", [])}
+    scen_recomputed = []
+
+    print("  Chi tiết đối chiếu 7 kịch bản (S1–S7):")
+    for sid in scenarios:
+        s_items = [r for r in results if r.get("scenario") == sid]
+        k = len(s_items)
+        if k == 0:
+            errors.append(f"Kịch bản {sid} không có mẫu dữ liệu nào")
+            continue
+
+        s_routing = round(sum(r.get("routing_correct", 0) for r in s_items) / k, 4)
+        s_rouge = round(sum(r.get("rouge_l", 0) for r in s_items) / k, 4)
+        s_sem = round(sum(r.get("semantic_similarity", r.get("bertscore", 0)) for r in s_items) / k, 4)
+        s_cite = round(sum(r.get("citation_compliance", r.get("citation_correct", 0)) for r in s_items) / k, 4)
+        s_time = round(sum(r.get("response_time", 0) for r in s_items) / k, 4)
+
+        scen_recomputed.append({
+            "routing": s_routing, "rouge": s_rouge, "sem": s_sem, "cite": s_cite, "time": s_time
+        })
+
+        stored_s = stored_scenarios.get(sid, {})
+        match_status = "✅"
+        if (abs(s_routing - stored_s.get("routing_accuracy", 0)) > 1e-3 or
+            abs(s_rouge - stored_s.get("rouge_l", 0)) > 1e-3 or
+            abs(s_sem - stored_s.get("semantic_similarity", 0)) > 1e-3 or
+            abs(s_cite - stored_s.get("citation_compliance_rate", 0)) > 1e-3):
+            match_status = "❌"
+            errors.append(f"Sai lệch tại kịch bản {sid}")
+        print(f"    {match_status} {sid}: n={k:2d} | Routing={s_routing:.2f} | ROUGE={s_rouge:.2f} | Sem={s_sem:.2f} | Cite={s_cite:.2f} | Time={s_time:.2f}s")
+
+    # 3. Tái lập Macro-Average (trung bình không trọng số của 7 kịch bản)
+    num_scen = len(scen_recomputed)
+    macro_routing = round(sum(s["routing"] for s in scen_recomputed) / num_scen, 4)
+    macro_rouge = round(sum(s["rouge"] for s in scen_recomputed) / num_scen, 4)
+    macro_sem = round(sum(s["sem"] for s in scen_recomputed) / num_scen, 4)
+    macro_cite = round(sum(s["cite"] for s in scen_recomputed) / num_scen, 4)
+    macro_time = round(sum(s["time"] for s in scen_recomputed) / num_scen, 4)
+
+    stored_macro = thesis_data.get("overall_macro_average", {})
+    if abs(macro_routing - stored_macro.get("routing_accuracy", 0)) > 1e-4:
+        errors.append(f"Macro Routing mismatch: {macro_routing} vs {stored_macro.get('routing_accuracy')}")
+    if abs(macro_rouge - stored_macro.get("rouge_l", 0)) > 1e-4:
+        errors.append(f"Macro ROUGE mismatch: {macro_rouge} vs {stored_macro.get('rouge_l')}")
+    if abs(macro_sem - stored_macro.get("semantic_similarity", 0)) > 1e-4:
+        errors.append(f"Macro Semantic mismatch: {macro_sem} vs {stored_macro.get('semantic_similarity')}")
+    if abs(macro_cite - stored_macro.get("citation_compliance_rate", 0)) > 1e-4:
+        errors.append(f"Macro Citation mismatch: {macro_cite} vs {stored_macro.get('citation_compliance_rate')}")
+    stored_macro_time = stored_macro.get("response_time", 0.0)
+    if abs(macro_time - stored_macro_time) > 0.05:
+        errors.append(f"Macro Time mismatch: {macro_time} vs {stored_macro_time}")
 
     if not errors:
-        print(f"✅ [PASS] Tái lập Micro-Average thành công 100% khớp dữ liệu:")
-        print(f"   Routing: {micro_routing:.4f} | ROUGE-L: {micro_rouge:.4f} | Semantic (LLM): {micro_sem:.4f} | Citation: {micro_cite:.4f} | Time: {micro_time:.2f}s")
+        print(f"\n  ✅ [PASS] Tái lập Micro-Average thành công:")
+        print(f"     Routing: {micro_routing:.4f} | ROUGE-L: {micro_rouge:.4f} | Semantic (LLM): {micro_sem:.4f} | Citation: {micro_cite:.4f} | Time: {micro_time:.2f}s")
+        print(f"  ✅ [PASS] Tái lập Macro-Average thành công:")
+        print(f"     Routing: {macro_routing:.4f} | ROUGE-L: {macro_rouge:.4f} | Semantic (LLM): {macro_sem:.4f} | Citation: {macro_cite:.4f} | Time: {macro_time:.2f}s")
         return True
     else:
-        print("❌ [FAIL] Có sai lệch khi tái lập Micro-Average:")
+        print("❌ [FAIL] Có sai lệch khi tái lập:")
         for err in errors:
             print(f"   - {err}")
         return False

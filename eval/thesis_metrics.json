@@ -3,7 +3,7 @@
     "source_file": "results_improved_final.json",
     "total_samples": 100,
     "total_scenarios": 7,
-    "semantic_evaluation_method": "LLM-as-a-Judge (Rubric-based Semantic Similarity)",
+    "semantic_evaluation_method": "LLM-as-a-Judge (Rubric-based Semantic Similarity, model: qwen2.5:7b-instruct-q4_K_M)",
     "semantic_metric_breakdown": {
       "llm_judge": 100
     },
