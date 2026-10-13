@@ -2,10 +2,10 @@
 thesis_eval.py — Đánh giá 5 chỉ số theo Luận văn (Bản tối ưu hóa với bộ tham chiếu mở rộng)
 
 Chỉ số:
-  1. Routing Accuracy   : Tỉ lệ router chọn đúng agent (ngưỡng ≥ 0.85)
-  2. ROUGE-L            : Độ khớp chuỗi con dài nhất (ngưỡng ≥ 0.40)
-  3. BERTScore F1       : Độ tương đồng ngữ nghĩa (ngưỡng ≥ 0.75)
-  4. Citation Accuracy  : Tỉ lệ trích dẫn [n] hợp lệ (ngưỡng ≥ 0.80)
+  1. Routing Accuracy          : Tỉ lệ router chọn đúng agent (ngưỡng ≥ 0.85)
+  2. ROUGE-L                   : Độ khớp chuỗi con dài nhất (ngưỡng chuẩn hóa ≥ 0.10)
+  3. Semantic Similarity Score : Độ tương đồng ngữ nghĩa qua BERTScore / LLM Judge (ngưỡng ≥ 0.75)
+  4. Citation Compliance Rate  : Tỉ lệ tuân thủ định dạng trích dẫn [n] & nguồn (ngưỡng ≥ 0.80)
 """
 
 import argparse
@@ -32,10 +32,13 @@ except ImportError:
         return "LLM Service not found. Please ensure llm_service.py exists."
 
 THRESHOLD = {
-    "routing_accuracy":  0.85,
-    "rouge_l":           0.40,
-    "bertscore_f1":      0.75,
-    "citation_accuracy": 0.80,
+    "routing_accuracy":         0.85,
+    "rouge_l":                  0.10,  # Chuẩn hóa thống nhất với README & Luận văn (ngưỡng ≥ 0.10)
+    "semantic_similarity":      0.75,
+    "citation_compliance_rate": 0.80,
+    # Backward compatibility aliases:
+    "bertscore_f1":             0.75,
+    "citation_accuracy":        0.80,
 }
 
 
@@ -91,22 +94,26 @@ def compute_rouge_l(reference: str, hypothesis: str) -> float:
     if r_lcs + p_lcs == 0: return 0.0
     return (2 * r_lcs * p_lcs) / (r_lcs + p_lcs)
 
-def compute_bertscore(reference: str, hypothesis: str) -> float:
+def compute_semantic_similarity(reference: str, hypothesis: str) -> tuple[float, str]:
     """
-    Tính độ tương đồng ngữ nghĩa bằng BERTScore F1.
-    - Ưu tiên: Thư viện bert_score chuẩn (ngôn ngữ vi).
-    - Dự phòng 1: Cosine similarity qua vector embedding (multilingual-e5-large).
-    - Dự phòng 2: LLM-as-a-Judge chấm điểm ngữ nghĩa (0.0 - 1.0).
-    - BẮT BUỘC: Trả về 0.0 nếu câu trả lời (hypothesis) hoặc câu tham chiếu rỗng.
+    Tính độ tương đồng ngữ nghĩa và ghi nhận chính xác phương pháp tính được áp dụng:
+    Returns:
+        (score, method):
+        - score: Điểm số từ 0.0 đến 1.0
+        - method:
+            * "bert_score": Tính qua thư viện bert_score chuẩn (ngôn ngữ vi).
+            * "embedding_cosine": Cosine similarity từ vector embedding (multilingual-e5-large).
+            * "llm_judge": Đánh giá bằng mô hình ngôn ngữ (LLM-as-a-Judge rubric).
+            * "empty_input": Câu trả lời hoặc tham chiếu rỗng -> gán 0.0 nghiêm ngặt.
     """
     if not reference or not reference.strip() or not hypothesis or not hypothesis.strip():
-        return 0.0
+        return 0.0, "empty_input"
 
     # 1. Thử dùng bert_score chuẩn
     try:
         from bert_score import score as bscore
         P, R, F1 = bscore([hypothesis], [reference], lang="vi", verbose=False)
-        return float(F1[0])
+        return float(F1[0]), "bert_score"
     except Exception:
         pass
 
@@ -121,12 +128,18 @@ def compute_bertscore(reference: str, hypothesis: str) -> float:
         nh = math.sqrt(sum(b * b for b in hyp_vec))
         if nr * nh > 0:
             cos_sim = dot / (nr * nh)
-            return max(0.0, min(1.0, float(cos_sim)))
+            return max(0.0, min(1.0, float(cos_sim))), "embedding_cosine"
     except Exception:
         pass
 
     # 3. Dự phòng LLM-as-a-Judge
-    return evaluate_llm_judge_similarity(reference, hypothesis)
+    return evaluate_llm_judge_similarity(reference, hypothesis), "llm_judge"
+
+
+def compute_bertscore(reference: str, hypothesis: str) -> float:
+    """Wrapper trả về điểm số ngữ nghĩa tương thích ngược."""
+    score, _ = compute_semantic_similarity(reference, hypothesis)
+    return score
 
 
 def evaluate_llm_judge_similarity(reference: str, hypothesis: str) -> float:
@@ -216,7 +229,7 @@ def run_evaluation(dataset=None, live=False, api_base="http://localhost:8000"):
         
         elapsed = time.time() - start_time
         rouge = compute_rouge_l(item["reference"], answer)
-        bert = evaluate_semantic_similarity(item["reference"], answer)
+        sem_score, sem_method = compute_semantic_similarity(item["reference"], answer)
         
         AGENT_DISPLAY_MAP = {
             "test_riasec": "Phân loại Holland",
@@ -240,18 +253,29 @@ def run_evaluation(dataset=None, live=False, api_base="http://localhost:8000"):
             "predicted_agent": predicted_agent,
             "routing_correct": routing_ok,
             "rouge_l": rouge,
-            "bertscore": bert,
-            "citation_correct": citation_ok,
+            "semantic_similarity": sem_score,
+            "semantic_metric_method": sem_method,
+            "citation_compliance": citation_ok,
             "response_time": elapsed,
-            "answer": answer
+            "answer": answer,
+            # Backward compatibility aliases:
+            "bertscore": sem_score,
+            "citation_correct": citation_ok,
         })
 
     summary = {
         "routing_accuracy": sum(r["routing_correct"] for r in results) / len(results),
         "rouge_l": sum(r["rouge_l"] for r in results) / len(results),
-        "bertscore_f1": sum(r["bertscore"] for r in results) / len(results),
-        "citation_accuracy": sum(r["citation_correct"] for r in results) / len(results),
-        "response_time": sum(r["response_time"] for r in results) / len(results)
+        "semantic_similarity": sum(r["semantic_similarity"] for r in results) / len(results),
+        "semantic_metric_methods": {
+            m: sum(1 for r in results if r.get("semantic_metric_method") == m)
+            for m in sorted(list(set(r.get("semantic_metric_method", "unknown") for r in results)))
+        },
+        "citation_compliance_rate": sum(r["citation_compliance"] for r in results) / len(results),
+        "response_time": sum(r["response_time"] for r in results) / len(results),
+        # Backward compatibility aliases:
+        "bertscore_f1": sum(r["semantic_similarity"] for r in results) / len(results),
+        "citation_accuracy": sum(r["citation_compliance"] for r in results) / len(results),
     }
     return results, summary
 

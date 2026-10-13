@@ -79,9 +79,12 @@ for sid, name in scenarios.items():
         "scenario": sid, "name": name,
         "routing_accuracy": round(routing_acc, 2),
         "rouge_l": round(rouge_l, 2),
+        "semantic_similarity": round(bertscore, 2),
+        "citation_compliance_rate": round(citation_acc, 2),
+        "response_time": round(response_time, 2),
+        # Backward compatibility aliases:
         "bertscore": round(bertscore, 2),
         "citation_accuracy": round(citation_acc, 2),
-        "response_time": round(response_time, 2)
     }
     all_results.append(result)
     print(f"{sid}. {name:32s} {routing_acc:12.2f} {rouge_l:10.2f} {bertscore:10.2f} {citation_acc:14.2f} {response_time:18.2f}")
@@ -92,18 +95,26 @@ if all_results:
     # Overall
     oa = sum(r["routing_accuracy"] for r in all_results) / len(all_results)
     orouge = sum(r["rouge_l"] for r in all_results) / len(all_results)
-    obert = sum(r["bertscore"] for r in all_results) / len(all_results)
-    ocit = sum(r["citation_accuracy"] for r in all_results) / len(all_results)
+    obert = sum(r["semantic_similarity"] for r in all_results) / len(all_results)
+    ocit = sum(r["citation_compliance_rate"] for r in all_results) / len(all_results)
     otime = sum(r["response_time"] for r in all_results) / len(all_results)
     print(f"{'TRUNG BÌNH':35s} {oa:12.2f} {orouge:10.2f} {obert:10.2f} {ocit:14.2f} {otime:18.2f}")
 
     out_file = EVAL_DIR / "thesis_metrics.json"
     with open(out_file, "w", encoding="utf-8") as f:
-        json.dump({"per_scenario": all_results, "overall": {
-            "routing_accuracy": round(oa, 2), "rouge_l": round(orouge, 2),
-            "bertscore": round(obert, 2), "citation_accuracy": round(ocit, 2),
-            "response_time": round(otime, 2)
-        }}, f, ensure_ascii=False, indent=2)
+        json.dump({
+            "per_scenario": all_results,
+            "overall": {
+                "routing_accuracy": round(oa, 2),
+                "rouge_l": round(orouge, 2),
+                "semantic_similarity": round(obert, 2),
+                "citation_compliance_rate": round(ocit, 2),
+                "response_time": round(otime, 2),
+                # Backward compatibility aliases:
+                "bertscore": round(obert, 2),
+                "citation_accuracy": round(ocit, 2),
+            }
+        }, f, ensure_ascii=False, indent=2)
     print(f"\n📁 Đã lưu: {out_file}")
 else:
     print("No valid results found to process.")

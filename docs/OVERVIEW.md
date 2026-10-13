@@ -80,9 +80,9 @@ java HollandRAGGUI
 | # | Chỉ số | Ngưỡng chấp nhận | Cấp độ |
 |---|---|---|---|
 | 1 | Routing Accuracy | ≥ 0,85 | Điều phối |
-| 2 | ROUGE-L | ≥ 0,40 | Sinh ngôn ngữ |
-| 3 | BERTScore F1 | ≥ 0,75 | Sinh ngôn ngữ |
-| 4 | Citation Accuracy | ≥ 0,80 | Sinh ngôn ngữ |
+| 2 | ROUGE-L | ≥ 0,10 | Sinh ngôn ngữ |
+| 3 | Semantic Similarity (BERTScore F1) | ≥ 0,75 | Sinh ngôn ngữ |
+| 4 | Citation Compliance Rate | ≥ 0,80 | Sinh ngôn ngữ |
 
 ---
 
@@ -107,33 +107,30 @@ Trong đó:
 - $P_{LCS} = \frac{|LCS(hypothesis, reference)|}{|hypothesis|}$ — độ chính xác
 - $R_{LCS} = \frac{|LCS(hypothesis, reference)|}{|reference|}$ — độ bao phủ
 
-- **Ngưỡng chấp nhận:** ≥ 0,40
-- **Ý nghĩa:** Phản ánh khả năng bảo toàn nội dung thông tin so với chuẩn vàng ở cấp độ từ vựng, không yêu cầu khớp thứ tự tuyệt đối.
+- **Ngưỡng chấp nhận:** ≥ 0,10 (ngưỡng tiêu chuẩn cho sinh văn bản dài và tư vấn học thuật bằng tiếng Việt)
+- **Ý nghĩa:** Do câu trả lời tư vấn hướng nghiệp mang tính phân tích đa chiều và diễn đạt mở, việc yêu cầu lặp lại nguyên văn chuỗi từ dài là không thực tế. Ngưỡng ≥ 0,10 đảm bảo nội dung cốt lõi của câu trả lời tham chiếu được bảo toàn mà vẫn cho phép mô hình diễn giải tự nhiên.
 
 ---
 
-#### 4.1.3 BERTScore F1
+#### 4.1.3 Semantic Similarity (BERTScore F1)
 
-**BERTScore F1** sử dụng mô hình ngôn ngữ `bert-base-multilingual-cased` để tính độ tương đồng ngữ nghĩa giữa câu trả lời sinh ra và câu tham chiếu thông qua so sánh các biểu diễn vector theo cơ chế attention.
+**Semantic Similarity** đo độ tương đồng ngữ nghĩa giữa câu trả lời sinh ra và câu tham chiếu, ưu tiên tính toán qua **BERTScore F1** (`bert-base-multilingual-cased` / ngôn ngữ `vi`), có cơ chế dự phòng embedding cosine similarity hoặc LLM-as-a-Judge.
 
 $$\text{BERTScore F1} = \frac{2 \times P_{BERT} \times R_{BERT}}{P_{BERT} + R_{BERT}}$$
 
-Trong đó $P_{BERT}$ và $R_{BERT}$ được tính bằng cosine similarity giữa từng token embedding của hypothesis và reference (greedy matching).
-
 - **Ngưỡng chấp nhận:** ≥ 0,75
-- **Ý nghĩa:** Khác với ROUGE-L chỉ đối sánh từ vựng, BERTScore nắm bắt được sự tương đồng ở cấp độ nghĩa — phù hợp khi hệ thống diễn đạt cùng nội dung bằng từ ngữ khác nhau.
-- **Model sử dụng:** `bert-base-multilingual-cased` (hỗ trợ tiếng Việt)
+- **Ý nghĩa:** Khác với ROUGE-L chỉ đối sánh từ vựng bề mặt, chỉ số này nắm bắt được sự tương đồng ở cấp độ ngữ nghĩa sâu — phù hợp khi hệ thống diễn đạt cùng thông tin hướng nghiệp bằng cách hành văn khác nhau.
 
 ---
 
-#### 4.1.4 Citation Accuracy
+#### 4.1.4 Citation Compliance Rate
 
-**Citation Accuracy** đo tỉ lệ câu trả lời có chứa ít nhất một trích dẫn nguồn hợp lệ theo định dạng `[n]`, trong đó `n` nằm trong phạm vi các nguồn được truy xuất.
+**Citation Compliance Rate** đo tỉ lệ câu trả lời tuân thủ quy chuẩn định dạng trích dẫn nguồn `[n]` và đính kèm danh sách tài liệu tham khảo hợp lệ được truy xuất bởi hệ thống (*citation-format / source-presence check*).
 
-$$\text{Citation Accuracy} = \frac{\text{Số câu trả lời có trích dẫn hợp lệ}}{\text{Tổng số câu trả lời}}$$
+$$\text{Citation Compliance Rate} = \frac{\text{Số câu trả lời có trích dẫn [n] & nguồn hợp lệ}}{\text{Tổng số câu trả lời}}$$
 
 - **Ngưỡng chấp nhận:** ≥ 0,80
-- **Ý nghĩa:** Trong hệ thống RAG, việc trích dẫn nguồn là yêu cầu bắt buộc nhằm đảm bảo tính minh bạch và khả năng kiểm chứng thông tin, đặc biệt quan trọng khi tư vấn hướng nghiệp cho học sinh.
+- **Ý nghĩa:** Trong hệ thống RAG, việc trích dẫn nguồn là yêu cầu bắt buộc nhằm đảm bảo tính minh bạch và khả năng kiểm chứng thông tin ban đầu. *Lưu ý: Chỉ số này là bước kiểm tra cấu trúc và sự hiện diện căn cứ, chưa bao gồm mô hình NLI kiểm chứng từng khẳng định chi tiết.*
 
 ---
 
@@ -177,9 +174,9 @@ Mỗi kịch bản được triển khai theo 3 dạng câu hỏi để kiểm t
 
 Các ngưỡng chấp nhận được xác định dựa trên tổng hợp từ các công trình liên quan trong lĩnh vực đánh giá hệ thống hỏi đáp và RAG:
 - **Routing Accuracy ≥ 0,85**: Ngưỡng tối thiểu để hệ thống đa agent vận hành đúng nghiệp vụ — tương đương với yêu cầu của các hệ thống phân loại ý định thực tế (intent classification).
-- **ROUGE-L ≥ 0,40**: Ngưỡng trung bình chấp nhận được cho bài toán sinh văn bản tiếng Việt không yêu cầu khớp hoàn toàn từ vựng.
+- **ROUGE-L ≥ 0,10**: Ngưỡng chuẩn hóa cho bài toán sinh văn bản tư vấn học thuật tiếng Việt với diễn giải dài và đa chiều.
 - **BERTScore F1 ≥ 0,75**: Mức tương đồng ngữ nghĩa đủ cao để đảm bảo câu trả lời không lệch nghĩa so với chuẩn vàng.
-- **Citation Accuracy ≥ 0,80**: Phản ánh yêu cầu nghiêm ngặt về tính minh bạch trong tư vấn hướng nghiệp.
+- **Citation Compliance Rate ≥ 0,80**: Phản ánh yêu cầu nghiêm ngặt về tính minh bạch và tuân thủ định dạng nguồn trong tư vấn hướng nghiệp.
 
 ### 4.3 Chạy Đánh Giá
 

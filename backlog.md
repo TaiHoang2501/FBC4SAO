@@ -10,7 +10,7 @@
 - [x] **Cross-Encoder Reranking:** Tái xếp hạng các đoạn văn bản truy xuất nhằm nâng cao độ liên quan ngữ cảnh.
 - [x] **Dynamic Web Fallback:** Tự động mở rộng tìm kiếm qua Tavily Search khi tài liệu nội bộ không đủ thông tin.
 - [x] **Semantic Cache Engine:** Giảm thiểu chi phí gọi LLM và độ trễ phản hồi cho các câu hỏi trùng lặp phổ biến.
-- [x] **Evaluation Framework:** Bộ đo thực nghiệm 100 câu hỏi (Routing, BERTScore F1, Citation Accuracy, ROUGE-L).
+- [x] **Evaluation Framework:** Bộ đo thực nghiệm 100 câu hỏi (Routing Accuracy, Semantic Similarity, Citation Compliance Rate, ROUGE-L).
 - [x] **Desktop Client:** Giao diện Java Swing Desktop kết nối SSE streaming.
 
 ## 2. Kế Hoạch Nâng Cấp Tiếp Theo (Future Backlog)
