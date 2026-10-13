@@ -111,29 +111,31 @@ python eval/thesis_eval.py --live --api http://localhost:8001 --file eval/ground
 
 ---
 
-### Phần B: Nghiên cứu So sánh Đối chứng 4 Pipeline (Comparative Ablation Study)
+### Phần B: Nghiên cứu So sánh 4 Pipeline (Comparative Pipeline Evaluation)
 
-Để chứng minh tính ưu việt của kiến trúc đề xuất **Adaptive Agentic RAG**, nghiên cứu thực hiện kiểm thử thực nghiệm đối chứng trên 4 kiến trúc với cùng bộ dữ liệu 100 câu hỏi trong môi trường benchmark kiểm soát độc lập (`eval/comparative_eval.py`):
+Để đánh giá tác động của các kỹ thuật thành phần, nghiên cứu thực hiện kiểm thử thực nghiệm so sánh độc lập giữa 4 kiến trúc trên cùng tập benchmark 100 câu hỏi trong môi trường kiểm soát (`eval/comparative_eval.py`):
 1. **Pipeline 1 (Standalone LLM):** Mô hình ngôn ngữ lớn thuần túy, không có thành phần truy xuất dữ liệu.
 2. **Pipeline 2 (Naive RAG):** Truy xuất Dense Vector đơn lẻ + Prompt tổng quát.
 3. **Pipeline 3 (Hybrid RAG):** Kết hợp BM25 + Dense Vector + Prompt tổng quát.
-4. **Pipeline 4 (Adaptive Agentic RAG):** Kiến trúc đề xuất với Dynamic Routing, Hybrid Retrieval, Cross-Encoder Reranker và Specialized Agent Prompts.
+4. **Pipeline 4 (Adaptive Agentic RAG):** Kiến trúc đề xuất với Dynamic Routing 7 Agents, Hybrid Retrieval, Cross-Encoder Reranker và Specialized Prompts.
 
-Lệnh chạy kiểm thử so sánh 4 pipeline:
+Lệnh chạy kiểm thử so sánh:
 ```bash
 python eval/comparative_eval.py
 ```
 
-#### Bảng so sánh hiệu năng 4 kiến trúc (Comparative Evaluation Results)
+#### Bảng so sánh hiệu năng 4 kiến trúc (Comparative Pipeline Evaluation)
 
-| Pipeline Kiến Trúc | ROUGE-L | BERTScore F1 | Citation Compliance\* | Routing Accuracy | Ghi Chú Kiến Trúc |
+| Pipeline Kiến Trúc | ROUGE-L | Semantic Similarity (BERTScore F1) | Citation Compliance Rate\* | Routing Accuracy | Phân Tích Đánh Đổi Kiến Trúc (Trade-offs) |
 |:---|:---:|:---:|:---:|:---:|:---|
-| **Pipeline 1: Standalone LLM** | 0.1324 | 0.6852 | 0.0% | 0.0% | Không có cơ chế RAG, hiện tượng ảo giác cao |
-| **Pipeline 2: Naive RAG** | 0.0226 | 0.6171 | 0.0% | 0.0% | Tìm kiếm vector đơn lẻ, dễ nhiễu ngữ cảnh |
-| **Pipeline 3: Hybrid RAG** | 0.1185 | 0.6768 | 100.0% | 0.0% | BM25 + Vector cải thiện trích xuất từ khóa |
-| **Pipeline 4: Adaptive Agentic RAG** (Đề xuất) | **0.1273** | **0.6723** | **76.0%** | **80.0%** | Định tuyến tác nhân thích ứng + Reranker |
+| **Pipeline 1: Standalone LLM** | **0.1324** | **0.6852** | 0.0% | N/A *(Không có Router)* | Phản hồi tự do theo tri thức pretrain, ROUGE cao nhưng hoàn toàn không có dẫn chứng (**0% Citation**), ảo giác cao |
+| **Pipeline 2: Naive RAG** | 0.0226 | 0.6171 | 0.0% | N/A *(Không có Router)* | Vector đơn lẻ bị nhiễu ngữ cảnh, ROUGE và điểm tương đồng ngữ nghĩa thấp nhất |
+| **Pipeline 3: Hybrid RAG** | 0.1185 | 0.6768 | **100.0%** | N/A *(Không có Router)* | BM25 + Vector ép trích dẫn nguồn 100%, nhưng thiếu chuyên biệt hóa theo kịch bản nghiệp vụ |
+| **Pipeline 4: Adaptive Agentic RAG** (Đề xuất) | 0.1273 | 0.6723 | 76.0% | **80.0%** | Điểm cân bằng tối ưu: đạt **80% Routing** đúng chuyên gia, **76% Citation** có căn cứ, vượt trội hoàn toàn so với Naive RAG |
 
-> 📌 **Lưu ý về phương pháp luận giữa hai bộ kết quả:**
-> - Hai bộ kết quả [`results_improved_final.json`](eval/results_improved_final.json) và [`comparative_results.json`](eval/comparative_results.json) đại diện cho **hai phép đo khác nhau**: một bên là kiểm thử dịch vụ sản phẩm trực tiếp (Live End-to-End System qua HTTP/SSE Streaming API có kết hợp Semantic Cache và Identity Firewall), một bên là thực nghiệm mô hình hóa đối chứng nội bộ (Modular Ablation Harness).
-> - Do đó, các con số tuyệt đối không được so sánh chéo trực tiếp như thể chúng sinh ra từ cùng một lần chạy, mà dùng để chứng minh hai luận điểm bổ trợ: (1) Kiến trúc đề xuất vượt trội hơn các baseline truyền thống; và (2) Hệ thống hoàn chỉnh triển khai thực tế đạt chuẩn SLAs cam kết.
+> 📌 **Phân tích học thuật & Sự đánh đổi (Trade-offs Analysis):**
+> - **Routing Accuracy:** Đối với các baseline (Standalone LLM, Naive RAG, Hybrid RAG), chỉ số này được ghi nhận chính xác là **N/A** vì các hệ thống này không trang bị mô-đun Query Router. Gán 0% sẽ gây hiểu lầm là hệ thống định tuyến sai, trong khi bản chất là chúng không thực hiện chức năng này.
+> - **Trade-off giữa Citation và Phong cách phản hồi:** Standalone LLM đạt điểm ROUGE-L (0.1324) và BERTScore (0.6852) cao hơn đôi chút do phản hồi mượt mà không bị ràng buộc bởi các trích đoạn văn bản thực tế. Tuy nhiên, trong bài toán tư vấn học thuật và hướng nghiệp, câu trả lời bắt buộc phải có nguồn chứng thực minh bạch. Adaptive Agentic RAG chấp nhận độ phân tán từ ngữ để đổi lấy **76.0% Citation Compliance** và **80.0% Routing Accuracy**.
+> - **So sánh với Naive RAG:** Adaptive Agentic RAG vượt trội rõ rệt so với Naive RAG truyền thống trên mọi phương diện: ROUGE-L tăng gấp **5.6 lần** (0.1273 vs 0.0226) và Semantic Similarity tăng đáng kể (0.6723 vs 0.6171).
+> - **Phân biệt hai bộ kết quả:** [`results_improved_final.json`](eval/results_improved_final.json) phản ánh năng lực dịch vụ thực tế của sản phẩm hoàn chỉnh (Live Production Service với Semantic Cache, Session Memory, Identity Firewall 3.0), trong khi [`comparative_results.json`](eval/comparative_results.json) là thực nghiệm so sánh độc lập giữa các biến thể kiến trúc. Hai bộ số liệu phục vụ hai mục đích khoa học riêng biệt và không thay thế cho nhau.
 

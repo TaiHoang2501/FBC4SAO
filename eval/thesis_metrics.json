@@ -7,7 +7,9 @@
       "rouge_l": 0.17,
       "bertscore": 0.82,
       "citation_accuracy": 1.0,
-      "response_time": 6.6
+      "response_time": 6.6,
+      "semantic_similarity": 0.82,
+      "citation_compliance_rate": 1.0
     },
     {
       "scenario": "S2",
@@ -16,7 +18,9 @@
       "rouge_l": 0.18,
       "bertscore": 0.84,
       "citation_accuracy": 1.0,
-      "response_time": 5.45
+      "response_time": 5.45,
+      "semantic_similarity": 0.84,
+      "citation_compliance_rate": 1.0
     },
     {
       "scenario": "S3",
@@ -25,7 +29,9 @@
       "rouge_l": 0.03,
       "bertscore": 0.89,
       "citation_accuracy": 0.5,
-      "response_time": 5.42
+      "response_time": 5.42,
+      "semantic_similarity": 0.89,
+      "citation_compliance_rate": 0.5
     },
     {
       "scenario": "S4",
@@ -34,7 +40,9 @@
       "rouge_l": 0.12,
       "bertscore": 0.87,
       "citation_accuracy": 1.0,
-      "response_time": 6.24
+      "response_time": 6.24,
+      "semantic_similarity": 0.87,
+      "citation_compliance_rate": 1.0
     },
     {
       "scenario": "S5",
@@ -43,7 +51,9 @@
       "rouge_l": 0.11,
       "bertscore": 0.88,
       "citation_accuracy": 0.93,
-      "response_time": 6.38
+      "response_time": 6.38,
+      "semantic_similarity": 0.88,
+      "citation_compliance_rate": 0.93
     },
     {
       "scenario": "S6",
@@ -52,7 +62,9 @@
       "rouge_l": 0.08,
       "bertscore": 0.85,
       "citation_accuracy": 0.64,
-      "response_time": 5.66
+      "response_time": 5.66,
+      "semantic_similarity": 0.85,
+      "citation_compliance_rate": 0.64
     },
     {
       "scenario": "S7",
@@ -61,7 +73,9 @@
       "rouge_l": 0.1,
       "bertscore": 0.85,
       "citation_accuracy": 1.0,
-      "response_time": 6.09
+      "response_time": 6.09,
+      "semantic_similarity": 0.85,
+      "citation_compliance_rate": 1.0
     }
   ],
   "overall": {
@@ -69,6 +83,8 @@
     "rouge_l": 0.11,
     "bertscore": 0.86,
     "citation_accuracy": 0.87,
-    "response_time": 5.98
+    "response_time": 5.98,
+    "semantic_similarity": 0.86,
+    "citation_compliance_rate": 0.87
   }
 }

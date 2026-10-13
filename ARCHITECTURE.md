@@ -41,7 +41,7 @@ graph TD
 
 ### 2.2 Đánh Giá & Kiểm Thử (`eval/`)
 * **`thesis_eval.py`**: Khung đánh giá End-to-End hệ thống Live qua API streaming trên 100 câu hỏi chuẩn hóa ([`eval/ground_truth_final.json`](eval/ground_truth_final.json)), lưu kết quả chi tiết tại [`eval/results_improved_final.json`](eval/results_improved_final.json) và tóm tắt kịch bản tại [`eval/thesis_metrics.json`](eval/thesis_metrics.json).
-* **`comparative_eval.py`**: Thực nghiệm so sánh đối chứng (Ablation Study) giữa 4 pipeline độc lập (Standalone LLM, Naive RAG, Hybrid RAG, Adaptive Agentic RAG), lưu tại [`eval/comparative_results.json`](eval/comparative_results.json).
+* **`comparative_eval.py`**: Thực nghiệm so sánh hiệu năng (Comparative Pipeline Evaluation) giữa 4 pipeline độc lập (Standalone LLM, Naive RAG, Hybrid RAG, Adaptive Agentic RAG), lưu tại [`eval/comparative_results.json`](eval/comparative_results.json).
 
 ### 2.3 Giao Diện & Client (`frontend/`)
 * **`HollandRAGGUI.java`**: Giao diện máy tính viết bằng Java Swing, giao tiếp backend qua HTTP SSE streaming. Khởi chạy bằng `cd frontend && javac HollandRAGGUI.java && java HollandRAGGUI`.
