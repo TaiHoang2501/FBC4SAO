@@ -40,15 +40,29 @@ graph TD
 * **`conversation_store.py`**: Quản lý lưu trữ trạng thái phiên làm việc và lịch sử trò chuyện bằng SQLite.
 
 ### 2.2 Đánh Giá & Kiểm Thử (`eval/`)
-* **`thesis_eval.py`**: Đánh giá 4 chỉ số chất lượng đề tài trên 100 câu hỏi chuẩn hóa ([`ground_truth_final.json`](eval/ground_truth_final.json)).
-* **`comparative_eval.py`**: So sánh 4 pipeline (Standalone LLM, Naive RAG, Hybrid RAG, Adaptive Agentic RAG).
+* **`thesis_eval.py`**: Khung đánh giá End-to-End hệ thống Live qua API streaming trên 100 câu hỏi chuẩn hóa ([`eval/ground_truth_final.json`](eval/ground_truth_final.json)), lưu kết quả chi tiết tại [`eval/results_improved_final.json`](eval/results_improved_final.json) và tóm tắt kịch bản tại [`eval/thesis_metrics.json`](eval/thesis_metrics.json).
+* **`comparative_eval.py`**: Thực nghiệm so sánh đối chứng (Ablation Study) giữa 4 pipeline độc lập (Standalone LLM, Naive RAG, Hybrid RAG, Adaptive Agentic RAG), lưu tại [`eval/comparative_results.json`](eval/comparative_results.json).
 
 ### 2.3 Giao Diện & Client (`frontend/`)
-* **`HollandRAGGUI.java`**: Giao diện ứng dụng máy tính xây dựng bằng Java Swing, giao tiếp backend qua HTTP SSE streaming.
+* **`HollandRAGGUI.java`**: Giao diện máy tính viết bằng Java Swing, giao tiếp backend qua HTTP SSE streaming. Khởi chạy bằng `cd frontend && javac HollandRAGGUI.java && java HollandRAGGUI`.
 
 ---
 
-## 3. Tài Liệu Tham Khảo Thêm
+## 3. Quy Chuẩn Khởi Chạy & Thực Thi (Deployment & Runtime)
+
+| Thành phần | Lệnh thực thi từ thư mục gốc | Mô tả |
+|:---|:---|:---|
+| **FastAPI Backend** | `uvicorn src.main:app --port 8001` | Khởi động máy chủ backend tại cổng 8001 |
+| **Inngest Engine** | `npx inngest-cli@latest dev -u http://127.0.0.1:8001/api/inngest` | Bộ điều phối sự kiện bất đồng bộ |
+| **Java UI** | `cd frontend && javac HollandRAGGUI.java && java HollandRAGGUI` | Giao diện người dùng Java Swing |
+| **Data Ingestion** | `python scripts/ingest_riasec_data.py` | Nạp dữ liệu lý thuyết RIASEC & hồ sơ |
+| **Live Eval (E2E)** | `python eval/thesis_eval.py --live --api http://localhost:8001` | Đánh giá trực tiếp toàn hệ thống |
+| **Comparative Eval** | `python eval/comparative_eval.py` | Đánh giá so sánh 4 mô hình độc lập |
+
+---
+
+## 4. Tài Liệu Tham Khảo Thêm
 * Chi tiết thiết kế: [`docs/OVERVIEW.md`](docs/OVERVIEW.md)
 * Kiến trúc chi tiết: [`docs/system_architecture.md`](docs/system_architecture.md)
 * Sơ đồ luồng: [`DIagram/`](DIagram/)
+

@@ -212,9 +212,9 @@ _FALLBACK_AGENT = "hoidapchung"
 # ── Router ────────────────────────────────────────────────────────────────────
 
 @lru_cache(maxsize=1000)
-def route_question(question: str) -> AgentConfig:
+def _route_question_cached(question: str) -> AgentConfig:
     """
-    Phân tích câu hỏi → Chọn Agent Hướng nghiệp & Ngoại khóa phù hợp nhất.
+    Phân tích câu hỏi → Chọn Agent Hướng nghiệp & Ngoại khóa phù hợp nhất (được cache).
     """
     agents_desc = "\n".join(
         f'- "{a.agent_id}": chủ đề={a.topic.value}'
@@ -264,6 +264,14 @@ def route_question(question: str) -> AgentConfig:
         print(f"[Router] Lỗi: {e} → fallback {_FALLBACK_AGENT}", file=sys.stderr)
 
     return _AGENT_INDEX[_FALLBACK_AGENT]
+
+
+def route_question(question: str, **kwargs) -> AgentConfig:
+    """
+    Phân tích câu hỏi → Chọn Agent Hướng nghiệp & Ngoại khóa phù hợp nhất.
+    Chấp nhận các tham số mở rộng (**kwargs) để tương thích ngược.
+    """
+    return _route_question_cached(question)
 
 
 # ── Search ────────────────────────────────────────────────────────────────────
