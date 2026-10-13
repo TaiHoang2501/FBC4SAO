@@ -44,7 +44,7 @@ pip install -r requirements.txt  # Hoặc dùng uv: uv sync
 
 ## 📊 Đánh Giá & Thực Nghiệm (Evaluation & Experimental Results)
 
-Hệ thống được đánh giá qua tập **100 câu hỏi thử nghiệm chuẩn hóa** (`ground_truth_final.json`) phân bổ đều qua 7 kịch bản nghiệp vụ (S1 – S7) với các chỉ số cốt lõi:
+Hệ thống được đánh giá qua tập **100 câu hỏi thử nghiệm chuẩn hóa** ([`eval/ground_truth_final.json`](eval/ground_truth_final.json)) phân bổ đều qua 7 kịch bản nghiệp vụ (S1 – S7) với các chỉ số cốt lõi:
 
 1. **Routing Accuracy** (≥ 0.85): Tỉ lệ định tuyến chính xác đến agent chuyên môn.
 2. **BERTScore F1** (≥ 0.75): Độ tương đồng ngữ nghĩa câu trả lời so với câu trả lời mẫu.
@@ -54,7 +54,7 @@ Hệ thống được đánh giá qua tập **100 câu hỏi thử nghiệm chu�
 
 Chạy đánh giá live:
 ```bash
-python thesis_eval.py --live --api http://localhost:8001 --file ground_truth_final.json
+python eval/thesis_eval.py --live --api http://localhost:8001 --file eval/ground_truth_final.json
 ```
 
 ### Kết quả thử nghiệm tổng thể (100 câu hỏi)
@@ -80,5 +80,5 @@ python thesis_eval.py --live --api http://localhost:8001 --file ground_truth_fin
 | **S7** | Hỏi đáp Tổng quát | 16 | 100% | 0.85 | 100% | 6.09s |
 | **Toàn hệ thống** | **Tổng thể** | **100** | **85%** | **0.86** | **86%** | **5.98s** |
 
-*Chi tiết kết quả xem tại: [`results_improved_final.json`](results_improved_final.json), [`thesis_metrics.json`](thesis_metrics.json) và [`comparative_results.json`](comparative_results.json).*
+*Chi tiết kết quả xem tại: [`eval/results_improved_final.json`](eval/results_improved_final.json), [`eval/thesis_metrics.json`](eval/thesis_metrics.json) và [`eval/comparative_results.json`](eval/comparative_results.json).*
 
