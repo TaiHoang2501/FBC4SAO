@@ -197,6 +197,8 @@ def verify_comparative_aggregation() -> bool:
     stored = comp_data["summary"]
 
     all_matched = True
+    tol = 1e-4  # Dung sai chặt chẽ ≤ 1e-4 cho TẤT CẢ chỉ số (bao gồm cả response_time avg, p50, p95)
+    
     for pipe, s_rec in recomputed.items():
         s_stored = stored.get(pipe, {})
         print(f"  Pipeline: {pipe}")
@@ -205,13 +207,15 @@ def verify_comparative_aggregation() -> bool:
             v_sto = s_stored.get(key)
             if v_rec is None and v_sto is None:
                 continue
-            # Dung sai: 1e-4 cho các tỷ lệ điểm số, 1e-2 cho số đo giây độ trễ
-            tol = 1e-2 if "response_time" in key else 1e-4
-            if abs((v_rec or 0) - (v_sto or 0)) > tol:
-                print(f"    ❌ Lệch chỉ số {key}: tính {v_rec} vs lưu {v_sto}")
+            diff = abs((v_rec or 0) - (v_sto or 0))
+            if diff > tol:
+                print(f"    ❌ Lệch chỉ số {key}: tính {v_rec} vs lưu {v_sto} (diff={diff:.6f})")
                 all_matched = False
             else:
-                print(f"    ✅ Khớp {key:<24}: {v_rec}")
+                print(f"    ✅ Khớp {key:<24}: {v_rec} (diff={diff:.6f})")
+
+    if all_matched:
+        print("\n  ✅ [PASS] Tái lập bảng so sánh 4 pipeline thành công (Dung sai chặt ≤ 1e-4 cho tất cả chỉ số bao gồm cả độ trễ).")
     return all_matched
 
 
@@ -269,23 +273,43 @@ def verify_embedding_environment() -> bool:
 
 def run_e2e_smoke_test() -> bool:
     print("\n" + "=" * 80)
-    print("7. KIỂM THỬ KHẢ THI END-TO-END THỰC TẾ TRÊN MẪU NHỎ (E2E SMOKE TEST)")
+    print("7. KIỂM THỬ KHẢ THI END-TO-END TRÊN MẪU NHỎ VỚI ADAPTIVE AGENTIC RAG (--smoke-eval)")
     print("=" * 80)
     try:
-        from comparative_eval import pipeline_naive_rag, compute_rouge_l, compute_semantic_similarity, compute_citation
+        from comparative_eval import (
+            pipeline_agentic_rag,
+            compute_rouge_l,
+            compute_semantic_similarity,
+            compute_citation,
+        )
         q = "Tôi thích máy móc và sửa chữa thì học ngành gì?"
         ref = "Bạn có xu hướng thuộc nhóm Realistic (R) kỹ thuật."
         
         print(f"  Chạy thử truy vấn mẫu: '{q}'")
-        res = pipeline_naive_rag(q)
+        res = pipeline_agentic_rag(q)
         ans = res.get("answer", "")
-        print(f"  Phản hồi nhận được ({res.get('time', 0):.2f}s): {ans[:80]}...")
-        
+        agent = res.get("agent", "unknown")
+        sources = res.get("sources", [])
+        elapsed = res.get("time", 0.0)
+
+        print(f"  ↳ Agent được Router phân bổ: {agent}")
+        print(f"  ↳ Số lượng nguồn dữ liệu truy xuất: {len(sources)}")
+        print(f"  ↳ Thời gian phản hồi: {elapsed:.2f}s")
+        print(f"  ↳ Phản hồi trích đoạn: {ans[:120]}...")
+
         rouge = compute_rouge_l(ref, ans)
         sem, method = compute_semantic_similarity(ref, ans)
-        cite = compute_citation(ans, res.get("sources", []))
-        print(f"  Chỉ số tính live: ROUGE-L={rouge:.4f} | Semantic={sem:.4f} ({method}) | Citation={cite}")
-        print("✅ [PASS] Toàn bộ chu trình E2E từ truy xuất, suy luận đến chấm điểm đều thực thi thành công!")
+        cite = compute_citation(ans, sources)
+        print(f"  ↳ Chỉ số đo lường trực tiếp:")
+        print(f"     - ROUGE-L             : {rouge:.4f}")
+        print(f"     - Semantic Similarity  : {sem:.4f} (phương pháp: {method})")
+        print(f"     - Citation Compliance  : {cite}")
+
+        if not ans or ans.startswith("Error"):
+            print("❌ [FAIL] Pipeline Adaptive Agentic RAG trả về kết quả rỗng hoặc báo lỗi")
+            return False
+
+        print("✅ [PASS] Toàn bộ chu trình Adaptive Agentic RAG (Router → Search → Rerank → LLM → Metrics) thực thi thành công!")
         return True
     except Exception as e:
         print(f"⚠ [WARN] E2E smoke test thất bại hoặc dịch vụ phụ thuộc chưa bật: {e}")
@@ -294,7 +318,8 @@ def run_e2e_smoke_test() -> bool:
 
 def main():
     parser = argparse.ArgumentParser(description="Xác minh độc lập tính tái lập của benchmark FBC4SAO")
-    parser.add_argument("--smoke-eval", action="store_true", help="Chạy kiểm thử end-to-end trên mẫu nhỏ")
+    parser.add_argument("--smoke-eval", action="store_true", help="Chạy kiểm thử end-to-end trên mẫu nhỏ với Adaptive Agentic RAG")
+    parser.add_argument("--ci", action="store_true", help="Chế độ CI: Chạy xác minh toán học và dữ liệu canonical, bỏ qua tải mô hình nặng từ HuggingFace")
     args = parser.parse_args()
 
     results = [
@@ -302,12 +327,18 @@ def main():
         ("Live E2E Scenario & Micro/Macro Aggregation", verify_live_aggregation()),
         ("Comparative Pipeline Aggregation", verify_comparative_aggregation()),
         ("Regex Source Stripping", verify_regex_source_stripping()),
-        ("BERTScore Vietnamese Environment", verify_bertscore_environment()),
-        ("Dense Embedding Environment", verify_embedding_environment()),
     ]
 
+    if not args.ci:
+        results.append(("BERTScore Vietnamese Environment", verify_bertscore_environment()))
+        results.append(("Dense Embedding Environment", verify_embedding_environment()))
+    else:
+        print("\n" + "=" * 80)
+        print("⏩ CHẾ ĐỘ CI: Bỏ qua kiểm tra tải mô hình nặng từ HuggingFace (BERTScore & Dense Embedding)")
+        print("=" * 80)
+
     if args.smoke_eval:
-        results.append(("E2E Pipeline Execution Smoke Test", run_e2e_smoke_test()))
+        results.append(("Adaptive Agentic RAG Smoke Test", run_e2e_smoke_test()))
 
     print("\n" + "=" * 80)
     print("TỔNG KẾT XÁC MINH TÍNH TÁI LẬP (REPRODUCIBILITY SUMMARY)")

@@ -7,6 +7,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 
 from agents import route_question
 
+@pytest.mark.external
 def test_routing_golden_snapshot(snapshot):
     """
     Tầng 2: Golden Snapshot - Ghi lại kết xuất chuẩn của Query Router.

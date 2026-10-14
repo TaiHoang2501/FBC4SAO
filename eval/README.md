@@ -55,15 +55,21 @@ ollama pull qwen2.5:7b-instruct-q4_K_M
 ```
 
 ### Bước 3: Chạy kịch bản kiểm tra tính tái lập tự động
-Dự án cung cấp bộ công cụ tự động kiểm tra tính toàn vẹn dữ liệu, tính tái lập toán học với dung sai chặt (≤ 1e-4) cho tất cả các chỉ số (kể cả `response_time`), regex bóc tách nguồn, và kiểm tra độc lập từng môi trường:
+Dự án cung cấp bộ công cụ tự động kiểm tra tính toàn vẹn dữ liệu, tính tái lập toán học với dung sai chặt (≤ 1e-4) cho tất cả các chỉ số (bao gồm cả độ trễ `response_time_avg`, `p50`, `p95` ở cả 4 pipeline và 7 kịch bản S1–S7), regex bóc tách nguồn, và kiểm tra độc lập từng môi trường:
 ```bash
-# Kiểm tra toán học, dữ liệu và môi trường (6 bài kiểm tra độc lập):
+# 1. Chạy xác minh trong CI (không tải mô hình nặng HuggingFace, không phụ thuộc dịch vụ ngoài):
+python eval/verify_reproducibility.py --ci
+
+# 2. Kiểm tra toán học, dữ liệu và môi trường đầy đủ (6 bài kiểm tra độc lập):
 python eval/verify_reproducibility.py
 
-# Hoặc chạy kèm kiểm thử thực thi End-to-End trực tiếp trên pipeline (7 bài kiểm tra):
+# 3. Chạy kèm kiểm thử thực thi End-to-End trực tiếp trên Adaptive Agentic RAG:
 python eval/verify_reproducibility.py --smoke-eval
 ```
-*Kết quả kỳ vọng: 6/6 (hoặc 7/7 với `--smoke-eval`) bài kiểm tra đều hiển thị `✅ PASS`.*
+*Kết quả kỳ vọng:*
+- *Chế độ `--ci`: 4/4 bài kiểm tra đạt `✅ PASS` trong ~5 giây (hoàn hảo cho GitHub Actions runner).*
+- *Chế độ mặc định: 6/6 bài kiểm tra đạt `✅ PASS`.*
+- *Chế độ `--smoke-eval`: Kiểm tra toàn diện chu trình Adaptive Agentic RAG (Router → Search → Rerank → LLM → Live Metrics), đạt `✅ PASS`.*
 
 ### Bước 4: Tái lập Bảng tổng hợp Luận văn (thesis_metrics.json)
 ```bash
@@ -91,8 +97,12 @@ python eval/thesis_eval.py --live --api http://localhost:8000 --file eval/ground
 
 ## 4. Kiểm Thử Đơn Vị & Hợp Đồng Dữ Liệu (Unit & Contract Tests)
 
-Để xác nhận hệ thống backend và các hợp đồng Pydantic hoạt động chính xác trước khi chạy benchmark:
+Hệ thống phân tách rõ ràng giữa kiểm thử môi trường CI (cô lập khỏi dịch vụ ngoài) và kiểm thử đầy đủ:
 ```bash
+# 1. Chạy kiểm thử CI (đã loại trừ phụ thuộc dịch vụ ngoài Ollama / Qdrant):
+pytest tests/ -v -m "not external"
+
+# 2. Chạy toàn bộ test suite (khi Ollama đã được bật tại localhost:11434):
 pytest tests/ -v
 ```
-*Kết quả kỳ vọng: 11/11 tests PASS (bao gồm 6 contract tests, 4 integration tests, 1 snapshot test).*
+*Kết quả kỳ vọng trong CI: 10/10 tests PASS (bao gồm 6 contract tests cho Pydantic schemas, 4 integration tests cho FastAPI API).*

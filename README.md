@@ -166,3 +166,13 @@ python eval/comparative_eval.py
 | [`eval/comparative_results.json`](eval/comparative_results.json) | So sánh 4 Pipeline đối chứng | BERTScore vi (dự phòng embedding cosine), Citation Presence, ROUGE-L, Latency (Avg/p50/p95) | **Chính thức (Canonical)** — Phân tích Kiến trúc |
 | [`eval/archive/standard_metrics_legacy.json`](eval/archive/standard_metrics_legacy.json) | Kết quả sơ khai từ commit `261a8f1` | Đo độ phủ nhị phân và token overlap ban đầu | **Lưu trữ lịch sử (Deprecated Archive)** |
 
+---
+
+### 🧪 Tự Động Hóa Kiểm Thử & CI/CD (Continuous Integration)
+
+Dự án thiết lập quy trình tích hợp liên tục tự động hóa trên GitHub Actions ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)), phân tách rõ ràng giữa kiểm thử môi trường CI chuẩn và kiểm thử dịch vụ ngoài:
+- **Kiểm thử Đơn vị & Tích hợp (CI Isolated Test Suite):** Chạy `pytest tests/ -v -m "not external"` bao gồm 10 bài kiểm thử hợp đồng Pydantic schemas và API integration, độc lập 100% với các daemon bên ngoài như Ollama hoặc Docker Qdrant.
+- **Xác minh Tính Tái lập Benchmark (Reproducibility Verification - CI Mode):** Chạy `python eval/verify_reproducibility.py --ci` xác minh tính toàn vẹn các bộ dữ liệu canonical, tái lập Micro/Macro Average 7 kịch bản S1–S7 và bảng đối sánh 4 pipeline với dung sai toán học chặt $\le 10^{-4}$ trên tất cả chỉ số (bao gồm cả `response_time`).
+- **Đóng gói Docker Production:** Kiểm tra cú pháp và build sạch Docker container production (`Dockerfile`) sau khi toàn bộ bước kiểm thử và xác minh toán học đều vượt qua.
+- **Kiểm thử Thực thi Toàn diện (Adaptive Agentic RAG Smoke Eval):** Khi có môi trường local/runtime đầy đủ, lệnh `python eval/verify_reproducibility.py --smoke-eval` cho phép kiểm thử trực tiếp chu trình Adaptive Agentic RAG (Router → Search → Rerank → LLM → Live Metrics).
+
