@@ -22,12 +22,26 @@ Tài liệu này cung cấp hướng dẫn đầy đủ, minh bạch và có th�
 
 ## 2. Quy Ước Tính Toán Chỉ Số (Metric Computation Conventions)
 
-1. **Routing Accuracy:** Tỷ lệ phân loại đúng agent chuyên môn ($1.0$ nếu đúng, $0.0$ nếu sai). Đối với 3 baseline không có Router (Standalone LLM, Naive RAG, Hybrid RAG), chỉ số này ghi nhận là **N/A**.
+1. **Routing Accuracy (Độ chính xác định tuyến):**
+   - Đánh giá khả năng phân loại đúng tác tử chuyên môn theo kịch bản ($1.0$ nếu `predicted_agent == expected_agent`, ngược lại $0.0$).
+   - **Tiêu chuẩn giữa các pipeline:** Chỉ *Adaptive Agentic RAG* sở hữu module Query Router nên được chấm điểm số thực tế. Ba baseline (Standalone LLM, Naive RAG, Hybrid RAG) là kiến trúc đơn pipeline, không trang bị Router, do đó được ghi nhận chính xác là **N/A** (kèm cờ `routing_supported: False`).
 2. **ROUGE-L & Chuẩn hóa tiền tố nguồn:**
    - Sử dụng thuật toán Longest Common Subsequence (LCS) trên tập token từ vựng tiếng Việt.
    - Trước khi so khớp, tiền tố nguồn (`Nguồn:`, `Nguồn tham khảo:`, `Sources:`, `**Nguồn:**`, v.v.) và các ký hiệu trích dẫn (`[n]`, `[1, 2]`) được bóc tách triệt để bằng biểu thức chính quy chuẩn hóa (`clean_for_rouge`) để đảm bảo không làm sai lệch điểm số nội dung chính.
-3. **Citation Compliance Rate:** Kiểm tra sự tuân thủ hình thức trích dẫn `[n]` trong văn bản và sự hiện diện của danh sách tài liệu nguồn tham khảo hợp lệ từ retriever.
-4. **Quy ước Phân vị Độ trễ (Percentiles):**
+3. **Citation Compliance & Source Index Validity (Tuân thủ trích dẫn & Hợp lệ nguồn tồn tại):**
+   - Đánh giá tính hợp lệ về hình thức trích dẫn và tính toàn vẹn của chỉ mục tài liệu tham chiếu:
+     * Câu trả lời không rỗng và hệ thống có tài liệu nguồn được truy xuất (`sources` không rỗng).
+     * Phải có ít nhất một ký hiệu trích dẫn `[n]` trong văn bản.
+     * **Kiểm tra nguồn tồn tại (Source Existence Check):** TẤT CẢ các chỉ số trích dẫn trong văn bản phải nằm trong phạm vi chỉ mục tài liệu thực tế: $1 \le n \le \text{len}(sources)$.
+     * **Xử lý trích dẫn ảo:** Nếu câu trả lời trích dẫn chỉ mục không tồn tại (ví dụ: trích dẫn `[5]` trong khi chỉ có 2 tài liệu trong context, hoặc chỉ số $\le 0$), điểm số lập tức bị đánh tụt về **0.0**.
+   - *Lưu ý học thuật:* Chỉ số này đo lường tính tuân thủ hình thức và tính toàn vẹn chỉ mục nguồn, chưa phải là claim-level NLI entailment.
+4. **Semantic Similarity & Phân tách phương pháp (Pure Metrics Separation):**
+   - Sử dụng thư viện `bert_score` chuẩn cho tiếng Việt (`lang="vi"`).
+   - **Nguyên tắc phân tách minh bạch:** Trong trường hợp có dự phòng (fallback) sang `embedding_cosine`, hệ thống lưu rõ `semantic_metric_method` cho từng câu và báo cáo độc lập:
+     * `bertscore_f1_pure`: Điểm trung bình CHỈ trên các mẫu đo bằng BERTScore thuần.
+     * `embedding_cosine_pure`: Điểm trung bình CHỈ trên các mẫu đo bằng Cosine Embedding.
+     * Không gộp mập mờ hai không gian điểm khác nhau vào cùng một cột mà không có bảng phân rã `semantic_metric_breakdown`.
+5. **Quy ước Phân vị Độ trễ (Percentiles):**
    - Độ trễ trung vị (p50) và phân vị 95 (p95) được tính toán theo chuẩn **Type 7 Linear Interpolation** (mặc định của NumPy và NIST/SciPy).
 
 ---
@@ -95,14 +109,32 @@ python eval/thesis_eval.py --live --api http://localhost:8000 --file eval/ground
 
 ---
 
-## 4. Kiểm Thử Đơn Vị & Hợp Đồng Dữ Liệu (Unit & Contract Tests)
+## 4. Kiểm Thử Đơn Vị & Kiểm Chứng Metric Độc Lập (Unit & Metric Tests)
 
-Hệ thống phân tách rõ ràng giữa kiểm thử môi trường CI (cô lập khỏi dịch vụ ngoài) và kiểm thử đầy đủ:
+Hệ thống cung cấp bộ kiểm thử độc lập toàn diện bao quát tất cả các trường hợp biên của từng chỉ số (`tests/test_evaluation_metrics.py`):
 ```bash
-# 1. Chạy kiểm thử CI (đã loại trừ phụ thuộc dịch vụ ngoài Ollama / Qdrant):
+# 1. Chạy toàn bộ kiểm thử đơn vị, API và các trường hợp biên của metric (36 tests):
 pytest tests/ -v -m "not external"
 
-# 2. Chạy toàn bộ test suite (khi Ollama đã được bật tại localhost:11434):
+# 2. Chạy riêng bộ kiểm chứng toán học và hành vi metric (26 tests):
+pytest tests/test_evaluation_metrics.py -v
+
+# 3. Chạy toàn bộ test suite bao gồm cả test snapshot router trực tiếp:
 pytest tests/ -v
 ```
-*Kết quả kỳ vọng trong CI: 10/10 tests PASS (bao gồm 6 contract tests cho Pydantic schemas, 4 integration tests cho FastAPI API).*
+*Kết quả kỳ vọng trong CI: **36/36 tests PASS** (bao gồm 6 contract tests, 4 API integration tests, 26 metric unit tests bao quát trích dẫn ảo, nguồn rỗng, bóc tách nguồn ROUGE, fallback semantic similarity, percentiles Type 7).*
+
+---
+
+## 5. Phạm Vi & Giới Hạn Kiểm Chứng Của CI (CI Verification Scope & Limitations)
+
+Để duy trì tính trung thực và minh bạch học thuật:
+- **Những gì CI đã kiểm chứng tự động (GitHub Actions):**
+  1. Toàn bộ logic toán học của các hàm tính metric, bao gồm bóc tách nguồn, xử lý trích dẫn ảo, trỏ nguồn ngoài phạm vi, và phân rã fallback (`tests/test_evaluation_metrics.py`).
+  2. Tính toàn vẹn cấu trúc và định dạng JSON của 4 tệp dữ liệu canonical (`ground_truth_final.json`, `results_improved_final.json`, `thesis_metrics.json`, `comparative_results.json`).
+  3. Tính tái lập toán học độc lập giữa dữ liệu chi tiết từng câu và các bảng tổng hợp với dung sai nghiêm ngặt $\le 10^{-4}$ cho tất cả các chỉ số (kể cả thời gian phản hồi).
+  4. Hợp đồng dữ liệu Pydantic, API endpoints và đóng gói Docker container production sạch sẽ.
+- **Giới hạn của môi trường CI:**
+  1. Do tài nguyên máy chủ ảo GitHub Actions (Ubuntu runner) không có GPU chuyên dụng và không duy trì thường trực dịch vụ LLM Ollama cục bộ, CI **chưa chạy lại toàn bộ 400 câu hỏi sinh văn bản thời gian thực (real-time generation)** của bài so sánh 4 pipeline.
+  2. Việc tái lập bài chạy sinh văn bản đầy đủ cần được thực hiện trong môi trường cục bộ có phần cứng phù hợp (Apple Silicon M-series hoặc GPU NVIDIA) theo đúng hướng dẫn tại Mục 3 (Bước 5).
+
