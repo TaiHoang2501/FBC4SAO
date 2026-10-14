@@ -1,4 +1,4 @@
-.PHONY: run dev test eval comparative-eval lint format clean frontend ui
+.PHONY: run dev test test-unit test-all eval comparative-eval verify verify-ci verify-smoke lint format clean frontend ui
 
 run:
 	uvicorn src.main:app --host 0.0.0.0 --port 8000
@@ -12,7 +12,22 @@ frontend:
 ui: frontend
 
 test:
+	pytest tests/ -v -m "not external"
+
+test-unit:
+	pytest tests/ -v -m "not external"
+
+test-all:
 	pytest tests/ -v
+
+verify:
+	python eval/verify_reproducibility.py
+
+verify-ci:
+	python eval/verify_reproducibility.py --ci
+
+verify-smoke:
+	python eval/verify_reproducibility.py --smoke-eval
 
 eval:
 	python eval/thesis_eval.py
