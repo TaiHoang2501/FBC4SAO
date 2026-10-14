@@ -6,7 +6,12 @@ import asyncio
 from typing import List, Dict
 
 # Đảm bảo import được các module local
-sys.path.append(os.getcwd())
+from pathlib import Path
+SRC_DIR = Path(__file__).resolve().parent
+ROOT_DIR = SRC_DIR.parent
+for p in [str(SRC_DIR), str(ROOT_DIR), os.getcwd()]:
+    if p not in sys.path:
+        sys.path.insert(0, p)
 
 from agents import route_question, agent_search, build_agent_prompt, _AGENT_INDEX
 from llm_service import call_llm
@@ -14,11 +19,16 @@ from web_search import search_tavily
 from data_loader import load_and_chunk_pdf
 
 def load_system():
-    pickle_path = "production_model.pkl"
-    if not os.path.exists(pickle_path):
-        return None
-    with open(pickle_path, "rb") as f:
-        return pickle.load(f)
+    candidates = [
+        Path("production_model.pkl"),
+        ROOT_DIR / "data" / "production_model.pkl",
+        Path("data/production_model.pkl"),
+    ]
+    for p in candidates:
+        if p.exists():
+            with open(p, "rb") as f:
+                return pickle.load(f)
+    return None
 
 def run_query(input_data: str):
     # 1. Load system state

@@ -11,10 +11,13 @@ from data_loader import load_and_chunk_pdf, embed_texts
 
 def main():
     store = get_storage()
-    ref_dir = Path("/Users/macos/Downloads/1. KLTN/RAG Production/tài liệu tham khảo")
+    root_dir = Path(__file__).resolve().parent.parent
+    ref_dir = root_dir / "data" / "tài liệu tham khảo"
+    if not ref_dir.exists():
+        ref_dir = root_dir / "tài liệu tham khảo"
     
-    files = list(ref_dir.glob("*.pdf")) + list(ref_dir.glob("*.docx"))
-    print(f"Bắt đầu ingest {len(files)} tài liệu vào local Qdrant...")
+    files = list(ref_dir.glob("*.pdf")) + list(ref_dir.glob("*.docx")) if ref_dir.exists() else []
+    print(f"Bắt đầu ingest {len(files)} tài liệu từ {ref_dir} vào local Qdrant...")
 
     for fpath in files:
         print(f"Processing: {fpath.name}...")

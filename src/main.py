@@ -66,7 +66,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -324,8 +324,10 @@ async def ingest_pdf(file: UploadFile = File(...)):
         raise HTTPException(status_code=400, detail="Missing file")
 
     # Save to temp
+    upload_dir = Path("uploads")
+    upload_dir.mkdir(parents=True, exist_ok=True)
     suffix = os.path.splitext(file.filename)[1]
-    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix, dir="uploads") as tmp:
+    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix, dir=upload_dir) as tmp:
         content = await file.read()
         tmp.write(content)
         tmp_path = tmp.name

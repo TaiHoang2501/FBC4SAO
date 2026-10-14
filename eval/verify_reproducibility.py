@@ -70,9 +70,81 @@ def verify_canonical_datasets() -> bool:
     return ok
 
 
+def verify_dataset_schemas_and_semantics() -> bool:
+    print("\n" + "=" * 80)
+    print("2. XÁC MINH SCHEMA, TÍNH HỮU HẠN & PHÂN BỐ CÂU HỎI TRONG BENCHMARK")
+    print("=" * 80)
+    ok = True
+
+    # 1. Ground truth schema & uniqueness
+    gt_path = EVAL_DIR / "ground_truth_final.json"
+    with open(gt_path, "r", encoding="utf-8") as f:
+        gt_data = json.load(f)
+
+    gt_required = ["scenario", "scenario_type", "question", "expected_agent", "reference"]
+    valid_agents = {"test_riasec", "hdnk_nentang", "hdnk_chuyenmon", "hdnk_canhan", "match_hoso", "danhgia_all", "hoidapchung"}
+
+    for i, item in enumerate(gt_data):
+        missing = [k for k in gt_required if k not in item or not str(item[k]).strip()]
+        if missing:
+            print(f"❌ [FAIL] Mẫu GT {i} thiếu trường bắt buộc: {missing}")
+            ok = False
+        if item.get("expected_agent") not in valid_agents:
+            print(f"❌ [FAIL] Mẫu GT {i} có expected_agent không hợp lệ: {item.get('expected_agent')}")
+            ok = False
+
+    unique_q = len(set(x["question"].strip() for x in gt_data))
+    unique_ref = len(set(x["reference"].strip() for x in gt_data))
+    if unique_q == 100:
+        print(f"✅ [PASS] 100/100 câu hỏi trong ground_truth_final.json là duy nhất (không trùng lặp)")
+    else:
+        print(f"⚠ [WARN] Phát hiện câu hỏi trùng: {unique_q}/100 câu hỏi duy nhất")
+
+    print(f"ℹ️ [NOTICE] Ground Truth Reference: 100 câu hỏi hiện chia sẻ {unique_ref} mẫu reference đại diện theo 7 kịch bản S1–S7 (1 ref/scenario). Đang trong quá trình audit để may đo reference chuyên biệt.")
+
+    # 2. Live results finite numbers & methods
+    live_path = EVAL_DIR / "results_improved_final.json"
+    with open(live_path, "r", encoding="utf-8") as f:
+        live_data = json.load(f)
+    live_details = live_data.get("details", [])
+    live_finite = True
+    for r in live_details:
+        for k in ["routing_correct", "rouge_l", "semantic_similarity", "citation_compliance", "response_time"]:
+            val = r.get(k)
+            if val is not None and not (isinstance(val, (int, float)) and math.isfinite(val)):
+                live_finite = False
+    if live_finite and len(live_details) == 100:
+        print("✅ [PASS] Toàn bộ 100 mẫu Live Results đều có giá trị chỉ số hữu hạn (không chứa NaN/Inf)")
+    else:
+        print("❌ [FAIL] Phát hiện giá trị NaN/Inf hoặc thiếu trường trong Live Results")
+        ok = False
+
+    # 3. Comparative results finite numbers & percentiles
+    comp_path = EVAL_DIR / "comparative_results.json"
+    with open(comp_path, "r", encoding="utf-8") as f:
+        comp_data = json.load(f)
+    comp_finite = True
+    for pipe, items in comp_data.get("details", {}).items():
+        if len(items) != 100:
+            print(f"❌ [FAIL] Pipeline {pipe} chỉ có {len(items)}/100 mẫu")
+            ok = False
+        for r in items:
+            for k in ["rouge_l", "semantic_similarity", "citation_compliance_rate", "response_time"]:
+                val = r.get(k)
+                if val is not None and not (isinstance(val, (int, float)) and math.isfinite(val)):
+                    comp_finite = False
+    if comp_finite:
+        print("✅ [PASS] Toàn bộ 400 mẫu Comparative Results (4 pipelines x 100) đều có giá trị chỉ số hữu hạn")
+    else:
+        print("❌ [FAIL] Phát hiện giá trị NaN/Inf trong Comparative Results")
+        ok = False
+
+    return ok
+
+
 def verify_live_aggregation() -> bool:
     print("\n" + "=" * 80)
-    print("2. TÁI LẬP TÍNH TOÁN ĐỘC LẬP TỪNG KỊCH BẢN, MICRO & MACRO AVERAGE TỪ RESULTS_IMPROVED_FINAL.JSON")
+    print("3. TÁI LẬP TÍNH TOÁN ĐỘC LẬP TỪNG KỊCH BẢN, MICRO & MACRO AVERAGE TỪ RESULTS_IMPROVED_FINAL.JSON")
     print("=" * 80)
     res_path = EVAL_DIR / "results_improved_final.json"
     thesis_path = EVAL_DIR / "thesis_metrics.json"
@@ -185,7 +257,7 @@ def verify_live_aggregation() -> bool:
 
 def verify_comparative_aggregation() -> bool:
     print("\n" + "=" * 80)
-    print("3. TÁI LẬP TÍNH TOÁN BẢNG SO SÁNH 4 PIPELINE TỪ COMPARATIVE_RESULTS.JSON")
+    print("4. TÁI LẬP TÍNH TOÁN BẢNG SO SÁNH 4 PIPELINE TỪ COMPARATIVE_RESULTS.JSON")
     print("=" * 80)
     comp_path = EVAL_DIR / "comparative_results.json"
     with open(comp_path, "r", encoding="utf-8") as f:
@@ -221,7 +293,7 @@ def verify_comparative_aggregation() -> bool:
 
 def verify_regex_source_stripping() -> bool:
     print("\n" + "=" * 80)
-    print("4. KIỂM TRA HÀM BÓC TÁCH NGUỒN CHO ROUGE-L (REGEX TEST)")
+    print("5. KIỂM TRA HÀM BÓC TÁCH NGUỒN CHO ROUGE-L (REGEX TEST)")
     print("=" * 80)
     from comparative_eval import compute_rouge_l
 
@@ -245,7 +317,7 @@ def verify_regex_source_stripping() -> bool:
 
 def verify_bertscore_environment() -> bool:
     print("\n" + "=" * 80)
-    print("5. KIỂM TRA ĐỘC LẬP MÔI TRƯỜNG BERTSCORE TIẾNG VIỆT (BERT_SCORE)")
+    print("6. KIỂM TRA ĐỘC LẬP MÔI TRƯỜNG BERTSCORE TIẾNG VIỆT (BERT_SCORE)")
     print("=" * 80)
     try:
         from bert_score import score as bscore
@@ -259,7 +331,7 @@ def verify_bertscore_environment() -> bool:
 
 def verify_embedding_environment() -> bool:
     print("\n" + "=" * 80)
-    print("6. KIỂM TRA ĐỘC LẬP MÔ HÌNH DENSE EMBEDDING (MULTILINGUAL-E5-LARGE)")
+    print("7. KIỂM TRA ĐỘC LẬP MÔ HÌNH DENSE EMBEDDING (MULTILINGUAL-E5-LARGE)")
     print("=" * 80)
     try:
         from data_loader import embed_texts
@@ -273,7 +345,7 @@ def verify_embedding_environment() -> bool:
 
 def run_e2e_smoke_test() -> bool:
     print("\n" + "=" * 80)
-    print("7. KIỂM THỬ KHẢ THI END-TO-END TRÊN MẪU NHỎ VỚI ADAPTIVE AGENTIC RAG (--smoke-eval)")
+    print("8. KIỂM THỬ KHẢ THI END-TO-END TRÊN MẪU NHỎ VỚI ADAPTIVE AGENTIC RAG (--smoke-eval)")
     print("=" * 80)
     try:
         from comparative_eval import (
@@ -324,6 +396,7 @@ def main():
 
     results = [
         ("Canonical Datasets Integrity", verify_canonical_datasets()),
+        ("Dataset Schema & Uniqueness Validation", verify_dataset_schemas_and_semantics()),
         ("Live E2E Scenario & Micro/Macro Aggregation", verify_live_aggregation()),
         ("Comparative Pipeline Aggregation", verify_comparative_aggregation()),
         ("Regex Source Stripping", verify_regex_source_stripping()),

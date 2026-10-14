@@ -12,8 +12,11 @@ from vector_db import QdrantStorage
 from tqdm import tqdm
 
 def ingest_all_cvs():
-    cv_dir = '/Users/macos/Downloads/1. KLTN/RAG Production/CV'
-    cv_files = glob.glob(os.path.join(cv_dir, "*.*"))
+    root_dir = Path(__file__).resolve().parent.parent
+    cv_dir = root_dir / "data" / "CV"
+    if not cv_dir.exists():
+        cv_dir = root_dir / "CV"
+    cv_files = glob.glob(os.path.join(str(cv_dir), "*.*"))
     cv_files = [f for f in cv_files if f.endswith(('.pdf', '.docx'))]
     
     store = QdrantStorage()

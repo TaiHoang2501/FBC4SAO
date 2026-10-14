@@ -311,10 +311,19 @@ public class HollandRAGGUI extends JFrame {
         }.execute();
     }
 
+    private static String resolvePath(String... candidates) {
+        for (String c : candidates) {
+            if (new File(c).exists()) return c;
+        }
+        return candidates[candidates.length - 1];
+    }
+
     private String callPythonBridge(String jsonInput) {
         StringBuilder sb = new StringBuilder();
         try {
-            Process p = new ProcessBuilder(PYTHON_EXECUTABLE, BRIDGE_SCRIPT, jsonInput).redirectErrorStream(true).start();
+            String pyPath = resolvePath("../.venv312/bin/python", ".venv312/bin/python", "python3");
+            String scriptPath = resolvePath("../src/java_bridge.py", "src/java_bridge.py", "java_bridge.py");
+            Process p = new ProcessBuilder(pyPath, scriptPath, jsonInput).redirectErrorStream(true).start();
             try (BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8))) {
                 String l; while ((l = r.readLine()) != null) sb.append(l).append("\n");
             }
