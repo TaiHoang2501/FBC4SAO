@@ -17,6 +17,9 @@ test:
 test-unit:
 	pytest tests/ -v -m "not external"
 
+test-metrics:
+	pytest tests/test_evaluation_metrics.py -v
+
 test-all:
 	pytest tests/ -v
 
