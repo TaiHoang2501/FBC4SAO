@@ -108,13 +108,69 @@ def compute_bertscore(reference: str, hypothesis: str) -> float:
     return score
 
 
+def extract_citation_indices(text: str) -> list[int]:
+    """
+    Trích xuất tất cả các chỉ số tài liệu được trích dẫn trong văn bản.
+    Hỗ trợ định dạng: [1], [2], [1, 2], [1, 2, 3], [1][2].
+    """
+    if not text:
+        return []
+    raw_blocks = re.findall(r"\[([\d\s,]+)\]", text)
+    indices = []
+    for block in raw_blocks:
+        for num_str in re.findall(r"\d+", block):
+            indices.append(int(num_str))
+    return indices
+
+
 def compute_citation(answer: str, sources: list) -> float:
-    """Kiểm tra tuân thủ hình thức trích dẫn và sự hiện diện nguồn (Citation Format & Source Presence).
-    1.0 nếu có ký hiệu trích dẫn [n] hợp lệ VÀ hệ thống có tài liệu nguồn tham chiếu.
-    Trả về 0.0 nếu câu trả lời rỗng."""
+    """
+    Kiểm tra tuân thủ trích dẫn và tính hợp lệ của nguồn tham chiếu (Citation Compliance & Source Index Validity):
+    
+    Quy tắc chấm điểm (0.0 hoặc 1.0):
+    1. Trả về 0.0 nếu câu trả lời rỗng hoặc chỉ có khoảng trắng.
+    2. Trả về 0.0 nếu hệ thống không có tài liệu nguồn được truy xuất (sources rỗng).
+    3. Trả về 0.0 nếu câu trả lời không chứa bất kỳ ký hiệu trích dẫn [n] nào.
+    4. Trả về 0.0 nếu có bất kỳ trích dẫn nào trỏ đến nguồn KHÔNG TỒN TẠI:
+       - Chỉ số <= 0
+       - Chỉ số > len(sources) (ví dụ: trích dẫn [5] trong khi chỉ có 2 nguồn tài liệu được retrieved).
+    5. Trả về 1.0 khi và chỉ khi:
+       - Có ít nhất một trích dẫn [n] hợp lệ.
+       - TẤT CẢ các chỉ số trích dẫn trong câu trả lời đều nằm trong phạm vi tài liệu thực tế [1, len(sources)].
+
+    Lưu ý học thuật: Thước đo này đánh giá tính tuân thủ hình thức trích dẫn và tính toàn vẹn của chỉ mục
+    tài liệu tham chiếu (Format & Source Index Integrity), ngăn chặn hiện tượng trích dẫn nguồn ảo / bịa đặt số thứ tự.
+    """
     if not answer or not answer.strip():
         return 0.0
-    return 1.0 if (re.search(r"\[\d+\]", answer) and sources) else 0.0
+    if not sources or len(sources) == 0:
+        return 0.0
+
+    cited_indices = extract_citation_indices(answer)
+    if not cited_indices:
+        return 0.0
+
+    # Kiểm tra tính tồn tại của từng nguồn được trích dẫn
+    max_source_idx = len(sources)
+    for idx in cited_indices:
+        if idx <= 0 or idx > max_source_idx:
+            # Citation trỏ đến nguồn không tồn tại trong danh sách retrieved!
+            return 0.0
+
+    return 1.0
+
+
+def evaluate_routing_accuracy(predicted_agent: str | None, expected_agent: str, has_router: bool = True) -> float | None:
+    """
+    Đánh giá độ chính xác định tuyến tác tử (Routing Accuracy):
+    - has_router = False: Trả về None (N/A) do pipeline không sở hữu module Query Router.
+    - has_router = True: 1.0 nếu predicted_agent khớp expected_agent, ngược lại 0.0.
+    """
+    if not has_router:
+        return None
+    if not predicted_agent:
+        return 0.0
+    return 1.0 if str(predicted_agent).strip() == str(expected_agent).strip() else 0.0
 
 
 # ── 4 Pipeline ────────────────────────────────────────────────────────────────
@@ -324,17 +380,30 @@ def compute_summary(all_results: dict) -> dict:
             m = r.get("semantic_metric_method", "unknown")
             methods_count[m] = methods_count.get(m, 0) + 1
 
+        # Phân tách rõ ràng điểm BERTScore F1 thuần và Embedding Cosine (không gộp mập mờ hai thang đo khác nhau)
+        bert_scores = [r.get("semantic_similarity", 0.0) for r in results if r.get("semantic_metric_method") == "bert_score"]
+        emb_scores = [r.get("semantic_similarity", 0.0) for r in results if r.get("semantic_metric_method") == "embedding_cosine"]
+
+        bert_avg = round(sum(bert_scores) / len(bert_scores), 4) if bert_scores else None
+        emb_avg = round(sum(emb_scores) / len(emb_scores), 4) if emb_scores else None
+
+        # Điểm semantic similarity tổng hợp của tất cả các mẫu:
+        sem_all = round(sum(r.get("semantic_similarity", r.get("bertscore_f1", 0.0)) for r in results) / n, 4)
+
         summary[pipe_name] = {
             "rouge_l":                  round(sum(r["rouge_l"] for r in results) / n, 4),
-            "semantic_similarity":      round(sum(r.get("semantic_similarity", r.get("bertscore_f1", 0.0)) for r in results) / n, 4),
+            "semantic_similarity":      sem_all,
             "semantic_metric_breakdown": methods_count,
+            "bertscore_f1_pure":        bert_avg,
+            "embedding_cosine_pure":    emb_avg,
             "citation_compliance_rate": round(sum(r["citation"] for r in results) / n, 4),
             "routing_accuracy":         routing_val,
+            "routing_supported":        has_router,
             "response_time_avg":        avg_time,
             "response_time_p50":        p50_time,
             "response_time_p95":        p95_time,
             # Backward compatibility aliases:
-            "bertscore_f1":             round(sum(r.get("semantic_similarity", r.get("bertscore_f1", 0.0)) for r in results) / n, 4),
+            "bertscore_f1":             sem_all,
             "citation_accuracy":        round(sum(r["citation"] for r in results) / n, 4),
             "n_samples":                n,
         }
