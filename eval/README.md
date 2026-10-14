@@ -55,11 +55,15 @@ ollama pull qwen2.5:7b-instruct-q4_K_M
 ```
 
 ### Bước 3: Chạy kịch bản kiểm tra tính tái lập tự động
-Dự án cung cấp bộ công cụ tự động kiểm tra tính nhất quán dữ liệu, tính tái lập toán học, regex bóc tách nguồn và sự sẵn sàng của thư viện BERTScore:
+Dự án cung cấp bộ công cụ tự động kiểm tra tính toàn vẹn dữ liệu, tính tái lập toán học với dung sai chặt (≤ 1e-4) cho tất cả các chỉ số (kể cả `response_time`), regex bóc tách nguồn, và kiểm tra độc lập từng môi trường:
 ```bash
+# Kiểm tra toán học, dữ liệu và môi trường (6 bài kiểm tra độc lập):
 python eval/verify_reproducibility.py
+
+# Hoặc chạy kèm kiểm thử thực thi End-to-End trực tiếp trên pipeline (7 bài kiểm tra):
+python eval/verify_reproducibility.py --smoke-eval
 ```
-*Kết quả kỳ vọng: 5/5 bài kiểm tra đều hiển thị `✅ PASS`.*
+*Kết quả kỳ vọng: 6/6 (hoặc 7/7 với `--smoke-eval`) bài kiểm tra đều hiển thị `✅ PASS`.*
 
 ### Bước 4: Tái lập Bảng tổng hợp Luận văn (thesis_metrics.json)
 ```bash

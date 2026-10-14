@@ -4,11 +4,12 @@ verify_reproducibility.py — Kịch bản xác minh độc lập tính tái l�
 
 Mục đích:
 1. Kiểm tra tính toàn vẹn và hợp lệ của các bộ dữ liệu canonical (ground truth, live results, comparative results).
-2. Tái lập tính toán độc lập Micro-Average và Macro-Average từ dữ liệu gốc kết quả live.
+2. Tái lập tính toán độc lập từng kịch bản (S1–S7), Micro-Average và Macro-Average với dung sai chặt (≤ 1e-4) cho TẤT CẢ các chỉ số, bao gồm cả response_time.
 3. Tái lập tính toán độc lập summary và phân vị độ trễ (Type 7 percentiles) từ dữ liệu so sánh 4 pipeline.
-4. Kiểm tra sự sẵn sàng của môi trường BERTScore tiếng Việt và embedding model.
-5. Kiểm tra hàm chuẩn hóa regex bóc tách nguồn trích dẫn cho ROUGE-L.
-6. (Tùy chọn) Chạy kiểm thử mẫu (--smoke-eval) để chứng minh pipeline thực thi được từ đầu đến cuối.
+4. Kiểm tra hàm chuẩn hóa regex bóc tách nguồn trích dẫn cho ROUGE-L.
+5. Kiểm tra độc lập môi trường BERTScore tiếng Việt (lang='vi') — Báo trạng thái riêng biệt.
+6. Kiểm tra độc lập mô hình Dense Embedding (multilingual-e5-large) — Báo trạng thái riêng biệt.
+7. (Tùy chọn) Chạy kiểm thử mẫu E2E (--smoke-eval) để chứng minh mã nguồn thực thi được từ đầu đến cuối.
 """
 
 import argparse
@@ -71,7 +72,7 @@ def verify_canonical_datasets() -> bool:
 
 def verify_live_aggregation() -> bool:
     print("\n" + "=" * 80)
-    print("2. TÁI LẬP TÍNH TOÁN ĐỘC LẬP MICRO & MACRO AVERAGE TỪ RESULTS_IMPROVED_FINAL.JSON")
+    print("2. TÁI LẬP TÍNH TOÁN ĐỘC LẬP TỪNG KỊCH BẢN, MICRO & MACRO AVERAGE TỪ RESULTS_IMPROVED_FINAL.JSON")
     print("=" * 80)
     res_path = EVAL_DIR / "results_improved_final.json"
     thesis_path = EVAL_DIR / "thesis_metrics.json"
@@ -86,7 +87,7 @@ def verify_live_aggregation() -> bool:
 
     errors = []
 
-    # 1. Tái lập Micro-Average (trung bình có trọng số theo 100 mẫu)
+    # 1. Tái lập Micro-Average (trung bình có trọng số theo 100 mẫu) với dung sai chặt 1e-4
     micro_routing = round(sum(r.get("routing_correct", 0) for r in results) / n, 4)
     micro_rouge = round(sum(r.get("rouge_l", 0) for r in results) / n, 4)
     micro_sem = round(sum(r.get("semantic_similarity", r.get("bertscore", 0)) for r in results) / n, 4)
@@ -102,16 +103,16 @@ def verify_live_aggregation() -> bool:
         errors.append(f"Micro Semantic mismatch: {micro_sem} vs {stored_micro['semantic_similarity']}")
     if abs(micro_cite - stored_micro["citation_compliance_rate"]) > 1e-4:
         errors.append(f"Micro Citation mismatch: {micro_cite} vs {stored_micro['citation_compliance_rate']}")
-    stored_micro_time = stored_micro.get("response_time", stored_micro.get("response_time_avg", 0.0))
-    if abs(micro_time - stored_micro_time) > 0.05:
-        errors.append(f"Micro Time mismatch: {micro_time} vs {stored_micro_time}")
+    stored_micro_time = stored_micro.get("response_time", 0.0)
+    if abs(micro_time - stored_micro_time) > 1e-4:
+        errors.append(f"Micro Time mismatch: {micro_time} vs {stored_micro_time} (diff={abs(micro_time-stored_micro_time):.6f})")
 
-    # 2. Tái lập theo từng kịch bản (Scenario Breakdown S1 - S7)
+    # 2. Tái lập chi tiết từng kịch bản (S1 - S7) — Kiểm tra chặt cả 5 chỉ số bao gồm response_time
     scenarios = ["S1", "S2", "S3", "S4", "S5", "S6", "S7"]
     stored_scenarios = {s["scenario"]: s for s in thesis_data.get("per_scenario", [])}
     scen_recomputed = []
 
-    print("  Chi tiết đối chiếu 7 kịch bản (S1–S7):")
+    print("  Chi tiết đối chiếu 7 kịch bản (S1–S7) với sai số kiểm tra chặt (≤ 1e-4):")
     for sid in scenarios:
         s_items = [r for r in results if r.get("scenario") == sid]
         k = len(s_items)
@@ -130,16 +131,25 @@ def verify_live_aggregation() -> bool:
         })
 
         stored_s = stored_scenarios.get(sid, {})
-        match_status = "✅"
-        if (abs(s_routing - stored_s.get("routing_accuracy", 0)) > 1e-3 or
-            abs(s_rouge - stored_s.get("rouge_l", 0)) > 1e-3 or
-            abs(s_sem - stored_s.get("semantic_similarity", 0)) > 1e-3 or
-            abs(s_cite - stored_s.get("citation_compliance_rate", 0)) > 1e-3):
-            match_status = "❌"
-            errors.append(f"Sai lệch tại kịch bản {sid}")
-        print(f"    {match_status} {sid}: n={k:2d} | Routing={s_routing:.2f} | ROUGE={s_rouge:.2f} | Sem={s_sem:.2f} | Cite={s_cite:.2f} | Time={s_time:.2f}s")
+        mismatch_fields = []
+        if abs(s_routing - stored_s.get("routing_accuracy", 0)) > 1e-4:
+            mismatch_fields.append(f"routing({s_routing} vs {stored_s.get('routing_accuracy')})")
+        if abs(s_rouge - stored_s.get("rouge_l", 0)) > 1e-4:
+            mismatch_fields.append(f"rouge({s_rouge} vs {stored_s.get('rouge_l')})")
+        if abs(s_sem - stored_s.get("semantic_similarity", 0)) > 1e-4:
+            mismatch_fields.append(f"sem({s_sem} vs {stored_s.get('semantic_similarity')})")
+        if abs(s_cite - stored_s.get("citation_compliance_rate", 0)) > 1e-4:
+            mismatch_fields.append(f"cite({s_cite} vs {stored_s.get('citation_compliance_rate')})")
+        if abs(s_time - stored_s.get("response_time", 0)) > 1e-4:
+            mismatch_fields.append(f"time({s_time} vs {stored_s.get('response_time')})")
 
-    # 3. Tái lập Macro-Average (trung bình không trọng số của 7 kịch bản)
+        if mismatch_fields:
+            errors.append(f"Sai lệch tại kịch bản {sid}: {', '.join(mismatch_fields)}")
+            print(f"    ❌ {sid}: n={k:2d} | Routing={s_routing:.2f} | ROUGE={s_rouge:.2f} | Sem={s_sem:.2f} | Cite={s_cite:.2f} | Time={s_time:.4f}s -> LỆCH: {mismatch_fields}")
+        else:
+            print(f"    ✅ {sid}: n={k:2d} | Routing={s_routing:.2f} | ROUGE={s_rouge:.2f} | Sem={s_sem:.2f} | Cite={s_cite:.2f} | Time={s_time:.4f}s")
+
+    # 3. Tái lập Macro-Average (trung bình không trọng số của 7 kịch bản) với dung sai chặt 1e-4
     num_scen = len(scen_recomputed)
     macro_routing = round(sum(s["routing"] for s in scen_recomputed) / num_scen, 4)
     macro_rouge = round(sum(s["rouge"] for s in scen_recomputed) / num_scen, 4)
@@ -157,14 +167,14 @@ def verify_live_aggregation() -> bool:
     if abs(macro_cite - stored_macro.get("citation_compliance_rate", 0)) > 1e-4:
         errors.append(f"Macro Citation mismatch: {macro_cite} vs {stored_macro.get('citation_compliance_rate')}")
     stored_macro_time = stored_macro.get("response_time", 0.0)
-    if abs(macro_time - stored_macro_time) > 0.05:
-        errors.append(f"Macro Time mismatch: {macro_time} vs {stored_macro_time}")
+    if abs(macro_time - stored_macro_time) > 1e-4:
+        errors.append(f"Macro Time mismatch: {macro_time} vs {stored_macro_time} (diff={abs(macro_time-stored_macro_time):.6f})")
 
     if not errors:
-        print(f"\n  ✅ [PASS] Tái lập Micro-Average thành công:")
-        print(f"     Routing: {micro_routing:.4f} | ROUGE-L: {micro_rouge:.4f} | Semantic (LLM): {micro_sem:.4f} | Citation: {micro_cite:.4f} | Time: {micro_time:.2f}s")
-        print(f"  ✅ [PASS] Tái lập Macro-Average thành công:")
-        print(f"     Routing: {macro_routing:.4f} | ROUGE-L: {macro_rouge:.4f} | Semantic (LLM): {macro_sem:.4f} | Citation: {macro_cite:.4f} | Time: {macro_time:.2f}s")
+        print(f"\n  ✅ [PASS] Tái lập Micro-Average thành công (Dung sai ≤ 1e-4):")
+        print(f"     Routing: {micro_routing:.4f} | ROUGE-L: {micro_rouge:.4f} | Semantic (LLM): {micro_sem:.4f} | Citation: {micro_cite:.4f} | Time: {micro_time:.4f}s")
+        print(f"  ✅ [PASS] Tái lập Macro-Average thành công (Dung sai ≤ 1e-4):")
+        print(f"     Routing: {macro_routing:.4f} | ROUGE-L: {macro_rouge:.4f} | Semantic (LLM): {macro_sem:.4f} | Citation: {macro_cite:.4f} | Time: {macro_time:.4f}s")
         return True
     else:
         print("❌ [FAIL] Có sai lệch khi tái lập:")
@@ -195,7 +205,9 @@ def verify_comparative_aggregation() -> bool:
             v_sto = s_stored.get(key)
             if v_rec is None and v_sto is None:
                 continue
-            if abs((v_rec or 0) - (v_sto or 0)) > 1e-2:
+            # Dung sai: 1e-4 cho các tỷ lệ điểm số, 1e-2 cho số đo giây độ trễ
+            tol = 1e-2 if "response_time" in key else 1e-4
+            if abs((v_rec or 0) - (v_sto or 0)) > tol:
                 print(f"    ❌ Lệch chỉ số {key}: tính {v_rec} vs lưu {v_sto}")
                 all_matched = False
             else:
@@ -218,7 +230,6 @@ def verify_regex_source_stripping() -> bool:
     all_ok = True
     for ref, hyp in test_samples:
         score = compute_rouge_l(ref, hyp)
-        # Vì phần nội dung chính giống hệt nhau (chỉ khác nguồn), ROUGE-L sau khi bóc tách nguồn phải đạt xấp xỉ 1.0
         print(f"  Test pair: '{ref[:30]}...' vs '{hyp[:30]}...' -> ROUGE-L = {score:.4f}")
         if score < 0.8:
             print("    ⚠ Cảnh báo: ROUGE-L thấp bất thường, tiền tố nguồn có thể chưa được lọc sạch.")
@@ -230,40 +241,73 @@ def verify_regex_source_stripping() -> bool:
 
 def verify_bertscore_environment() -> bool:
     print("\n" + "=" * 80)
-    print("5. KIỂM TRA MÔI TRƯỜNG BERTSCORE TIẾNG VIỆT & EMBEDDING MODEL")
+    print("5. KIỂM TRA ĐỘC LẬP MÔI TRƯỜNG BERTSCORE TIẾNG VIỆT (BERT_SCORE)")
     print("=" * 80)
     try:
         from bert_score import score as bscore
         P, R, F1 = bscore(["Xin chào"], ["Chào bạn"], lang="vi", verbose=False)
         print(f"✅ [PASS] Thư viện bert_score sẵn sàng! Điểm thử nghiệm vi: F1={float(F1[0]):.4f}")
-        bert_ok = True
+        return True
     except Exception as e:
-        print(f"⚠ [WARN] Không thể chạy bert_score: {e}")
-        bert_ok = False
+        print(f"❌ [FAIL] Không thể chạy bert_score: {e}")
+        return False
 
+
+def verify_embedding_environment() -> bool:
+    print("\n" + "=" * 80)
+    print("6. KIỂM TRA ĐỘC LẬP MÔ HÌNH DENSE EMBEDDING (MULTILINGUAL-E5-LARGE)")
+    print("=" * 80)
     try:
         from data_loader import embed_texts
         vec = embed_texts(["Kiểm tra vector"], is_query=True)[0]
         print(f"✅ [PASS] Embedding model sẵn sàng! Chiều vector: {len(vec)}")
-        emb_ok = True
+        return True
     except Exception as e:
-        print(f"⚠ [WARN] Không thể nạp embedding model: {e}")
-        emb_ok = False
+        print(f"❌ [FAIL] Không thể nạp embedding model: {e}")
+        return False
 
-    return bert_ok or emb_ok
+
+def run_e2e_smoke_test() -> bool:
+    print("\n" + "=" * 80)
+    print("7. KIỂM THỬ KHẢ THI END-TO-END THỰC TẾ TRÊN MẪU NHỎ (E2E SMOKE TEST)")
+    print("=" * 80)
+    try:
+        from comparative_eval import pipeline_naive_rag, compute_rouge_l, compute_semantic_similarity, compute_citation
+        q = "Tôi thích máy móc và sửa chữa thì học ngành gì?"
+        ref = "Bạn có xu hướng thuộc nhóm Realistic (R) kỹ thuật."
+        
+        print(f"  Chạy thử truy vấn mẫu: '{q}'")
+        res = pipeline_naive_rag(q)
+        ans = res.get("answer", "")
+        print(f"  Phản hồi nhận được ({res.get('time', 0):.2f}s): {ans[:80]}...")
+        
+        rouge = compute_rouge_l(ref, ans)
+        sem, method = compute_semantic_similarity(ref, ans)
+        cite = compute_citation(ans, res.get("sources", []))
+        print(f"  Chỉ số tính live: ROUGE-L={rouge:.4f} | Semantic={sem:.4f} ({method}) | Citation={cite}")
+        print("✅ [PASS] Toàn bộ chu trình E2E từ truy xuất, suy luận đến chấm điểm đều thực thi thành công!")
+        return True
+    except Exception as e:
+        print(f"⚠ [WARN] E2E smoke test thất bại hoặc dịch vụ phụ thuộc chưa bật: {e}")
+        return False
 
 
 def main():
     parser = argparse.ArgumentParser(description="Xác minh độc lập tính tái lập của benchmark FBC4SAO")
+    parser.add_argument("--smoke-eval", action="store_true", help="Chạy kiểm thử end-to-end trên mẫu nhỏ")
     args = parser.parse_args()
 
     results = [
         ("Canonical Datasets Integrity", verify_canonical_datasets()),
-        ("Live E2E Micro/Macro Aggregation", verify_live_aggregation()),
+        ("Live E2E Scenario & Micro/Macro Aggregation", verify_live_aggregation()),
         ("Comparative Pipeline Aggregation", verify_comparative_aggregation()),
         ("Regex Source Stripping", verify_regex_source_stripping()),
-        ("BERTScore & Embedding Environment", verify_bertscore_environment()),
+        ("BERTScore Vietnamese Environment", verify_bertscore_environment()),
+        ("Dense Embedding Environment", verify_embedding_environment()),
     ]
+
+    if args.smoke_eval:
+        results.append(("E2E Pipeline Execution Smoke Test", run_e2e_smoke_test()))
 
     print("\n" + "=" * 80)
     print("TỔNG KẾT XÁC MINH TÍNH TÁI LẬP (REPRODUCIBILITY SUMMARY)")
@@ -273,10 +317,10 @@ def main():
         status = "✅ PASS" if res else "❌ FAIL"
         if not res:
             passed_all = False
-        print(f"  {name:<40}: {status}")
+        print(f"  {name:<45}: {status}")
 
     if passed_all:
-        print("\n🎉 Tất cả kiểm tra tính tái lập dữ liệu và thuật toán đều THÀNH CÔNG.")
+        print("\n🎉 Tất cả bài kiểm tra tính tái lập dữ liệu và môi trường đều THÀNH CÔNG.")
         sys.exit(0)
     else:
         print("\n⚠ Có bài kiểm tra không đạt. Vui lòng kiểm tra nhật ký chi tiết phía trên.")
