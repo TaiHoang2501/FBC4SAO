@@ -63,3 +63,6 @@ ragas_results.json
 *.docx
 *.doc
 fake_metrics.py
+
+# ── Java ─────────────────────────────────────────────────────────────────────
+*.class

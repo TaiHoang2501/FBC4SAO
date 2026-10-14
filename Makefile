@@ -1,10 +1,12 @@
 .PHONY: run dev test test-unit test-all eval comparative-eval verify verify-ci verify-smoke lint format clean frontend ui
 
+PORT ?= 8001
+
 run:
-	uvicorn src.main:app --host 0.0.0.0 --port 8000
+	uvicorn src.main:app --host 0.0.0.0 --port $(PORT)
 
 dev:
-	uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
+	uvicorn src.main:app --reload --host 0.0.0.0 --port $(PORT)
 
 frontend:
 	cd frontend && javac HollandRAGGUI.java && java HollandRAGGUI
@@ -28,6 +30,8 @@ verify:
 
 verify-ci:
 	python eval/verify_reproducibility.py --ci
+
+audit: verify-ci
 
 verify-smoke:
 	python eval/verify_reproducibility.py --smoke-eval

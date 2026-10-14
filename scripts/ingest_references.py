@@ -2,12 +2,15 @@ import os
 import httpx
 from pathlib import Path
 
-API_URL = "http://localhost:8001/ingest/pdf"
-REF_DIR = Path("/Users/macos/Downloads/1. KLTN/RAG Production/tài liệu tham khảo")
+API_URL = os.getenv("API_URL", "http://localhost:8001/ingest/pdf")
+ROOT_DIR = Path(__file__).resolve().parent.parent
+REF_DIR = ROOT_DIR / "data" / "tài liệu tham khảo"
+if not REF_DIR.exists():
+    REF_DIR = ROOT_DIR / "tài liệu tham khảo"
 
 def ingest_all():
     print(f"Checking {REF_DIR}...")
-    files = list(REF_DIR.glob("*.pdf")) + list(REF_DIR.glob("*.docx"))
+    files = list(REF_DIR.glob("*.pdf")) + list(REF_DIR.glob("*.docx")) if REF_DIR.exists() else []
     for fpath in files:
         print(f"Ingesting: {fpath.name}...")
         try:

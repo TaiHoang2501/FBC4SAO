@@ -17,21 +17,24 @@ Hệ thống RAG đa tác nhân thích ứng (Adaptive Agentic RAG) được thi
 ### 1. Chuẩn bị Môi trường
 - Python 3.12+
 - Docker (để chạy Qdrant server - tùy chọn)
-- Ollama (với model `qwen3.5:0.8b` hoặc tương đương)
+- Ollama (Khuyến nghị: `qwen2.5:7b-instruct-q4_K_M` — model chuẩn được sử dụng trong nghiên cứu & benchmark; hoặc `qwen3.5:0.8b` cho kiểm thử chức năng nhẹ)
 
 ### 2. Khởi tạo Cơ sở dữ liệu & Model
 ```bash
-# Docker Qdrant (Nếu dùng server)
+# Docker Qdrant (Nếu dùng server tách rời; mặc định hệ thống có sẵn local storage tại data/qdrant_storage)
 docker run -p 6333:6333 qdrant/qdrant
 
-# Kéo model Ollama
+# Kéo model chuẩn thực nghiệm:
+ollama pull qwen2.5:7b-instruct-q4_K_M
+
+# (Tùy chọn) Kéo model nhẹ phục vụ smoke test:
 ollama pull qwen3.5:0.8b
 ```
 
 ### 3. Cài đặt Phụ thuộc
 ```bash
 python -m venv .venv312
-source .venv312/bin/activate  # macOS
+source .venv312/bin/activate  # macOS / Linux
 pip install -r requirements.txt  # Hoặc dùng uv: uv sync
 ```
 
@@ -42,7 +45,7 @@ pip install -r requirements.txt  # Hoặc dùng uv: uv sync
 1. **Backend API**:
    ```bash
    uvicorn src.main:app --host 0.0.0.0 --port 8001
-   # Hoặc dùng Makefile: make dev (port 8000)
+   # Hoặc dùng Makefile: make dev (mặc định PORT=8001)
    ```
 2. **Inngest Worker**:
    ```bash
@@ -53,10 +56,9 @@ pip install -r requirements.txt  # Hoặc dùng uv: uv sync
    cd frontend && javac HollandRAGGUI.java && java HollandRAGGUI
    # Hoặc dùng Makefile từ thư mục gốc: make frontend
    ```
-4. **Ingest Dữ liệu (Tri thức RIASEC & Hồ sơ)**:
-   ```bash
-   python scripts/ingest_riasec_data.py
-   ```
+4. **Ingest & Dữ liệu Tri thức (Knowledge Base)**:
+   - Dữ liệu tri thức RIASEC, hồ sơ sinh viên 10 năm và tài liệu tham khảo đã được lập chỉ mục sẵn trong thư mục `data/` (`qdrant_storage`, `bm25_index.pkl`, `semantic_cache.db`).
+   - Tệp [`scripts/ingest_riasec_data.py`](scripts/ingest_riasec_data.py) là script mẫu tham khảo quy trình hành văn hóa (textualization ETL) từ bảng dữ liệu gốc sang vector embedding. Để nạp thêm tài liệu PDF/DOCX mới, sử dụng API `/ingest/pdf` hoặc [`scripts/direct_ingest.py`](scripts/direct_ingest.py).
 
 ## 📊 Đánh Giá & Thực Nghiệm (Evaluation & Experimental Results)
 
@@ -157,6 +159,21 @@ python eval/comparative_eval.py
 
 ---
 
+### 📂 Phân Định Kết Quả Thực Nghiệm & Tính Minh Bạch Nghiên Cứu
+
+Để đảm bảo liêm chính học thuật (academic integrity) và minh bạch tối đa khi thẩm định nghiên cứu, toàn bộ kết quả được phân định theo 3 cấp độ kiểm chứng:
+
+1. **Observed Results (Kết quả Lưu trữ Lịch sử):** Các số liệu đo lường trong [`eval/results_improved_final.json`](eval/results_improved_final.json) và [`eval/comparative_results.json`](eval/comparative_results.json) ghi nhận từ lần chạy thực nghiệm hoàn chỉnh trên máy chủ thử nghiệm cục bộ (Apple Silicon M-series, runtime Ollama `qwen2.5:7b-instruct-q4_K_M`, mô hình nhúng `multilingual-e5-large`, không bật cache ở phần so sánh).
+2. **Verified Results (Kết quả Đối soát Tái lập Toán học):** Toàn bộ phép tổng hợp (Micro/Macro Average, thống kê Type 7 Percentiles, phép bóc tách regex nguồn) được kiểm tra tự động bởi [`eval/verify_reproducibility.py --ci`](eval/verify_reproducibility.py) trong mỗi commit với sai số kiểm tra tuyệt đối $\le 10^{-4}$ ($0.000000$ discrepancy).
+3. **Reproduced Results (Tái lập Toàn bộ từ Đầu):** Đòi hỏi môi trường phần cứng có GPU/NPU và các dịch vụ nền (Ollama server với model 7B, Qdrant vector database). Khi có đủ môi trường, thực thi `python eval/comparative_eval.py` hoặc `python eval/thesis_eval.py --live`.
+
+#### ⚠️ Các Giới Hạn Nghiên Cứu Quan Trọng (Academic Caveats & Limitations)
+- **Cấu trúc Bộ Ground Truth:** Tập [`eval/ground_truth_final.json`](eval/ground_truth_final.json) hiện gồm 100 câu hỏi độc lập được chia thành 7 nhóm kịch bản (S1–S7). Ở phiên bản hiện tại, các câu hỏi trong cùng một kịch bản đang đối chiếu với cùng một văn bản tham chiếu chung đại diện cho nhóm (1 reference template/scenario). Nghiên cứu đang trong lộ trình audit và may đo bộ 100 câu trả lời tham chiếu chuyên biệt cho từng câu hỏi riêng biệt.
+- **Bản chất Chỉ số Citation Compliance:** Metric này kiểm tra tính hợp lệ của cú pháp trích dẫn `[n]` và sự tồn tại của chỉ mục $1 \le idx \le \text{len}(sources)$ từ kết quả truy xuất. Metric này **chưa phải là kiểm chứng tính xác thực ở mức nhận định (claim-level NLI entailment)**.
+- **Tách biệt Không gian Điểm Ngữ nghĩa:** Điểm $0.8558$ ở Hệ thống Live là **LLM-as-a-Judge** (thang điểm rubric chuẩn hóa $[0, 1]$), trong khi điểm $0.6723 - 0.6852$ ở Bảng so sánh là **BERTScore vi F1**. Hai thang đo thuộc hai không gian toán học khác nhau và không được so sánh trực tiếp như cùng một đại lượng.
+
+---
+
 ### 📂 Ma trận Nguồn gốc Tệp Dữ liệu Thực nghiệm (Provenance Matrix)
 
 | Tệp Dữ Liệu | Mục Đích Sử Dụng | Phương Pháp Đánh Giá | Trạng Thái Học Thuật |
@@ -171,8 +188,9 @@ python eval/comparative_eval.py
 ### 🧪 Tự Động Hóa Kiểm Thử & CI/CD (Continuous Integration)
 
 Dự án thiết lập quy trình tích hợp liên tục tự động hóa trên GitHub Actions ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)), phân tách rõ ràng giữa kiểm thử môi trường CI chuẩn và kiểm thử dịch vụ ngoài:
-- **Kiểm thử Đơn vị & Tích hợp (CI Isolated Test Suite):** Chạy `pytest tests/ -v -m "not external"` bao gồm 10 bài kiểm thử hợp đồng Pydantic schemas và API integration, độc lập 100% với các daemon bên ngoài như Ollama hoặc Docker Qdrant.
-- **Xác minh Tính Tái lập Benchmark (Reproducibility Verification - CI Mode):** Chạy `python eval/verify_reproducibility.py --ci` xác minh tính toàn vẹn các bộ dữ liệu canonical, tái lập Micro/Macro Average 7 kịch bản S1–S7 và bảng đối sánh 4 pipeline với dung sai toán học chặt $\le 10^{-4}$ trên tất cả chỉ số (bao gồm cả `response_time`).
+- **Kiểm thử Đơn vị & Tích hợp (CI Isolated Test Suite):** Chạy `pytest tests/ -v -m "not external"` bao gồm **36 bài kiểm thử** (hợp đồng Pydantic schemas, API integration, và toàn bộ các trường hợp biên của metrics: citation index out-of-bounds, negative index, empty inputs, regex stripping, Type 7 interpolation), độc lập 100% với các daemon bên ngoài như Ollama hoặc Docker Qdrant.
+- **Xác minh Tính Tái lập Benchmark (Reproducibility Verification - CI Mode):** Chạy `python eval/verify_reproducibility.py --ci` xác minh tính toàn vẹn và schema dữ liệu canonical, không chứa giá trị NaN/Inf, tái lập Micro/Macro Average 7 kịch bản S1–S7 và bảng đối sánh 4 pipeline với dung sai toán học chặt $\le 10^{-4}$ trên tất cả chỉ số (bao gồm cả `response_time`).
 - **Đóng gói Docker Production:** Kiểm tra cú pháp và build sạch Docker container production (`Dockerfile`) sau khi toàn bộ bước kiểm thử và xác minh toán học đều vượt qua.
 - **Kiểm thử Thực thi Toàn diện (Adaptive Agentic RAG Smoke Eval):** Khi có môi trường local/runtime đầy đủ, lệnh `python eval/verify_reproducibility.py --smoke-eval` cho phép kiểm thử trực tiếp chu trình Adaptive Agentic RAG (Router → Search → Rerank → LLM → Live Metrics).
+
 
